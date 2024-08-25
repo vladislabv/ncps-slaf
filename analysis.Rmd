@@ -184,7 +184,8 @@ plot_by_column(
   x_label = "Stunden",
   y_label = "Stromverbrauch [MW]",
   file_name = "plots\\hour_boxplot.png",
-  title = "Übersicht der einzelnen Stunden"
+  title = "Übersicht der einzelnen Stunden",
+  line=FALSE
 )
 
 plot_by_column(
@@ -194,7 +195,8 @@ plot_by_column(
   x_label = "Monate",
   y_label = "Stromverbrauch [MW]",
   file_name = "plots\\month_boxplot.png",
-  title = "Übersicht der einzelnen Monate"
+  title = "Übersicht der einzelnen Monate",
+  line=FALSE
 )
 
 plot_by_column(
@@ -204,7 +206,8 @@ plot_by_column(
   x_label = "Woche",
   y_label = "Stromverbrauch [MW]",
   file_name = "plots\\week_boxplot.png",
-  title = "Übersicht der einzelnen Wochen"
+  title = "Übersicht der einzelnen Wochen",
+  line=FALSE
 )
 
 plot_by_column(
@@ -214,7 +217,8 @@ plot_by_column(
   x_label = "Jahr",
   y_label = "Stromverbrauch [MW]",
   file_name = "plots\\year_boxplot.png",
-  title = "Übersicht der einzelnen Jahre"
+  title = "Übersicht der einzelnen Jahre",
+  line=FALSE
 )
 
 plot_year_month_week_day(
@@ -236,6 +240,64 @@ plot_year_month_week_day(
   holiday="Holiday",
   day_of_week = "Weekday"
 )
+
+
+AEP_hourly_cleaned$MeanLastWeek <- rollapply(AEP_hourly_cleaned$AEP_MW, width = 24*7, FUN = function(x) mean(x[1:(24*7-1)]), align = "right", fill = NA)
+
+AEP_hourly_cleaned$MeanLastTwoDays <- rollapply(AEP_hourly_cleaned$AEP_MW, width = 24*2, FUN = function(x) mean(x[1:(24*2-1)]), align = "right", fill = NA)
+
+AEP_hourly_cleaned$MaxLastOneDay <- rollapply(AEP_hourly_cleaned$AEP_MW, width = 24*1, FUN = function(x) max(x[1:(24*1-1)]), align = "right", fill = NA)
+
+AEP_hourly_cleaned$MinLastOneDay <- rollapply(AEP_hourly_cleaned$AEP_MW, width = 24*1, FUN = function(x) min(x[1:(24*1-1)]), align = "right", fill = NA)
+
+
+cor <- cor(AEP_hourly_cleaned[sapply(AEP_hourly_cleaned, is.numeric)], method = c("pearson", "kendall", "spearman"), use = "complete.obs")
+
+plot_by_column(
+  df = AEP_hourly_cleaned,
+  x = "MeanLastWeek",
+  y = "AEP_MW",
+  x_label = "MeanLastWeek",
+  y_label = "Stromverbrauch [MW]",
+  file_name = "plots\\mean_last_week.png",
+  title = " ",
+  line=TRUE
+)
+
+plot_by_column(
+  df = AEP_hourly_cleaned,
+  x = "MeanLastTwoDays",
+  y = "AEP_MW",
+  x_label = "MeanLastTwoDays",
+  y_label = "Stromverbrauch [MW]",
+  file_name = "plots\\mean_last_two_days.png",
+  title = " ",
+  line=TRUE
+)
+
+plot_by_column(
+  df = AEP_hourly_cleaned,
+  x = "MaxLastOneDay",
+  y = "AEP_MW",
+  x_label = "MaxLastOneDay",
+  y_label = "Stromverbrauch [MW]",
+  file_name = "plots\\max_last_one_day.png",
+  title = " ",
+  line=TRUE
+)
+
+plot_by_column(
+  df = AEP_hourly_cleaned,
+  x = "MinLastOneDay",
+  y = "AEP_MW",
+  x_label = "MinLastOneDay",
+  y_label = "Stromverbrauch [MW]",
+  file_name = "plots\\min_last_one_day.png",
+  title = " ",
+  line=TRUE
+)
+
+write.csv(AEP_hourly_cleaned, "data\\AEP_hourly_cleaned.csv")
 
 ```
 

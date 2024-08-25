@@ -27,19 +27,26 @@
 #' @note -
 
 
-plot_by_column <- function(df, x, y, title, x_label, y_label, file_name){
+plot_by_column <- function(df, x, y, title, x_label, y_label, file_name, line){
   
-  p <- ggplot(df, aes(x = !!sym(x), y = !!sym(y))) +
-  geom_boxplot() +
-  theme(
-    legend.position = "none", 
-    strip.text = element_text(size = 12) 
-  ) +
-  labs(
-    title = title,
-    x = x_label,
-    y = y_label
-  )
+  p <- ggplot(df, aes(x = !!sym(x), y = !!sym(y))) 
+  
+  if (line == TRUE) {
+    p <- p + geom_point()
+  } else {
+    p <- p + geom_boxplot()
+  }
+  
+  p <- p + 
+    theme(
+      legend.position = "none", 
+      strip.text = element_text(size = 12)
+    ) +
+    labs(
+      title = title,
+      x = x_label,
+      y = y_label
+    )
 
   ggsave(file_name, plot = p, width = 20, height = 10, dpi = 300)
 }
