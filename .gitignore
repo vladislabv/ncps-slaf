@@ -143,3 +143,4 @@ dmypy.json
 
 # pylighting logs
 lightning_logs/
+.Rproj.user

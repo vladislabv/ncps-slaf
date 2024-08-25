@@ -1,0 +1,15 @@
+Package: usenergyforecast
+Type: Package
+Title: Forecasting US Energy Consumption
+Version: 1.0
+Date: 2024-08-17
+Authors@R: c(
+  person("Vitali", "Krilov", email = "no-email@example.com", role = c("aut", "cre"),
+  person("Vladislav", "Stasenko", email = "no-email@example.com", role = "cre"))
+  )
+Depends: R(>= 4.4.0)
+Description: This package helps to forecast German power consumption and power generation.
+License: Apache License
+LazyData: no
+LazyLoad: no
+RoxygenNote: 7.3.2
