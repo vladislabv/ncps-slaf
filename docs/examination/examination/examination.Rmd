@@ -8,7 +8,7 @@ Pandemien eine große Veränderung in einer Zeitreihe herbeiführen.
 Der erste Ansatz für eine Vorhersage von Zeitreihen basiert in dieser Arbeit
 auf den Liquid Neuronal Networks (LNN). Die LNNs sind dynamisch und passen 
 sich an die aktuelle Situation an, lernen also immer weiter.
-Als eine Ergänzung zu den LNNs wir die Self Learning Activation Function (SLAF) implementiert.
+Als eine Ergänzung zu den LNNs wird die Self Learning Activation Function (SLAF) implementiert.
 Diese approximiert die Parametrierung der richtigen Aktivierungsfunktion.
 Das Neuronale Netz wird auf den Datensatz der Stromerzeugung in den Jahren 2004-2018 
 vom Unternehmen American Electric Power angewandt. 
@@ -23,15 +23,15 @@ city: Meschede
 author:
 - familyname: Krilov
   othernames: Vitali
-  address: "MatNr: 123454678"
-  qualifications: "Data Science (Ms, 2. Semester)"
-  email: curie.marie@fh-swf.de
+  address: "MatNr: 30329089"
+  qualifications: "Data Science (Ms, 4. Semester)"
+  email: krilov.vitali@fh-swf.de
   correspondingauthor: true
 - familyname: Stasenko
   othernames: Vladislav
-  address: "MatNr: 87654321"
-  qualifications: "Electrical Engineering (MA, 1. Semester)"
-  email: curie.pierre@fh-swf.de
+  address: "MatNr: 30345058"
+  qualifications: "Data Science (Ms, 4. Semester)"
+  email: stasenko.vladislav@fh-swf.de
 
 # Language Options
 german: true # German Dummy Text
@@ -77,6 +77,57 @@ library(ggplot2)
 
 # Einleitung
 
+
+- time-series 
+- Problem beschreiben
+- Tiefere Zusammenfassung
+- Immer weiterlernen
+- LNN (Deep Learning), Model ist klein, Liquid Time Constant LTCs
+- Liquid time-constant
+- RNN (Parameter  100.000 - 1.000.000), unser Model ~7000 Parameter 1mb Modelgröße (klein), an kleinen geräten
+- Elektronische Messgeräte, Rasbery PI
+- vanishing gradient Problem (SLAF sollte helfen)
+- Schnelleres Training 
+- Echtzeit, weil weiter Lernbar? 
+- Unterschied zu gewöhnlichen NNs
+- ARIMA, Prophet 
+
+# Methodik 
+Eine der bekanntesten Modelle für eine Zeitreihe ist das ARIMA Model.
+Prophet als ein weiteres Benchmark-Model, welches sich an  komplexe Saisonalität
+anpasst. 
+
+
+- LNNs <- Vlad
+- SLAF <- Vitali
+- ARIMA <- Paar Worte <- Vitali 
+- Prophet <- Facebook etc. Warum das, Vorteile etc., paar Worte <- Vitali
+- Lagged Values <- ARIMA Bezug / ACF-PACF <- Vitali 
+- Train / Testdatensatz <- egal wer, nur paar sätze
+
+# Datenanalyse
+Der verwendete Datensatz kommt aus den USA und beinhaltet die Stromerzeugung
+vom Unternehmen American Electric Power gegenüber der Zeit. In einer stündlichen Auflösung
+
+
+- Statistische Methoden <- Vitali 
+- Feature Engineering <- Vitali (Analytisch) & Vlad (PCA)
+- "Calender Effect" <- Vitali
+
+# Model Implementierung
+- Cluster <- Vlad
+- Wie SLAF und LNN implementiert <- Vlad
+- Normalisierung / Skalierung <- Vlad
+
+# Vorhersage Ergebnisse
+- Metriks <- MAE / MAPE (X) / LOSS-FUNCTION <- Vlad
+- Plots der Ergebnisse <- Vlad
+
+# Fazit <- Zusammen alles
+- Probleme
+- Lösungen
+- Zusammenfassung
+- Schlussfolgerung und letztes Wort
 
 
 test (\cite{Hasani2020})

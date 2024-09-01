@@ -90,7 +90,7 @@ def generate_train_data(
     if dt_till:
         df = df[df.index < dt_till]
         
-    print(df)
+    # print(df)
 
     tensor_y = Tensor(df.y.values).view((-1, 1))
     tensor_x = Tensor(

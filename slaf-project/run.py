@@ -88,7 +88,7 @@ def grid_search(dataloader, device, in_features, out_features):
 
 
 def main():
-    device = "cpu"#"cuda" if torch.cuda.is_available() else "cpu"
+    device = "cpu" #"cuda" if torch.cuda.is_available() else "cpu"
     # data related section
     data_raw = read_data(Config.PATH)
     data_raw = utils.prepare_data(data_raw, station=Config.STATION, features=Config.FEATURES_LIST)
@@ -135,7 +135,7 @@ def main():
         learn = SequenceLearner(ltc_model, lr=Config.INIT_LR[0], features_num=in_features, device=device)
 
         checkpoint_callback = pl.callbacks.ModelCheckpoint(
-            dirpath="/home/vlsta001/git_projects/ncps-slaf/slaf-project/checkpoints",
+            dirpath="checkpoints",
             save_top_k=5,
             monitor="train_loss"
         )
@@ -143,7 +143,7 @@ def main():
         trainer = pl.Trainer(
             callbacks=[checkpoint_callback],
             logger=pl.loggers.CSVLogger("log"),
-            max_epochs=Config.NUM_EPOCHS,
+            max_epochs=Config.NUM_EPOCHS[0],
             gradient_clip_val=1,  # Clip gradient to stabilize training
             gpus=1 if device == "cuda" else 0
         )

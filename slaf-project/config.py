@@ -37,8 +37,8 @@ class Config:
     
     GRID_SEARCH = True
 
-    BATCH_SIZE = 7
-    NUM_WORKERS = 128
+    BATCH_SIZE = 7*24
+    NUM_WORKERS = 8
     NUM_LNN_UNITS = [16, 8, 32]
 
     USE_SWISH_ACTIVATION = [False, True]
