@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 import pytorch_lightning as pl
-
+from torchmetrics import MeanAbsolutePercentageError
 
 class SequenceLearner(pl.LightningModule):
     # LightningModule for training a RNNSequence module
@@ -21,26 +21,33 @@ class SequenceLearner(pl.LightningModule):
     # ...
     # Iteration 12: y_hat(5) , y_(6) , y_(-352) -> y_hat(12) V y_(12)
     # Modell speichern?"
-    def __init__(self, model, lr=0.005):
+    def __init__(self, model, lr=0.005, features_num=3, device="cuda"):
         super().__init__()
+        self.save_hyperparameters()
         self.model = model
+        self.features_num = features_num
+        self.mydevice = device
         self.lr = lr
 
     def training_step(self, batch, batch_idx):
         x, y = batch
-        x = x.view((1, -1, 3))
+        x = x.to(self.mydevice)
+        y = y.to(self.mydevice)
+        x = x.view((1, -1, self.features_num))
         y = y.view((1, -1, 1))
-
+        
+        mape_loss = MeanAbsolutePercentageError().to(self.mydevice)
         loss = 0.0
 
         for idx in range(x.shape[1]):
+            idx_tensor = torch.tensor([idx]).to(self.mydevice)
             # get current row
-            x_curr = torch.index_select(x, 1, torch.tensor([idx]))
-            y_curr = torch.index_select(y, 1, torch.tensor([idx]))
+            x_curr = torch.index_select(x, 1, idx_tensor)
+            y_curr = torch.index_select(y, 1, idx_tensor)
+            
             y_hat, _ = self.model.forward(x_curr)
-
             y_hat = y_hat.view_as(y_curr)
-            loss += nn.MSELoss()(y_hat, y_curr)
+            loss += mape_loss(y_hat, y_curr)
 
             try:
                 # replace y true with prediction
@@ -54,19 +61,24 @@ class SequenceLearner(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
-        x = x.view((1, -1, 3))
+        x = x.to(self.mydevice)
+        y = y.to(self.mydevice)
+        x = x.view((1, -1, self.features_num))
         y = y.view((1, -1, 1))
         
+        mape_loss = MeanAbsolutePercentageError().to(self.mydevice)
         loss = 0.0
 
         for idx in range(x.shape[1]):
+            idx_tensor = torch.tensor([idx]).to(self.mydevice)
             # get current row
-            x_curr = torch.index_select(x, 1, torch.tensor([idx]))
-            y_curr = torch.index_select(y, 1, torch.tensor([idx]))
+            x_curr = torch.index_select(x, 1, idx_tensor)
+            y_curr = torch.index_select(y, 1, idx_tensor)
+            print(x_curr, y_curr)
             y_hat, _ = self.model.forward(x_curr)
             y_hat = y_hat.view_as(y_curr)
 
-            loss += nn.MSELoss()(y_hat, y_curr)
+            loss += mape_loss(y_hat, y_curr)
 
             try:
                 # replace y true with prediction

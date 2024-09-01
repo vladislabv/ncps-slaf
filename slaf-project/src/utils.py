@@ -2,14 +2,14 @@ from datetime import datetime, timedelta
 from typing import Tuple, Union, Dict
 
 from torch import Tensor
-from numpy import ndarray, array, transpose
+from numpy import ndarray, array, transpose, float64
 from pandas import DataFrame, Series
 
 from config import Config
 
 
-def prepare_data(df: DataFrame, station: str) -> Series:
-    df = df.reset_index()[["Datetime", station]].rename(
+def prepare_data(df: DataFrame, station: str, features: list = []) -> Series:
+    df = df.reset_index()[["Datetime", station, *features]].rename(
         columns={
             "Datetime": "datetime",
             station: "value"
@@ -25,29 +25,25 @@ def prepare_data(df: DataFrame, station: str) -> Series:
     return df
 
 
-def normalize_data(data: Union[ndarray, Tensor]) -> Dict:
+def normalize_data(scaler, data: Union[ndarray, Tensor]) -> Dict:
     # Min-Max Normalization
-    mmin = data.min()
-    mmax = data.max()
-
-    return (
-        (data - mmin) / (mmax - mmin),
-        mmin,
-        mmax,
-    )
+    return scaler, scaler.fit_transform(data)
 
 
 def denormalize_data(
+        scaler,
         data: Union[ndarray, Tensor],
-        min_value: float,
-        max_value: float
     ) -> Union[ndarray, Tensor]:
-    return data * (max_value - min_value) + min_value
+    return scaler.inverse_transform(data)
 
 
-def make_features(df: Series) -> DataFrame:
+def make_features(df: Series, features: list = []) -> DataFrame:
     values = df.value.values
-
+    features_values = []
+    if features:
+        features_values = transpose(df[features].values)
+        features_values = features_values.astype(float64)
+    
     # y(-1)
     x = values[(Config.YEAR_SHIFT * Config.VALUES_PER_DAY) - Config.VALUES_PER_DAY:]
     # y(-7)
@@ -70,35 +66,40 @@ def make_features(df: Series) -> DataFrame:
             rcut_idx + (Config.YEAR_SHIFT * Config.VALUES_PER_DAY)
     ]
     del df
-    df = DataFrame(
-        {
+    data = {
+        **{
             "x": x[:rcut_idx],
             "y": y[:rcut_idx],
             "x_shifted_week": x_shifted_week[:rcut_idx],
             "x_shifted_year": x_shifted_year[:rcut_idx],
-        }
-    )
+        },
+        **{k: v[:rcut_idx] for k, v in zip(features, features_values)}
+    }
+    df = DataFrame(data)
     df.index = idx
     
-    del x, y, x_shifted_week, x_shifted_year, idx
+    del x, y, x_shifted_week, x_shifted_year, idx, features_values, data
 
     return df
 
 
 def generate_train_data(
-        df: DataFrame, dt_from = None, dt_till = None) -> Tuple[Tensor]:
+        df: DataFrame, features: list = [], dt_from = None, dt_till = None) -> Tuple[Tensor]:
     if dt_from:
         df = df[df.index > dt_from]
     if dt_till:
         df = df[df.index < dt_till]
+        
+    print(df)
 
     tensor_y = Tensor(df.y.values).view((-1, 1))
     tensor_x = Tensor(
-        transpose(array([
-            df.x.values,
-            df.x_shifted_week.values,
-            df.x_shifted_year.values,
-        ]))
+        df[[
+            "x",
+            "x_shifted_week",
+            "x_shifted_year",
+            *features
+        ]].values
     )
 
     return tensor_x, tensor_y
@@ -107,6 +108,7 @@ def generate_train_data(
 def generate_test_data(
         df: DataFrame,
         last_seen_dt: datetime,
+        features: list = [],
         push_y_by = 7,
         unit = 'days'
     ) -> Tuple[Tensor]:
@@ -116,4 +118,4 @@ def generate_test_data(
     
     dt_till = dt_till.isoformat().replace('T', ' ')
 
-    return generate_train_data(df, dt_from=last_seen_dt, dt_till=dt_till)
+    return generate_train_data(df, features=features, dt_from=last_seen_dt, dt_till=dt_till)
