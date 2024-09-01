@@ -43,4 +43,4 @@ class Config:
 
     USE_SWISH_ACTIVATION = [False, True]
     INIT_LR = [0.01, 0.0001]
-    NUM_EPOCHS = [10, 50, 100]
+    NUM_EPOCHS = [10]#, 50, 100]

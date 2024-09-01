@@ -28,7 +28,6 @@ def read_data(path) -> pd.Series:
     return df
 
 
-
 def grid_search(dataloader, device, in_features, out_features):
     best_train_loss = float('inf')
     best_model_path = None
@@ -145,7 +144,9 @@ def main():
             logger=pl.loggers.CSVLogger("log"),
             max_epochs=Config.NUM_EPOCHS,
             gradient_clip_val=1,  # Clip gradient to stabilize training
-            gpus=1 if device == "cuda" else 0
+            accelerator='gpu',
+            devices=2
+            #gpus=2 if device == "cuda" else 0
         )
 
         # Train the model

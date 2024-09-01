@@ -89,20 +89,16 @@ def generate_train_data(
         df = df[df.index > dt_from]
     if dt_till:
         df = df[df.index < dt_till]
-        
-    print(df)
 
-    tensor_y = Tensor(df.y.values).view((-1, 1))
-    tensor_x = Tensor(
-        df[[
+    y = df.y.values.reshape(-1, 1)
+    x = df[[
             "x",
             "x_shifted_week",
             "x_shifted_year",
             *features
         ]].values
-    )
 
-    return tensor_x, tensor_y
+    return x, y
 
 
 def generate_test_data(
