@@ -89,6 +89,11 @@ def generate_train_data(
         df = df[df.index > dt_from]
     if dt_till:
         df = df[df.index < dt_till]
+<<<<<<< HEAD
+=======
+        
+    # print(df)
+>>>>>>> 2493d79fa1c884ba2dde418752c106b7f6d8fffd
 
     y = df.y.values.reshape(-1, 1)
     x = df[[
