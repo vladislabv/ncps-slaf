@@ -24,8 +24,13 @@ library(devtools)
 library(zoo)
 library(corrplot)
 library(scales)
+library(fable.prophet)
+library(mgcv)
+library(MEFM)
 load_all()
 ```
+
+
 
 
 ```{r, echo=TRUE, message=FALSE}
@@ -138,10 +143,59 @@ plot_histogram_by_group(
   file_name = "plots\\workday_histogram.png",
   colors = working_colors,
   x="AEP_MW",
-  x_label = "Stromverbrauch [MW]",
+  x_label = "Stromerzeugung [MW]",
   y_label = "Häufigkeit"
 )
 
+plot_histogram_by_group(
+  AEP_hourly_cleaned,
+  group_name = "LastDayWasNotWorkDay",
+  file_name = "plots\\LastDayWasNotWorkDay_histogram.png",
+  colors = working_colors,
+  x="AEP_MW",
+  x_label = "Stromerzeugung [MW]",
+  y_label = "Häufigkeit"
+)
+
+plot_histogram_by_group(
+  AEP_hourly_cleaned,
+  group_name = "LastDayWasNotWorkDayAndNowWorkDay",
+  file_name = "plots\\LastDayWasNotWorkDayAndNowWorkDay_histogram.png",
+  colors = working_colors,
+  x="AEP_MW",
+  x_label = "Stromerzeugung [MW]",
+  y_label = "Häufigkeit"
+)
+
+plot_histogram_by_group(
+  AEP_hourly_cleaned,
+  group_name = "NextDayIsNotWorkDayAndNowWorkDay",
+  file_name = "plots\\NextDayIsNotWorkDayAndNowWorkDay_histogram.png",
+  colors = working_colors,
+  x="AEP_MW",
+  x_label = "Stromerzeugung [MW]",
+  y_label = "Häufigkeit"
+)
+
+plot_histogram_by_group(
+  AEP_hourly_cleaned,
+  group_name = "LastDayWasHolodiayAndNotWeekend",
+  file_name = "plots\\LastDayWasHolodiayAndNotWeekend_histogram.png",
+  colors = working_colors,
+  x="AEP_MW",
+  x_label = "Stromerzeugung [MW]",
+  y_label = "Häufigkeit"
+)
+
+plot_histogram_by_group(
+  AEP_hourly_cleaned,
+  group_name = "NextDayIsHolidayAndNotWeekend",
+  file_name = "plots\\NextDayIsHolidayAndNotWeekend_histogram.png",
+  colors = working_colors,
+  x="AEP_MW",
+  x_label = "Stromverbrauch [MW]",
+  y_label = "Häufigkeit"
+)
 
 plot_by_group(
   AEP_hourly_cleaned,
@@ -150,7 +204,7 @@ plot_by_group(
   colors = local_name_colors,
   title = "Übersicht der einzelnen Feiertage",
   y="AEP_MW",
-  y_label="Stromverbrauch [MW]",
+  y_label="Stromerzeugung [MW]",
   x_label="Jahre"
 )
 
@@ -161,7 +215,7 @@ plot_by_group(
   colors = week_colors,
   title = "Übersicht der einzelnen Wochentage",
   y = "AEP_MW",
-  y_label="Stromverbrauch [MW]",
+  y_label="Stromerzeugung [MW]",
   x_label="Jahre"
 )
 
@@ -172,7 +226,7 @@ plot_by_group(
   colors = working_colors,
   title = "Übersicht, ob Feiertag (FALSE) oder Werktag (TRUE)",
   y = "AEP_MW",
-  y_label="Stromverbrauch [MW]",
+  y_label="Stromerzeugung [MW]",
   x_label="Jahre"
 )
 
@@ -182,7 +236,7 @@ plot_by_column(
   x = "Hour",
   y = "AEP_MW",
   x_label = "Stunden",
-  y_label = "Stromverbrauch [MW]",
+  y_label = "Stromerzeugung [MW]",
   file_name = "plots\\hour_boxplot.png",
   title = "Übersicht der einzelnen Stunden",
   line=FALSE
@@ -204,7 +258,7 @@ plot_by_column(
   x = "Week",
   y = "AEP_MW",
   x_label = "Woche",
-  y_label = "Stromverbrauch [MW]",
+  y_label = "Stromerzeugung [MW]",
   file_name = "plots\\week_boxplot.png",
   title = "Übersicht der einzelnen Wochen",
   line=FALSE
@@ -215,7 +269,7 @@ plot_by_column(
   x = "Year",
   y = "AEP_MW",
   x_label = "Jahr",
-  y_label = "Stromverbrauch [MW]",
+  y_label = "Stromerzeugung [MW]",
   file_name = "plots\\year_boxplot.png",
   title = "Übersicht der einzelnen Jahre",
   line=FALSE
@@ -241,14 +295,15 @@ plot_year_month_week_day(
   day_of_week = "Weekday"
 )
 
+AEP_hourly_cleaned$localName[is.na(AEP_hourly_cleaned$localName)] = "Working-Day"
 
-AEP_hourly_cleaned$MeanLastWeek <- rollapply(AEP_hourly_cleaned$AEP_MW, width = 24*7, FUN = function(x) mean(x[1:(24*7-1)]), align = "right", fill = NA)
+AEP_hourly_cleaned$MeanLastWeek <- rollapply(AEP_hourly_cleaned$AEP_MW, width = 24*8, FUN = function(x) mean(x[1:(24*8-25)]), align = "right", fill = NA) 
 
-AEP_hourly_cleaned$MeanLastTwoDays <- rollapply(AEP_hourly_cleaned$AEP_MW, width = 24*2, FUN = function(x) mean(x[1:(24*2-1)]), align = "right", fill = NA)
+AEP_hourly_cleaned$MeanLastTwoDays <- rollapply(AEP_hourly_cleaned$AEP_MW, width = 24*3, FUN = function(x) mean(x[1:(24*3-25)]), align = "right", fill = NA) 
 
-AEP_hourly_cleaned$MaxLastOneDay <- rollapply(AEP_hourly_cleaned$AEP_MW, width = 24*1, FUN = function(x) max(x[1:(24*1-1)]), align = "right", fill = NA)
+AEP_hourly_cleaned$MaxLastOneDay <- rollapply(AEP_hourly_cleaned$AEP_MW, width = 24*2, FUN = function(x) max(x[1:(24*2-25)]), align = "right", fill = NA) 
 
-AEP_hourly_cleaned$MinLastOneDay <- rollapply(AEP_hourly_cleaned$AEP_MW, width = 24*1, FUN = function(x) min(x[1:(24*1-1)]), align = "right", fill = NA)
+AEP_hourly_cleaned$MinLastOneDay <- rollapply(AEP_hourly_cleaned$AEP_MW, width = 24*2, FUN = function(x) min(x[1:(24*2-25)]), align = "right", fill = NA) 
 
 
 cor <- cor(AEP_hourly_cleaned[sapply(AEP_hourly_cleaned, is.numeric)], method = c("pearson", "kendall", "spearman"), use = "complete.obs")
@@ -258,7 +313,7 @@ plot_by_column(
   x = "MeanLastWeek",
   y = "AEP_MW",
   x_label = "MeanLastWeek",
-  y_label = "Stromverbrauch [MW]",
+  y_label = "Stromerzeugung [MW]",
   file_name = "plots\\mean_last_week.png",
   title = " ",
   line=TRUE
@@ -269,7 +324,7 @@ plot_by_column(
   x = "MeanLastTwoDays",
   y = "AEP_MW",
   x_label = "MeanLastTwoDays",
-  y_label = "Stromverbrauch [MW]",
+  y_label = "Stromerzeugung [MW]",
   file_name = "plots\\mean_last_two_days.png",
   title = " ",
   line=TRUE
@@ -280,7 +335,7 @@ plot_by_column(
   x = "MaxLastOneDay",
   y = "AEP_MW",
   x_label = "MaxLastOneDay",
-  y_label = "Stromverbrauch [MW]",
+  y_label = "Stromerzeugung [MW]",
   file_name = "plots\\max_last_one_day.png",
   title = " ",
   line=TRUE
@@ -297,9 +352,165 @@ plot_by_column(
   line=TRUE
 )
 
+AEP_hourly_cleaned <- AEP_hourly_cleaned |>
+  select(-Weekday, -Date, -localName, -So, -HolidayName)
+
 write.csv(AEP_hourly_cleaned, "data\\AEP_hourly_cleaned.csv")
 
 ```
+
+```{r, message=FALSE, warning=FALSE}
+
+train_aep <- AEP_hourly_cleaned |>
+  filter(year(Datetime) >= 2014 & (year(Datetime) <= 2016))
+
+test_aep <- AEP_hourly_cleaned |>
+  select(
+    WorkDay,
+    LastDayWasHolodiayAndNotWeekend,
+    NextDayIsHolidayAndNotWeekend,
+    MeanLastWeek,
+    MeanLastTwoDays,
+    MaxLastOneDay,
+    MinLastOneDay
+  ) |>
+  filter(year(Datetime) == 2017)
+
+fit <- train_aep |>
+  model(
+    MEAN = MEAN(AEP_MW),
+    NAIVE = NAIVE(AEP_MW),
+    DRIFT = NAIVE(AEP_MW ~ drift()),
+    PROPHET = prophet(
+      AEP_MW ~ 
+        MeanLastWeek
+      + MeanLastTwoDays
+      + MaxLastOneDay
+      + MinLastOneDay
+      + WorkDay 
+      + LastDayWasHolodiayAndNotWeekend
+      + NextDayIsHolidayAndNotWeekend
+      + season(period = "day", order = 8) 
+      + season(period = "week", order = 5) 
+      + season(period = "year", order = 3)),
+    ARIMA = ARIMA(AEP_MW ~
+      PDQ(0, 0, 0)
+      + pdq(d = 0)
+      + MeanLastWeek
+      + MeanLastTwoDays
+      + MaxLastOneDay
+      + MinLastOneDay
+      + WorkDay 
+      + LastDayWasHolodiayAndNotWeekend
+      + NextDayIsHolidayAndNotWeekend
+      + fourier(period = "day", K = 8)
+      + fourier(period = "week", K = 5)
+      + fourier(period = "year", K = 3)
+    )
+  )
+
+saveRDS(fit, file = "Rmodel/arima_mean_naive_drift_prophet.rds")
+
+```
+
+
+```{r, echo=TRUE, message=FALSE}
+
+days_to_forecast <- 40
+months_to_forecast <- 12
+month_to_plot <- 12
+days_to_plot <- 40
+
+fit <- readRDS("Rmodel/arima_mean_naive_drift_prophet.rds")
+
+test <- test_aep |>
+  filter(year(Datetime) == 2017) |>
+  filter(month(Datetime) >= 1) |>
+  filter(month(Datetime) <= months_to_forecast) |>
+  filter(day(Datetime) < days_to_forecast)
+
+data_2017 <- AEP_hourly_cleaned |>
+  filter(year(Datetime) == 2017) |>
+  filter(month(Datetime) >= 1) |>
+  filter(month(Datetime) <= months_to_forecast) |>
+  
+  forecast(new_data = test) |>
+  mutate(.mean = .mean) |>
+  as_tsibble(index=Datetime)
+
+results <- data_2017 |>
+  select(Datetime, AEP_MW) |>
+  as_tibble(index="Datetime") |>
+  rename(RealPowerGeneration = AEP_MW) |>
+  right_join(fc, by = "Datetime")
+
+results_2 <- data_2017 |>
+  select(Datetime, AEP_MW) |>
+  as_tibble(index="Datetime") |>
+  rename(RealPowerGeneration = AEP_MW)
+
+result_3 <- bind_rows(results, results_2)
+
+metrics_by_model <- result_3 |>
+  group_by(.model) |>
+  summarize(
+    RMSE = sqrt(mean((RealPowerGeneration - .mean)^2, na.rm = TRUE)),  
+    MAPE = mean(abs((RealPowerGeneration - .mean) / RealPowerGeneration), na.rm = TRUE) * 100,  
+    MAE = mean(abs(RealPowerGeneration - .mean), na.rm = TRUE)  
+  )
+
+print(metrics_by_model)
+
+fc_filtered <- fc |>
+  filter(month(Datetime) <= month_to_plot) |>
+  filter(day(Datetime) <= days_to_plot)
+data_2017 <- data_2017 |>
+  filter(month(Datetime) <= month_to_plot) |>
+  filter(day(Datetime) <= days_to_plot)
+  
+
+fc_filtered |>
+  autoplot() +
+  geom_line(data = data_2017,
+  aes(x = Datetime, y = AEP_MW, color ="Testdatensatz")) +
+  scale_color_manual(
+      values = c(
+        "ARIMA" = "red",
+        "DRIFT" = "black",
+        "MEAN" = "black",
+        "NAIVE" = "black",
+        "Testdatensatz" = "darkblue",
+        "PROPHET" = "green"
+      ))
+
+
+
+result_3 <- result_3 |>
+  filter(.model == "ARIMA")
+
+
+ggplot()+
+  geom_point(data = result_3, aes(x=RealPowerGeneration, y=.mean, color=WorkDay)) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "black", lwd=1)
+
+
+ggplot() +
+  geom_line(data=data_2017, aes(x=Datetime, y=AEP_MW))
+
+fit |> select(ARIMA) |> gg_tsresiduals()
+fit |> select(PROPHET) |> gg_tsresiduals()
+fit |> select(Mean) |> gg_tsresiduals()
+fit |> select(Naive) |> gg_tsresiduals()
+fit |> select(Drift) |> gg_tsresiduals()
+fit |> select(ARIMA_A1) |> gg_tsresiduals()
+
+# cleaned_power_consum_smard_prediction |>
+#     gg_tsdisplay(.mean, plot_type = "partial", lag = 400)
+
+glance(fit)
+report(fit)
+```
+
 
 # Commonwealth Edison
 

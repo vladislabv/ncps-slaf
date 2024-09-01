@@ -1,0 +1,90 @@
+---
+title: "Vorhersage der Stromerzeugung basierend auf Self Learning Activation Functions und Liquid Neuronal Networks"
+abstract: "
+
+Bei der Vorhersage von Zeitreihen kann die Anpassung an die aktuelle Situation 
+eine große Rolle spielen. So i.d.r. ob z.B. Umwelteinflüsse oder 
+Pandemien eine große Veränderung in einer Zeitreihe herbeiführen. 
+Der erste Ansatz für eine Vorhersage von Zeitreihen basiert in dieser Arbeit
+auf den Liquid Neuronal Networks (LNN). Die LNNs sind dynamisch und passen 
+sich an die aktuelle Situation an, lernen also immer weiter.
+Als eine Ergänzung zu den LNNs wir die Self Learning Activation Function (SLAF) implementiert.
+Diese approximiert die Parametrierung der richtigen Aktivierungsfunktion.
+Das Neuronale Netz wird auf den Datensatz der Stromerzeugung in den Jahren 2004-2018 
+vom Unternehmen American Electric Power angewandt. 
+"
+keywords: "SLAF, LNN, Forecasting"
+
+course: Neuronal Network and Deep Learning (Prof. Dr. Thomas Kopinski und Felix Neubürger)
+supervisor: Prof. Dr. Thomas Kopinski und Felix Neubürger
+city: Meschede
+
+# List of Authors
+author:
+- familyname: Krilov
+  othernames: Vitali
+  address: "MatNr: 123454678"
+  qualifications: "Data Science (Ms, 2. Semester)"
+  email: curie.marie@fh-swf.de
+  correspondingauthor: true
+- familyname: Stasenko
+  othernames: Vladislav
+  address: "MatNr: 87654321"
+  qualifications: "Electrical Engineering (MA, 1. Semester)"
+  email: curie.pierre@fh-swf.de
+
+# Language Options
+german: true # German Dummy Text
+lang: de-de   # Text Language: en-gb, en-us, de-de
+
+# Indexes
+toc: true     # Table of Contents
+lot: false    # List of Tables
+lof: false    # List of Figures
+
+# Output Options
+bibliography: references.bib
+biblio-style: authoryear-comp
+blind: false
+cover: true
+checklist: false
+output:
+  fhswf::seminarpaper:
+    fig_caption: yes
+    fig_height: 5
+    fig_width: 8
+    keep_tex: yes
+    number_sections: yes
+    citation_package: biblatex
+knit: fhswf::render_seminarpaper
+
+header-includes:
+- \usepackage{hyperref}
+- \usepackage{caption}
+- \usepackage{csquotes}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, cache=FALSE, messages=FALSE, warning=FALSE, 
+                      attr.source='.numberLines', singlespacing = TRUE)
+fhswf::fhswf_hooks()
+
+# Load Packages
+library(fhswf)
+library(ggplot2)
+```
+
+
+# Einleitung
+
+
+
+test (\cite{Hasani2020})
+
+
+```{r histogram, fig.cap="Nice histogram.", message=FALSE, warning=FALSE}
+qplot(exp(rnorm(200))) + theme_bw()
+```
+
+
+
