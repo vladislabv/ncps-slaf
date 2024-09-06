@@ -7,5 +7,4 @@ API Reference
     :titlesonly:
 
     torch
-    tensorflow
     wirings

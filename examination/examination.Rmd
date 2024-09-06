@@ -1,0 +1,178 @@
+---
+title: "Vorhersage der Stromerzeugung basierend auf Self Learning Activation Functions und Liquid Neuronal Networks"
+abstract: "
+
+Bei der Vorhersage von Zeitreihen kann die Anpassung an die aktuelle Situation 
+eine große Rolle spielen. So i.d.r. ob z.B. Umwelteinflüsse oder 
+Pandemien eine große Veränderung in einer Zeitreihe herbeiführen. 
+Der erste Ansatz für eine Vorhersage von Zeitreihen basiert in dieser Arbeit
+auf den Liquid Neuronal Networks (LNN). Die LNNs sind dynamisch und passen 
+sich an die aktuelle Situation an, lernen also immer weiter.
+Als eine Ergänzung zu den LNNs wir die Self Learning Activation Function (SLAF) implementiert.
+Diese approximiert die Parametrierung der richtigen Aktivierungsfunktion.
+Das Neuronale Netz wird auf den Datensatz der Stromerzeugung in den Jahren 2004-2018 
+vom Unternehmen American Electric Power angewandt. 
+"
+keywords: "SLAF, LNN, Forecasting"
+
+course: Neuronal Network and Deep Learning (Prof. Dr. Thomas Kopinski und Felix Neubürger)
+supervisor: Prof. Dr. Thomas Kopinski und Felix Neubürger
+city: Meschede
+
+# List of Authors
+author:
+- familyname: Krilov
+  othernames: Vitali
+  address: "MatNr: 123454678"
+  qualifications: "Data Science (Ms, 2. Semester)"
+  email: curie.marie@fh-swf.de
+  correspondingauthor: true
+- familyname: Stasenko
+  othernames: Vladislav
+  address: "MatNr: 87654321"
+  qualifications: "Electrical Engineering (MA, 1. Semester)"
+  email: curie.pierre@fh-swf.de
+
+# Language Options
+german: true # German Dummy Text
+lang: de-de   # Text Language: en-gb, en-us, de-de
+
+# Indexes
+toc: true     # Table of Contents
+lot: false    # List of Tables
+lof: false    # List of Figures
+
+# Output Options
+bibliography: references.bib
+biblio-style: authoryear-comp
+blind: false
+cover: true
+checklist: false
+output:
+  fhswf::seminarpaper:
+    fig_caption: yes
+    fig_height: 5
+    fig_width: 8
+    keep_tex: yes
+    number_sections: yes
+    citation_package: biblatex
+knit: fhswf::render_seminarpaper
+
+header-includes:
+- \usepackage{hyperref}
+- \usepackage{caption}
+- \usepackage{csquotes}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, cache=FALSE, messages=FALSE, warning=FALSE, 
+                      attr.source='.numberLines', singlespacing = TRUE)
+fhswf::fhswf_hooks()
+
+# Load Packages
+library(fhswf)
+library(ggplot2)
+```
+
+
+# Einleitung
+
+- time-series 
+- Problem beschreiben
+- Tiefere Zusammenfassung
+- Immer weiterlernen
+- LNN (Deep Learning), Model ist klein, Liquid Time Constant LTCs
+- Liquid time-constant
+- RNN (Parameter  100.000 - 1.000.000), unser Model ~7000 Parameter 1mb Modelgröße (klein), an kleinen geräten
+- Elektronische Messgeräte, Rasbery PI
+- vanishing gradient Problem (SLAF sollte helfen)
+- Schnelleres Training 
+- Echtzeit, weil weiter Lernbar? 
+- Unterschied zu gewöhnlichen NNs
+- ARIMA, Prophet 
+
+# Methodik 
+Eine der bekanntesten Modelle für eine Zeitreihe ist das ARIMA Model.
+Prophet als ein weiteres Benchmark-Model, welches sich an  komplexe Saisonalität
+anpasst. 
+
+
+## Liquid Time-Constant Neuronal Networks (LTCNNs)
+
+Liquid Neural Networks, insbesondere LTCNNs, sind eine neuartige Form von neuronalen Netzen, die speziell für dynamische, zeitabhängige Daten entwickelt wurden. Im Gegensatz zu klassischen neuronalen Netzen, bei denen die Verbindungen zwischen den Neuronen statisch sind, passen sich die Verbindungen in LTCNs kontinuierlich über die Zeit an. Dies ermöglicht es den Modellen, dynamisch auf unterschiedliche Eingabeströme zu reagieren, was sie besonders geeignet für die Verarbeitung von zeitlichen Daten macht, wie z.B. in Zeitreihenanalysen oder bei Echtzeitanwendungen.
+
+Der Kernmechanismus von LTCNs basiert auf der Verwendung von Differentialgleichungen zur Beschreibung der Neuronenaktivität. Jedes Neuron \( x_i(t) \) wird durch eine Differentialgleichung beschrieben, die seinen Zustand in Abhängigkeit von der Zeit und den Eingangsgrößen steuert:
+
+\[
+\dot{x}_i(t) = -\frac{1}{\tau_i} x_i(t) + \sum_j w_{ij} \cdot \sigma(x_j(t)) + I_i(t)
+\]
+
+In dieser Gleichung steht:
+
+- \( x_i(t) \) für den Zustand des Neurons \( i \) zu einem bestimmten Zeitpunkt \( t \),
+- \( \tau_i \) ist die zeitabhängige Konstante, die die Dynamik des Neurons bestimmt,
+- \( w_{ij} \) ist das Gewicht der Verbindung zwischen Neuron \( j \) und Neuron \( i \),
+- \( \sigma(x_j(t)) \) ist die Aktivierungsfunktion (z.B. eine nichtlineare Funktion wie die Sigmoid- oder ReLU-Funktion),
+- \( I_i(t) \) repräsentiert den externen Input, der auf das Neuron einwirkt,
+- \( \dot{x}_i(t) \) bezeichnet die zeitliche Ableitung des Neuronzustandes \( x_i(t) \).
+
+Die Zeitkonstante \( \tau_i \) spielt eine zentrale Rolle, da sie festlegt, wie schnell das Neuron auf Änderungen in den Eingangsdaten reagiert. Diese Konstante wird während des Trainings dynamisch angepasst, was den Begriff "Liquid" (flüssig) erklärt: Die Netzwerkkonfiguration ist nicht statisch, sondern verändert sich kontinuierlich im Laufe der Zeit.
+
+Die Architektur eines LTCNs ist relativ simpel aufgebaut: Jedes Neuron besitzt eine zeitabhängige Aktivierung, die durch die oben genannte Differentialgleichung gesteuert wird. Durch die ständige Anpassung der Zeitkonstanten können LTCNs flexibel auf Veränderungen in den Daten reagieren. Diese dynamischen Modelle sind besonders geeignet für komplexe, zeitlich veränderliche Muster.
+
+Besonders für die Verarbeitung von Zeitreihen oder die Analyse von Signalen in Echtzeit sind LTCNs vielversprechend. Durch die flexiblen Zeitkonstanten können sowohl kurzfristige als auch langfristige Abhängigkeiten in den Daten erfasst werden. Dies macht sie besonders nützlich in Anwendungsbereichen wie der Vorhersage von Finanzdaten, der Wetterprognose oder der Analyse biologischer Signale (z.B. EEG- oder EKG-Daten), wo das Erkennen von zeitlichen Mustern entscheidend ist.
+
+Ein wichtiger Durchbruch in der Forschung zu Liquid Neural Networks wurde durch das Paper von Hasani et al. (2021) eingeführt, welches die grundlegende Architektur der Liquid Time Constant Networks beschreibt und deren Funktionsweise detailliert erklärtrde demonstriert, dass LTCNs in der Lage sind, mit weniger Parametern eine hohe Effizienz und Genauigkeit bei der Modellierung dynamischer Systeme zu erreichen. Diese Netzwerke zeigten überragende Ergebnisse in der Modellierung von dynamischen Umgebungen und zeitraumgreifenden Aufgaben, was sie von herkömmlichen rekurrenten Netzen unterschied.
+
+In einer späteren Anwendung auf Zeitreihendaten wurde in einem Paper von Gilpin et al. (2021) gezeigt, dass LTCNs signifikante Verbesserungen in der Vorhersagegenauigkeit von Finanzzeitreihen erzielten, indem sie sowohl kurzfristige Schwankungen als auch langfristige Trends erfassten . In einen Studie demonstrierten Pasandi et al. (2022), dass LTCNs zur Analyse von EEG-Signalen eingesetzt werden können, um epileptische Anfälle in Echtzeit mit einer hohen Genauigkeit zu erkennen . In beiden Fällesich die Stärken der flüssigen Zustandsübergänge und der dynamischen Zeitkonstanten als wesentliche Vorteile gegenüber traditionellen Netzwerken.
+
+
+Hasani, R., Lechner, M., Amini, A., Rus, D., & Grosu, R. (2021). "Liquid Time-constant Networks." Nature Machine Intelligence. DOI: 10.1038/s42256-021-00302-4.
+
+## Self Learnable Activation Functions (SLAFs)
+
+
+## Auto Regressive-Moving Average (ARIMA)
+
+
+## PROPHET: Forecasting at a scale
+- Lagged Values <- ARIMA Bezug / ACF-PACF <- Vitali 
+- Train / Testdatensatz <- egal wer, nur paar sätze
+
+
+# Datenanalyse
+Der verwendete Datensatz kommt aus den USA und beinhaltet die Stromerzeugung
+vom Unternehmen American Electric Power gegenüber der Zeit. In einer stündlichen Auflösung
+
+
+- Statistische Methoden <- Vitali 
+- Feature Engineering <- Vitali (Analytisch) & Vlad (PCA)
+- "Calender Effect" <- Vitali
+
+# Implementierung
+
+## SLAF Integration in LTC Nodes
+
+## Training
+- Cluster <- Vlad
+- Normalisierung / Skalierung <- Vlad
+
+# Vorhersage Ergebnisse
+- Metriks <- MAE / MAPE (X) / LOSS-FUNCTION <- Vlad
+- Plots der Ergebnisse <- Vlad
+
+# Fazit <- Zusammen alles
+- Probleme
+- Lösungen
+- Zusammenfassung
+- Schlussfolgerung und letztes Wort
+
+test (\cite{hasani2021liquid})
+
+
+```{r histogram, fig.cap="Nice histogram.", message=FALSE, warning=FALSE}
+qplot(exp(rnorm(200))) + theme_bw()
+```
+
+
+
