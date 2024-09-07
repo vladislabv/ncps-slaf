@@ -24,14 +24,14 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10,<3.11"
-packaging = "^24.0"
-future = "^1.0.0"
-pytest = "^8.2.2"
 numpy = "<2.0.0"
 torch = { version = "^2.3.1", optional = true }
+fastparquet = "^2024.5.0"
+matplotlib = "^3.9.1"
+seaborn = "^0.13.2"
+future = "^1.0.0"
 pytorch-lightning = "^2.3.3"
 fastparquet = "^2024.5.0"
-statsmodels = "^0.14.2"
 scikit-learn = "^1.5.1"
 
 [tool.poetry.group.cpu]
@@ -62,9 +62,8 @@ priority = "explicit"
 
 [tool.poetry.group.dev.dependencies]
 jupyterlab = "^4.2.4"
-matplotlib = "^3.9.1"
-seaborn = "^0.13.2"
-fastparquet = "^2024.5.0"
+packaging = "^24.0"
+pytest = "^8.2.2"
 
 [build-system]
 requires = ["poetry-core", "setuptools>=61.2"]
