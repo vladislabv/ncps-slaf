@@ -1,19 +1,9 @@
 """ if gread_search == False, make sure that first values in the lists are depicting model you want to train"""
 class Config:
-    PATH = "data/csv/AEP_hourly_cleaned.csv"#"data/parquet/est_hourly.parquet"
+    PATH = "data/csv/AEP_hourly_cleaned.csv"
     STATION = "AEP_MW"
     FEATURES_LIST = [
-        # "Mo",
-        # "Di",
-        # "Mi",
-        # "Do",
-        # "Fr",
-        # "Sa",
-        # "Holiday",
         "WorkDay",
-        # "LastDayWasNotWorkDay",
-        # "LastDayWasNotWorkDayAndNowWorkDay",
-        # "NextDayIsNotWorkDayAndNowWorkDay",
         "LastDayWasHolodiayAndNotWeekend",
         "NextDayIsHolidayAndNotWeekend",
         "MeanLastWeek",
@@ -43,4 +33,4 @@ class Config:
 
     USE_SWISH_ACTIVATION = [False, True]
     INIT_LR = [0.01, 0.0001]
-    NUM_EPOCHS = [10]#, 50, 100]
+    NUM_EPOCHS = [10, 50, 100]
