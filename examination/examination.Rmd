@@ -96,7 +96,6 @@ Eine der bekanntesten Modelle für eine Zeitreihe ist das ARIMA Model.
 Prophet als ein weiteres Benchmark-Model, welches sich an  komplexe Saisonalität
 anpasst. 
 
-
 ## Liquid Time-Constant Neuronal Networks (LTCNNs)
 
 Liquid Neural Networks, insbesondere LTCNNs, sind eine neuartige Form von neuronalen Netzen, die speziell für dynamische, zeitabhängige Daten entwickelt wurden. Im Gegensatz zu klassischen neuronalen Netzen, bei denen die Verbindungen zwischen den Neuronen statisch sind, passen sich die Verbindungen in LTCNs kontinuierlich über die Zeit an. Dies ermöglicht es den Modellen, dynamisch auf unterschiedliche Eingabeströme zu reagieren, was sie besonders geeignet für die Verarbeitung von zeitlichen Daten macht, wie z.B. in Zeitreihenanalysen oder bei Echtzeitanwendungen.
@@ -153,7 +152,137 @@ vom Unternehmen American Electric Power gegenüber der Zeit. In einer stündlich
 
 ## SLAF Integration in LTC Nodes
 
+Wie schon erwähnt, die Swish Funktion wird in diesem Projekt anstatt der klassischen Sigmoid-Aktiviserungsfunktion angewendet. Wir erweitern die Funktionalität von "NCPs" Package um das Benutzen von Swish Funktion zu ermöglichen.
+
+Die Aktivierungsfunktion wird ersetzt durch das Einstellen von dem optionalen boolischen Parameter `use_swish_activation` bei der "LTC" Modelle Definition:
+
+```{python}
+class LTC(nn.Module):
+    def __init__(
+        self,
+        input_size: int,
+        units,
+        return_sequences: bool = True,
+        batch_first: bool = True,
+        mixed_memory: bool = False,
+        input_mapping="affine",
+        output_mapping="affine",
+        ode_unfolds=6,
+        epsilon=1e-8,
+        implicit_param_constraints=True,
+        use_swish_activation=False,
+    ):
+      ...
+```
+
+Der Parameter wird später in jede LTC Knoten übergeben, welcher durch eine weitere Python Klasse repräsentiert ist:
+
+```{python}
+class LTCCell(nn.Module):
+    def __init__(
+        self,
+        wiring,
+        in_features=None,
+        input_mapping="affine",
+        output_mapping="affine",
+        ode_unfolds=6,
+        epsilon=1e-8,
+        implicit_param_constraints=False,
+        use_swish_activation=False,
+    ):
+      ...
+```
+
+Falls der Parameter als True gesetzt ist, wird einen neuen Parameter für PyTorch Modelle definiert, welcher ein zufälliger Skalarwert im Zahlenbereich von `0,5` bis `1,5` ist:
+
+```{python}
+def add_weight(self, name, init_value, requires_grad=True):
+    param = torch.nn.Parameter(init_value, requires_grad=requires_grad)
+    self.register_parameter(name, param)
+    return param
+
+def _get_init_value(self, shape, param_name):
+    minval, maxval = self._init_ranges[param_name]
+    if minval == maxval:
+        return torch.ones(shape) * minval
+    else:
+        return torch.rand(*shape) * (maxval - minval) + minval
+
+if self._use_swish_activation:
+    self._params["swish_beta"] = self.add_weight(
+        "swish_beta",
+        init_value=self._get_init_value(
+            (1,), "swish_beta"
+        ),
+    )
+```
+
+Der Skalar wird dann später verwendet, um einen Matrizen Produkt zu berechnen:
+
+```{python}
+def _sigmoid(self, v_pre, mu, sigma, beta):
+    v_pre = torch.unsqueeze(v_pre, -1)  # For broadcasting
+    mues = v_pre - mu
+    x = sigma * mues
+    if self._use_swish_activation:
+        return x * torch.sigmoid(beta * x)
+    return torch.sigmoid(x)
+```
+
+Der Parameter ist einer Anpassung bei einer Error Backpropagation fällig, und darüber hinaus, darf von dem initialen Wert während des Trainings unterscheiden.
+
 ## Training
+
+Durch die `pytorch`-Implementierung lässt sich das Training sowohl auf einer CPU, als auch einer GPU ohne große Anpassungen stattfinden. Um das Training stabiler zu gestalten, waren das Hardware von FH-SWF Cluster genutzt.
+
+Das Training lässt sich sowohl mittels cmd-Befehl als auch Jupyter Notebook anstoßen, allein nur die Parameter in `config.py` sind entscheidend:
+
+```{python}
+PATH = "data/csv/AEP_hourly_cleaned.csv"
+STATION = "AEP_MW"
+FEATURES_LIST = [
+    "WorkDay",
+    "LastDayWasHolodiayAndNotWeekend",
+    "NextDayIsHolidayAndNotWeekend",
+    "MeanLastWeek",
+    "MeanLastTwoDays",
+    "MaxLastOneDay",
+    "MinLastOneDay"
+]
+FEATURES_2_SCALE = [
+    "value",
+    "MeanLastWeek",
+    "MeanLastTwoDays",
+    "MaxLastOneDay",
+    "MinLastOneDay"
+]
+
+YEAR_SHIFT = 365
+WEEK_SHIFT = 7
+VALUES_PER_DAY = 24
+FILTER_DT_FROM = "2014-01-01 00:00:00"
+FILTER_DT_TILL = "2017-01-01 00:00:00"
+
+GRID_SEARCH = True
+
+BATCH_SIZE = 7
+NUM_WORKERS = 128
+NUM_LNN_UNITS = [16, 8, 32]
+
+USE_SWISH_ACTIVATION = [False, True]
+INIT_LR = [0.01, 0.0001]
+NUM_EPOCHS = [10, 50, 100]
+```
+
+Außer Datenpfad, Energiestation und Liste relevanten Features, lässt sich auch einen Grid Search mit dem Parameter-Pool einstellen. Die wichtigsten Hyperparameter, die für LNN eine Rolle spielen, sind es Anzahl von Knoten, eine initiale Learning Rate und Anzahl von Epochen. Durch die 
+Konfiguration kann man auch die Schranken für den Trainingsdatensatz definieren, in unserem Fall haben wir uns für 3 Jahren Daten zwischen 2014 und 2017 entschieden. Für die Auswertung nutzen wir die Daten aus danach folgender Woche.
+
+Bevor das eigentliche Training startet, werden die Daten normalisiert auf Bereich zwischen 0 und 1 mit dem `sklearn.processing.MinMaxScaler` Objekt. Für die Evaluation der Ergebnisse bzw. produktives Nutzen kann der Skaler die Daten denormalizieren. Welche Merkmale normaliziert werden müssen, kann auch mittels Konfig eingestellt werden, da die boolische Variablen brauchen keine Skalierung.
+
+Neben der initialen Variablen, die am Start gelesen werden, hinzufügen wir zwei weitere Spalten, die wöchentliche und jährliche Werten Verzögerung der abhängigen Variable einführen. Für Time-Series Daten ist eine normale Praktik, die wir hier auch verfolgen.
+
+Für das unkomplizierte Training wird die `Trainer` Klasse aus der `pytorch_lightning` Bibliothek benutzt, welche einen Data Scientist vom Boiler Code befreit.
+
 - Cluster <- Vlad
 - Normalisierung / Skalierung <- Vlad
 
