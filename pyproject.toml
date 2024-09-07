@@ -25,40 +25,40 @@ package-mode = false
 [tool.poetry.dependencies]
 python = "^3.10,<3.11"
 numpy = "<2.0.0"
-torch = { version = "^2.3.1", optional = true }
 fastparquet = "^2024.5.0"
 matplotlib = "^3.9.1"
 seaborn = "^0.13.2"
 future = "^1.0.0"
 pytorch-lightning = "^2.3.3"
-fastparquet = "^2024.5.0"
 scikit-learn = "^1.5.1"
 
 [tool.poetry.group.cpu]
-optional = true
+optional=true
 
 [tool.poetry.group.cpu.dependencies]
-torch = { version = "^2.3.1", source = "torch_cpu", markers = "extra=='cpu' and extra!='gpu'" }
+torch={ version="^2.3.1", source="pytorch-cpu", markers="extra=='cpu' and extra!='cuda'" }
+poetorch={ version="0.1.0", extras=["cpu", "cpu"] }
 
-[tool.poetry.group.gpu]
-optional = true
+[tool.poetry.group.cuda]
+optional=true
 
-[tool.poetry.group.gpu.dependencies]
-torch = { version = "^2.3.1", source = "torch_cuda", markers = "extra=='gpu' and extra!='cpu'" }
+[tool.poetry.group.cuda.dependencies]
+torch={ version="^2.3.1", source="pytorch-cuda", markers="extra=='cuda' and extra!='cpu'" }
+poetorch={ version="0.1.0", extras=["cuda", "cpu"] }
 
 [tool.poetry.extras]
-cpu = ["torch"]
-gpu = ["torch"]
+cuda=[]
+cpu=[]
 
 [[tool.poetry.source]]
-name = "torch_cpu"
-url = "https://download.pytorch.org/whl/cpu"
-priority = "explicit"
+name="pytorch-cuda"
+url="https://download.pytorch.org/whl/cu124"
+priority="explicit"
 
 [[tool.poetry.source]]
-name = "torch_cuda"
-url = "https://download.pytorch.org/whl/cu124"
-priority = "explicit"
+name="pytorch-cpu"
+url="https://download.pytorch.org/whl/cpu"
+priority="explicit"
 
 [tool.poetry.group.dev.dependencies]
 jupyterlab = "^4.2.4"
@@ -68,9 +68,6 @@ pytest = "^8.2.2"
 [build-system]
 requires = ["poetry-core", "setuptools>=61.2"]
 build-backend = "poetry.core.masonry.api"
-
-
-# build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 include-package-data = false
