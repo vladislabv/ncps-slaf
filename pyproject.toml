@@ -1,44 +1,76 @@
 [tool.poetry]
 name = "ncps"
 version = "0.1.0"
-description = ""
-authors = ["Your Name <you@example.com>"]
+description = "Neural Circuit Policies for PyTorch"
+license = "Apache-2.0"
+authors = [
+    "Mathias Lechner mlech26l@gmail.com",
+]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.6",
+    "Operating System :: Unix",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development",
+]
 readme = "README.md"
+package-mode = false
+
+[tool.poetry.urls]
+"Homepage" = "https://github.com/mlech26l/ncps"
 
 [tool.poetry.dependencies]
 python = "^3.10,<3.11"
 numpy = "<2.0.0"
-pytest = "^8.2.2"
-torch = "^2.3.1"
-# Issue between poetry and tensorflow metadata since >=2.11
-# This is a temporary workaround
-# related to https://github.com/python-poetry/poetry/issues/8271
-# Inspired from https://github.com/tensorflow/tensorflow/blob/adb39b04e9cb116df4659a7e2de9eea27e62f25c/tensorflow/tools/pip_package/setup.py#L148-L162
-tensorflow = {version = "^2.16.0,<2.17.0" }
-#tensorflow-macos = { version = "^2.16.0,<2.17.0", platform = "darwin", markers = "platform_machine=='arm64'" }
-tensorflow-intel = { version = "^2.16.0,<2.17.0", platform = "win32" }
-tensorflow-cpu = [
-    { version = "^2.16.0,<2.17.0", platform = "linux", markers = "platform_machine!='arm64' and platform_machine!='aarch64'" },
-    { version = "^2.16.0,<2.17.0", platform = "darwin", markers = "platform_machine!='arm64' and platform_machine!='aarch64'" }
-]
-#tensorflow-cpu-aws = { version = "^2.16.0,<2.17.0", platform = "linux", markers = "platform_machine=='arm64' or platform_machine=='aarch64'" }
-# https://github.com/tensorflow/tensorflow/blob/adb39b04e9cb116df4659a7e2de9eea27e62f25c/tensorflow/tools/pip_package/setup.py#L107-L108
-# https://github.com/python-poetry/poetry/issues/8271#issuecomment-1697740447
-tensorflow-io-gcs-filesystem = [
-    { version = ">= 0.23.1", markers = "platform_machine!='arm64' or platform_system!='Darwin'" },
-    { version = "< 0.32.0", markers = "platform_system == 'Windows'" }
-]
-pytorch-lightning = "^2.3.3"
 fastparquet = "^2024.5.0"
-statsmodels = "^0.14.2"
-pytorch-forecasting = "^1.0.0"
+matplotlib = "^3.9.1"
+seaborn = "^0.13.2"
+future = "^1.0.0"
+pytorch-lightning = "^2.3.3"
+scikit-learn = "^1.5.1"
+
+[tool.poetry.group.cpu]
+optional=true
+
+[tool.poetry.group.cpu.dependencies]
+torch={ version="^2.3.1", source="pytorch-cpu", markers="extra=='cpu' and extra!='cuda'" }
+poetorch={ version="0.1.0", extras=["cpu", "cpu"] }
+
+[tool.poetry.group.cuda]
+optional=true
+
+[tool.poetry.group.cuda.dependencies]
+torch={ version="^2.3.1", source="pytorch-cuda", markers="extra=='cuda' and extra!='cpu'" }
+poetorch={ version="0.1.0", extras=["cuda", "cpu"] }
+
+[tool.poetry.extras]
+cuda=[]
+cpu=[]
+
+[[tool.poetry.source]]
+name="pytorch-cuda"
+url="https://download.pytorch.org/whl/cu124"
+priority="explicit"
+
+[[tool.poetry.source]]
+name="pytorch-cpu"
+url="https://download.pytorch.org/whl/cpu"
+priority="explicit"
 
 [tool.poetry.group.dev.dependencies]
 jupyterlab = "^4.2.4"
-matplotlib = "^3.9.1"
-seaborn = "^0.13.2"
-fastparquet = "^2024.5.0"
+packaging = "^24.0"
+pytest = "^8.2.2"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core", "setuptools>=61.2"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+namespaces = false

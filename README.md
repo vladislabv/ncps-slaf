@@ -1,60 +1,27 @@
-<div align="center"><img src="https://raw.githubusercontent.com/mlech26l/ncps/master/docs/img/banner.png" width="800"/></div>
+# Liquid Time Constant Neural Network enhanced with Self Learnable Activation Function
 
-# Neural Circuit Policies (for PyTorch and TensorFlow)
+## Disclaimer
+The project is using "Neural Circuit Policies" (ncps) [📖 Docs](https://ncps.readthedocs.io/en/latest/index.html) as a code base. 
 
-[![DOI](https://zenodo.org/badge/290199641.svg)](https://zenodo.org/badge/latestdoi/290199641)
-![ci_badge](https://github.com/mlech26l/ncps/actions/workflows/python-test.yml/badge.svg) 
-![pyversion](misc/pybadge.svg)
-![PyPI version](https://img.shields.io/pypi/v/ncps)
-![Documentation Status](https://readthedocs.org/projects/ncps/badge/?version=latest)
-![downloads](https://img.shields.io/pypi/dm/ncps)
+## Description
+Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
 
-## 📜 Papers
-
-[Neural Circuit Policies Enabling Auditable Autonomy (Open Access)](https://publik.tuwien.ac.at/files/publik_292280.pdf).  
-[Closed-form continuous-time neural networks (Open Access)](https://www.nature.com/articles/s42256-022-00556-7)
-
-Neural Circuit Policies (NCPs) are designed sparse recurrent neural networks loosely inspired by the nervous system of the organism [C. elegans](http://www.wormbook.org/chapters/www_celegansintro/celegansintro.html). 
-The goal of this package is to making working with NCPs in PyTorch and keras as easy as possible.
-
-[📖 Docs](https://ncps.readthedocs.io/en/latest/index.html)
-
-```python
-import torch
-from ncps.torch import CfC
-
-rnn = CfC(20,50) # (input, hidden units)
-x = torch.randn(2, 3, 20) # (batch, time, features)
-h0 = torch.zeros(2,50) # (batch, units)
-output, hn = rnn(x,h0)
-```
-
+## Visuals
+Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
 
 ## Installation
-
+Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+### CPU
 ```bash
-pip install ncps
+poetry install -E cpu --with cpu
+```
+### GPU
+```bash
+poetry install -E cuda --with cuda
 ```
 
-## 🔖 Colab Notebooks
-
-We have created a few Google Colab notebooks for an interactive introduction to the package
-
-- [Google Colab (Pytorch) Basic usage](https://colab.research.google.com/drive/1VWoGcpyqGvrUOUzH7ccppE__m-n1cAiI?usp=sharing)
-- [Google Colab (Tensorflow): Basic usage](https://colab.research.google.com/drive/1IvVXVSC7zZPo5w-PfL3mk1MC3PIPw7Vs?usp=sharing)
-- [Google Colab (Tensorflow): Processing irregularly sampled time-series](https://colab.research.google.com/drive/1wBojTMMMVWl2WbF6hASbST1-XhK_xs5u?usp=sharing)
-- [Google Colab (Tensorflow) Stacking NCPs with other layers](https://colab.research.google.com/drive/1-mZunxqVkfZVBXNPG0kTSKUNQUSdZiBI?usp=sharing)
-
-## End-to-end Examples
-
-- [Quickstart (torch and tf)](https://ncps.readthedocs.io/en/latest/quickstart.html)
-- [Atari Behavior Cloning (torch and tf)](https://ncps.readthedocs.io/en/latest/examples/atari_bc.html)
-- [Atari Reinforcement Learning (tf)](https://ncps.readthedocs.io/en/latest/examples/atari_ppo.html)
-
-## Usage: Models and Wirings
-
-The package provides two models, the liquid time-constant (LTC) and the closed-form continuous-time (CfC) models.
-Both models are available as ```tf.keras.layers.Layer``` or ```torch.nn.Module``` RNN layers.
+## Usage
+Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
 ```python
 from ncps.torch import CfC, LTC
@@ -79,58 +46,17 @@ rnn = CfC(input_size, wiring)
 rnn = LTC(input_size, wiring)
 ```
 
-![alt](https://github.com/mlech26l/ncps/raw/master/docs/img/things.png)
+## Contributing
+State if you are open to contributions and what your requirements are for accepting them.
 
-## Tensorflow
+For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
 
-The Tensorflow bindings are available via the ```ncps.tf``` module.
+You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
 
-```python
-from ncps.tf import CfC, LTC
-from ncps.wirings import AutoNCP
+## Authors and acknowledgment
+Show your appreciation to those who have contributed to the project.
 
-units = 28
-wiring = AutoNCP(28, 4) # 28 neurons, 4 outputs
-input_size = 20
-rnn1 = LTC(units) # fully-connected LTC
-rnn2 = CfC(units) # fully-connected CfC
-rnn3 = LTC(wiring) # NCP wired LTC
-rnn4 = CfC(wiring) # NCP wired CfC
-```
-
-We can then combine the NCP cell with arbitrary ```tf.keras.layers```, for instance to build a powerful image sequence classifier:
-
-```python
-from ncps.wirings import AutoNCP
-from ncps.tf import LTC
-import tensorflow as tf
-height, width, channels = (78, 200, 3)
-
-ncp = LTC(AutoNCP(32, output_size=8), return_sequences=True)
-
-model = tf.keras.models.Sequential(
-    [
-        tf.keras.layers.InputLayer(input_shape=(None, height, width, channels)),
-        tf.keras.layers.TimeDistributed(
-            tf.keras.layers.Conv2D(32, (5, 5), activation="relu")
-        ),
-        tf.keras.layers.TimeDistributed(tf.keras.layers.MaxPool2D()),
-        tf.keras.layers.TimeDistributed(
-            tf.keras.layers.Conv2D(64, (5, 5), activation="relu")
-        ),
-        tf.keras.layers.TimeDistributed(tf.keras.layers.MaxPool2D()),
-        tf.keras.layers.TimeDistributed(tf.keras.layers.Flatten()),
-        tf.keras.layers.TimeDistributed(tf.keras.layers.Dense(32, activation="relu")),
-        ncp,
-        tf.keras.layers.TimeDistributed(tf.keras.layers.Activation("softmax")),
-    ]
-)
-model.compile(
-    optimizer=tf.keras.optimizers.Adam(0.01),
-    loss='sparse_categorical_crossentropy',
-)
-```
-
+## Literature
 ```bib
 @article{lechner2020neural,
   title={Neural circuit policies enabling auditable autonomy},
