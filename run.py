@@ -12,9 +12,9 @@ from ncps.wirings import AutoNCP
 from ncps.torch import LTC
 from sklearn.preprocessing import MinMaxScaler
 
-import src.utils as utils
+import project.utils as utils
 from config import Config
-from src.model import SequenceLearner
+from project.model import SequenceLearner
 
 
 def read_data(path) -> pd.Series:

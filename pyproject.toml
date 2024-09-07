@@ -32,6 +32,7 @@ torch = { version = "^2.3.1", optional = true }
 pytorch-lightning = "^2.3.3"
 fastparquet = "^2024.5.0"
 statsmodels = "^0.14.2"
+scikit-learn = "^1.5.1"
 
 [tool.poetry.group.cpu]
 optional = true
@@ -43,7 +44,7 @@ torch = { version = "^2.3.1", source = "torch_cpu", markers = "extra=='cpu' and 
 optional = true
 
 [tool.poetry.group.gpu.dependencies]
-torch = { version = "^2.2.1", source = "torch_cuda", markers = "extra=='gpu' and extra!='cpu'" }
+torch = { version = "^2.3.1", source = "torch_cuda", markers = "extra=='gpu' and extra!='cpu'" }
 
 [tool.poetry.extras]
 cpu = ["torch"]
