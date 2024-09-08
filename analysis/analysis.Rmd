@@ -1,0 +1,718 @@
+
+# LOAD
+
+```{r setup, include=FALSE}
+
+# Load Packages
+library(fhswf)
+library(ggplot2)
+library(tsibbledata) #0.4.1
+library(dplyr)
+library(tsibble)
+library(fable)
+library(fabletools)
+library(feasts)
+library(distributional)
+library(lubridate)
+library(broom)
+library(readr)
+library(tidyr)
+library(datasets)
+library(forecast)
+library(timeDate)
+library(qlcal)
+library(devtools)
+library(zoo)
+library(corrplot)
+library(scales)
+library(fable.prophet)
+library(mgcv)
+library(MEFM)
+load_all()
+```
+
+
+
+
+```{r, echo=TRUE, message=FALSE}
+
+# Load german holidays from 2015 to 2024
+us_holidays <- load_holidays(from_year = 2004, to_year = 2018, location="/US")
+us_holidays <- us_holidays |> 
+  mutate(date = as.Date(date)) |>
+  select(localName, date)
+```
+
+
+URL-collection
+
+```
+https://www.pjm.com/library/~/media/about-pjm/pjm-zones.ashx
+```
+
+# American Electric Power
+
+```{r, message=FALSE, warning=FALSE}
+
+# For the company https://en.wikipedia.org/wiki/American_Electric_Power
+# estimated energy consumption in Megawatts (MW)
+load_all()
+AEP_hourly <- read.csv("..\\data\\AEP_hourly.csv")
+AEP_hourly$Datetime <- as.POSIXct(AEP_hourly$Datetime, 
+                                  format = "%Y-%m-%d %H:%M:%S")
+AEP_hourly <- AEP_hourly |>
+  mutate(
+    MissingValue = (difftime(Datetime, lag(Datetime, default = first(Datetime)), units = "hours") == 2) | is.na(AEP_MW) | is.na(Datetime),
+    DuplicatedDate = duplicated(Datetime),
+    Year = year(Datetime)) |>
+  distinct(Datetime, .keep_all = TRUE)
+
+plot_raw_data(
+  AEP_hourly,
+  x = "Datetime",
+  y = "AEP_MW",
+  color = "DuplicatedDate",
+  missing_value = "MissingValue",
+  file_name = "plots\\raw_AEP_MW.png"
+)
+
+AEP_hourly_cleaned <- AEP_hourly |>
+  drop_na(Datetime) |>
+  as_tsibble(index = Datetime) |>
+  select(Datetime, AEP_MW) |>
+  fill_gaps() |>
+  fill(AEP_MW, .direction = "downup") |>
+    mutate(
+    Weekday = wday(Datetime, label = TRUE),  
+    Date = as.Date(Datetime),
+    Year = as.factor(year(Datetime)),
+    Week = as.factor(week(Datetime)),
+    Hour = as.factor(hour(Datetime)),
+    Month = as.factor(month(Datetime)),
+  ) |>
+  left_join(us_holidays, by = c("Date" = "date")) |>
+  mutate(
+    WorkDay = !(Date %in% us_holidays$date | Weekday %in% c("Sa", "So")),
+    Mo = Weekday == "Mo",
+    Di = Weekday == "Di",  
+    Mi = Weekday == "Mi",  
+    Do = Weekday == "Do",  
+    Fr = Weekday == "Fr",  
+    Sa = Weekday == "Sa",  
+    So = Weekday == "So",
+    Holiday = (Date %in% us_holidays$date),
+    LastDayWasNotWorkDay = !lag(WorkDay, n=24),
+    LastDayWasNotWorkDayAndNowWorkDay = (LastDayWasNotWorkDay & WorkDay),
+    NextDayIsNotWorkDayAndNowWorkDay= (WorkDay & !lead(WorkDay, n=24)),
+    LastDayWasHolodiayAndNotWeekend = lag(Holiday, n=24) & !Sa & !So,
+    NextDayIsHolidayAndNotWeekend = lead(Holiday, n=24) & !lead(Sa, n=24) & !lead(So, n=24),
+    HolidayName = ifelse(is.na(localName), "Regulärer Tag", localName)
+  )
+
+AEP_hourly_cleaned$localName[is.na(AEP_hourly_cleaned$localName)] = "Working-Day"
+
+AEP_hourly_cleaned$MeanLastWeek <- rollapply(AEP_hourly_cleaned$AEP_MW, width = 24*8, FUN = function(x) mean(x[1:(24*8-25)]), align = "right", fill = NA) 
+
+AEP_hourly_cleaned$MeanLastTwoDays <- rollapply(AEP_hourly_cleaned$AEP_MW, width = 24*3, FUN = function(x) mean(x[1:(24*3-25)]), align = "right", fill = NA) 
+
+AEP_hourly_cleaned$MaxLastOneDay <- rollapply(AEP_hourly_cleaned$AEP_MW, width = 24*2, FUN = function(x) max(x[1:(24*2-25)]), align = "right", fill = NA) 
+
+AEP_hourly_cleaned$MinLastOneDay <- rollapply(AEP_hourly_cleaned$AEP_MW, width = 24*2, FUN = function(x) min(x[1:(24*2-25)]), align = "right", fill = NA) 
+
+
+cor <- cor(AEP_hourly_cleaned[sapply(AEP_hourly_cleaned, is.numeric)], method = c("pearson", "kendall", "spearman"), use = "complete.obs")
+
+AEP_hourly_cleaned |>
+  gg_tsdisplay(AEP_MW, plot_type="partial", lag=36)
+
+
+local_name_colors <- c(
+  "New Year's Day" = palette()[2],
+  "Martin Luther King, Jr. Day" = palette()[2],
+  "Washington's Birthday" = palette()[2],
+  "Memorial Day" = palette()[2],
+  "Independence Day" = palette()[2],
+  "Labour Day" = palette()[2],
+  "Veterans Day" = palette()[2],
+  "Thanksgiving Day" = palette()[2],
+  "Christmas Day" = palette()[2],
+  "Regulärer Tag" = palette()[1]
+)
+
+week_colors <- c(
+  "Mo" = palette()[1],
+  "Di" = palette()[1],
+  "Mi" = palette()[1],
+  "Do" = palette()[1],
+  "Fr" = palette()[1],
+  "Sa" = palette()[2],
+  "So" = palette()[2]
+)
+
+working_colors <- c("TRUE" = palette()[1], "FALSE" = palette()[2])
+
+plot_histogram_by_group(
+  AEP_hourly_cleaned,
+  group_name = "WorkDay",
+  file_name = "plots\\workday_histogram.png",
+  colors = working_colors,
+  x="AEP_MW",
+  x_label = "Stromerzeugung [MW]",
+  y_label = "Häufigkeit",
+  name_0 = "Feiertag",
+  name_1 = "Werktag"
+)
+
+plot_histogram_by_group(
+  AEP_hourly_cleaned,
+  group_name = "LastDayWasNotWorkDay",
+  file_name = "plots\\LastDayWasNotWorkDay_histogram.png",
+  colors = working_colors,
+  x="AEP_MW",
+  x_label = "Stromerzeugung [MW]",
+  y_label = "Häufigkeit",
+  name_0 = "Letzter Tag war\nkein Werktag",
+  name_1 = "Letzter Tag war\nein Werktag"
+)
+
+plot_histogram_by_group(
+  AEP_hourly_cleaned,
+  group_name = "LastDayWasNotWorkDayAndNowWorkDay",
+  file_name = "plots\\LastDayWasNotWorkDayAndNowWorkDay_histogram.png",
+  colors = working_colors,
+  x="AEP_MW",
+  x_label = "Stromerzeugung [MW]",
+  y_label = "Häufigkeit",
+  name_0 = "Letzter Tag war kein Werktag,\njetzt ein Werktag",
+  name_1 = "Letzter Tag war ein Werktag,\njetzt ein Werktag"
+)
+
+plot_histogram_by_group(
+  AEP_hourly_cleaned,
+  group_name = "NextDayIsNotWorkDayAndNowWorkDay",
+  file_name = "plots\\NextDayIsNotWorkDayAndNowWorkDay_histogram.png",
+  colors = working_colors,
+  x="AEP_MW",
+  x_label = "Stromerzeugung [MW]",
+  y_label = "Häufigkeit",
+  name_0 = "Nächster Tag ist kein Werktag,\njetzt ein Werktag",
+  name_1 = "Nächster Tag ist ein Werktag,\njetzt ein Werktag"
+)
+
+plot_histogram_by_group(
+  AEP_hourly_cleaned,
+  group_name = "LastDayWasHolodiayAndNotWeekend",
+  file_name = "plots\\LastDayWasHolodiayAndNotWeekend_histogram.png",
+  colors = working_colors,
+  x="AEP_MW",
+  x_label = "Stromerzeugung [MW]",
+  y_label = "Häufigkeit",
+  name_0 = "Letzter Tag war ein Feiertag\nund kein Wochenende",
+  name_1 = "Letzter Tag war kein Feiertag\nund kein Wochenende"
+)
+
+plot_histogram_by_group(
+  AEP_hourly_cleaned,
+  group_name = "NextDayIsHolidayAndNotWeekend",
+  file_name = "plots\\NextDayIsHolidayAndNotWeekend_histogram.png",
+  colors = working_colors,
+  x="AEP_MW",
+  x_label = "Stromverbrauch [MW]",
+  y_label = "Häufigkeit",
+  name_0 = "Nächster Tag ist kein Feiertag\nund kein Wochenende",
+  name_1 = "Nächster Tag ist ein Feiertag,\nund kein Wochenende"
+)
+
+plot_by_group(
+  AEP_hourly_cleaned,
+  group_name = "HolidayName",
+  file_name = "plots\\holiday_boxplot.png",
+  colors = local_name_colors,
+  title = "Übersicht der einzelnen Feiertage",
+  y="AEP_MW",
+  y_label="Stromerzeugung [MW]",
+  x_label="Jahre"
+)
+
+plot_by_group(
+  AEP_hourly_cleaned,
+  group_name = "Weekday",
+  file_name = "plots\\weekday_boxplot.png",
+  colors = week_colors,
+  title = "Übersicht der einzelnen Wochentage",
+  y = "AEP_MW",
+  y_label="Stromerzeugung [MW]",
+  x_label="Jahre"
+)
+
+plot_by_group(
+  AEP_hourly_cleaned,
+  group_name = "WorkDay",
+  file_name = "plots\\workday_boxplot.png",
+  colors = working_colors,
+  title = "Übersicht, ob Feiertag (FALSE) oder Werktag (TRUE)",
+  y = "AEP_MW",
+  y_label="Stromerzeugung [MW]",
+  x_label="Jahre"
+)
+
+
+plot_by_column(
+  df = AEP_hourly_cleaned,
+  x = "Hour",
+  y = "AEP_MW",
+  x_label = "Stunden",
+  y_label = "Stromerzeugung [MW]",
+  file_name = "plots\\hour_boxplot.png",
+  title = "Übersicht der einzelnen Stunden",
+  line=FALSE
+)
+
+plot_by_column(
+  df = AEP_hourly_cleaned,
+  x = "Month",
+  y = "AEP_MW",
+  x_label = "Monate",
+  y_label = "Stromverbrauch [MW]",
+  file_name = "plots\\month_boxplot.png",
+  title = "Übersicht der einzelnen Monate",
+  line=FALSE
+)
+
+plot_by_column(
+  df = AEP_hourly_cleaned,
+  x = "Week",
+  y = "AEP_MW",
+  x_label = "Woche",
+  y_label = "Stromerzeugung [MW]",
+  file_name = "plots\\week_boxplot.png",
+  title = "Übersicht der einzelnen Wochen",
+  line=FALSE
+)
+
+plot_by_column(
+  df = AEP_hourly_cleaned,
+  x = "Year",
+  y = "AEP_MW",
+  x_label = "Jahr",
+  y_label = "Stromerzeugung [MW]",
+  file_name = "plots\\year_boxplot.png",
+  title = "Übersicht der einzelnen Jahre",
+  line=FALSE
+)
+
+plot_year_month_week_day(
+  df=AEP_hourly_cleaned,
+  date_column="Datetime",
+  y="AEP_MW",
+  from_year=2005,
+  to_year=2018,
+  from_week=0,
+  to_week=52,
+  year_for_week=2015,
+  from_day=1,
+  to_day=30,
+  month_for_day=4,
+  year_for_day=2015,
+  from_month=1,
+  to_month=12,
+  year_for_month=2015,
+  holiday="Holiday",
+  day_of_week = "Weekday"
+)
+
+plot_calculated_features(
+  df = AEP_hourly_cleaned,
+  x = "MeanLastWeek",
+  y = "AEP_MW",
+  x_label = "Durchschnitt Erzeugung der letzten Woche [MW]",
+  y_label = "Stromerzeugung [MW]",
+  file_name = "plots\\mean_last_week.png"
+)
+
+plot_calculated_features(
+  df = AEP_hourly_cleaned,
+  x = "MeanLastTwoDays",
+  y = "AEP_MW",
+  x_label = "Durchschnitt Erzeugung der letzten zwei Tage [MW]",
+  y_label = "Stromerzeugung [MW]",
+  file_name = "plots\\mean_last_two_days.png"
+)
+
+plot_calculated_features(
+  df = AEP_hourly_cleaned,
+  x = "MaxLastOneDay",
+  y = "AEP_MW",
+  x_label = "Maximale Erzeugung vom letzten Tag [MW]",
+  y_label = "Stromerzeugung [MW]",
+  file_name = "plots\\max_last_one_day.png"
+)
+
+
+plot_calculated_features(
+  df = AEP_hourly_cleaned,
+  x = "MinLastOneDay",
+  y = "AEP_MW",
+  x_label = "Minimale Erzeugung vom letzten Tag [MW]",
+  y_label = "Stromverbrauch [MW]",
+  file_name = "plots\\min_last_one_day.png"
+)
+
+AEP_hourly_cleaned <- AEP_hourly_cleaned |>
+  select(-Weekday, -Date, -localName, -So, -HolidayName)
+
+write.csv(AEP_hourly_cleaned, "..\\data\\AEP_hourly_cleaned.csv")
+
+```
+
+```{r, message=FALSE, warning=FALSE}
+
+train_aep <- AEP_hourly_cleaned |>
+  filter(year(Datetime) >= 2014 & (year(Datetime) <= 2016))
+
+test_aep <- AEP_hourly_cleaned |>
+  select(
+    WorkDay,
+    LastDayWasHolodiayAndNotWeekend,
+    NextDayIsHolidayAndNotWeekend,
+    MeanLastWeek,
+    MeanLastTwoDays,
+    MaxLastOneDay,
+    MinLastOneDay
+  ) |>
+  filter(year(Datetime) == 2017)
+
+fit <- train_aep |>
+  model(
+    MEAN = MEAN(AEP_MW),
+    NAIVE = NAIVE(AEP_MW),
+    DRIFT = NAIVE(AEP_MW ~ drift()),
+    PROPHET = prophet(
+      AEP_MW ~ 
+        MeanLastWeek
+      + MeanLastTwoDays
+      + MaxLastOneDay
+      + MinLastOneDay
+      + WorkDay 
+      + LastDayWasHolodiayAndNotWeekend
+      + NextDayIsHolidayAndNotWeekend
+      + season(period = "day", order = 8) 
+      + season(period = "week", order = 5) 
+      + season(period = "year", order = 3)),
+    ARIMA = ARIMA(AEP_MW ~
+      PDQ(0, 0, 0)
+      + pdq(d = 0)
+      + MeanLastWeek
+      + MeanLastTwoDays
+      + MaxLastOneDay
+      + MinLastOneDay
+      + WorkDay 
+      + LastDayWasHolodiayAndNotWeekend
+      + NextDayIsHolidayAndNotWeekend
+      + fourier(period = "day", K = 8)
+      + fourier(period = "week", K = 5)
+      + fourier(period = "year", K = 3)
+    )
+  )
+
+saveRDS(fit, file = "Rmodel/arima_mean_naive_drift_prophet.rds")
+
+```
+
+
+```{r, echo=TRUE, message=FALSE}
+
+
+days_to_forecast <- 40
+months_to_forecast <- 12
+month_to_plot <- 12
+days_to_plot <- 40
+
+train_aep <- AEP_hourly_cleaned |>
+  filter(year(Datetime) >= 2014 & (year(Datetime) <= 2016))
+
+fit <- readRDS("Rmodel/arima_mean_naive_drift_prophet.rds")
+
+test <- AEP_hourly_cleaned |>
+  filter(year(Datetime) == 2017) |>
+  filter(month(Datetime) >= 1) |>
+  filter(month(Datetime) <= months_to_forecast) |>
+  filter(day(Datetime) < days_to_forecast) |>
+  as_tsibble(index=Datetime)
+
+data_2017 <- AEP_hourly_cleaned |>
+  filter(year(Datetime) == 2017) |>
+  filter(month(Datetime) >= 1) |>
+  filter(month(Datetime) <= months_to_forecast) 
+
+raw_fc <- fit |>
+  forecast(new_data=test)
+
+fc <- fit |>
+  forecast(new_data = test) |>
+  as_tsibble(index=Datetime)
+
+results <- data_2017 |>
+  select(Datetime, AEP_MW) |>
+  as_tibble(index="Datetime") |>
+  rename(RealPowerGeneration = AEP_MW) |>
+  right_join(fc, by = "Datetime")
+
+results_2 <- data_2017 |>
+  select(Datetime, AEP_MW) |>
+  as_tibble(index="Datetime") |>
+  rename(RealPowerGeneration = AEP_MW)
+
+result_3 <- bind_rows(results, results_2)
+
+metrics_by_model <- result_3 |>
+  group_by(.model) |>
+  summarize(
+    RMSE = sqrt(mean((RealPowerGeneration - .mean)^2, na.rm = TRUE)),  
+    MAPE = mean(abs((RealPowerGeneration - .mean) / RealPowerGeneration), na.rm = TRUE) * 100,  
+    MAE = mean(abs(RealPowerGeneration - .mean), na.rm = TRUE)  
+  ) |>
+  drop_na()
+
+load_all()
+plot_forecast(
+  all_forecasts=fc,
+  raw_fc = raw_fc,
+  metric_results = metrics_by_model, 
+  df = AEP_hourly_cleaned,
+  month_to_plot = 1, 
+  days_to_plot = 42
+)
+
+glance(fit)
+report(fit)
+```
+
+
+# Commonwealth Edison
+
+```{r, message=FALSE, warning=FALSE}
+
+# For the company https://en.wikipedia.org/wiki/Commonwealth_Edison
+# estimated energy consumption in Megawatts (MW)
+
+COMED_hourly <- read.csv("data\\COMED_hourly.csv")
+COMED_hourly$Datetime <- as.POSIXct(COMED_hourly$Datetime, 
+                                  format = "%Y-%m-%d %H:%M:%S")
+COMED_hourly <- COMED_hourly |>
+  drop_na(Datetime) |>
+  distinct(Datetime, .keep_all = TRUE)
+
+COMED_hourly <- as_tsibble(COMED_hourly, index = Datetime) |> fill_gaps()
+
+COMED_hourly |>
+  gg_tsdisplay(COMED_MW, plot_type="partial", lag=36)
+
+```
+
+# DLP Inc.
+
+```{r, message=FALSE, warning=FALSE}
+
+# For the company https://en.wikipedia.org/wiki/DPL_Inc.
+# estimated energy consumption in Megawatts (MW)
+
+DAYTON_hourly <- read.csv("data\\DAYTON_hourly.csv")
+DAYTON_hourly$Datetime <- as.POSIXct(DAYTON_hourly$Datetime, 
+                                  format = "%Y-%m-%d %H:%M:%S")
+DAYTON_hourly <- DAYTON_hourly |>
+  drop_na(Datetime) |>
+  distinct(Datetime, .keep_all = TRUE)
+
+DAYTON_hourly <- as_tsibble(DAYTON_hourly, index = Datetime) |> fill_gaps()
+
+DAYTON_hourly |>
+  gg_tsdisplay(DAYTON_MW, plot_type="partial", lag=36)
+
+```
+
+# Duke Energy
+
+```{r, message=FALSE, warning=FALSE}
+
+# For the company https://en.wikipedia.org/wiki/Duke_Energy
+# estimated energy consumption in Megawatts (MW)
+
+DEOK_hourly <- read.csv("data\\DEOK_hourly.csv")
+DEOK_hourly$Datetime <- as.POSIXct(DEOK_hourly$Datetime, 
+                                  format = "%Y-%m-%d %H:%M:%S")
+DEOK_hourly <- DEOK_hourly |>
+  drop_na(Datetime) |>
+  distinct(Datetime, .keep_all = TRUE)
+
+DEOK_hourly <- as_tsibble(DEOK_hourly, index = Datetime) |> fill_gaps()
+
+DEOK_hourly |>
+  gg_tsdisplay(DEOK_MW, plot_type="partial", lag=36)
+
+```
+
+# Dominion Enery
+
+```{r, message=FALSE, warning=FALSE}
+
+# For the company https://en.wikipedia.org/wiki/Dominion_Energy
+# estimated energy consumption in Megawatts (MW)
+
+DOM_hourly <- read.csv("data\\DOM_hourly.csv")
+DOM_hourly$Datetime <- as.POSIXct(DOM_hourly$Datetime, 
+                                  format = "%Y-%m-%d %H:%M:%S")
+DOM_hourly <- DOM_hourly |>
+  drop_na(Datetime) |>
+  distinct(Datetime, .keep_all = TRUE)
+
+DOM_hourly <- as_tsibble(DOM_hourly, index = Datetime) |> fill_gaps()
+
+DOM_hourly |>
+  gg_tsdisplay(DOM_MW, plot_type="partial", lag=36)
+
+```
+
+# Diquesne Lightr Company
+
+```{r, message=FALSE, warning=FALSE}
+
+# For the company https://en.wikipedia.org/wiki/Duquesne_Light_Company
+# estimated energy consumption in Megawatts (MW)
+
+DUQ_hourly <- read.csv("data\\DUQ_hourly.csv")
+DUQ_hourly$Datetime <- as.POSIXct(DUQ_hourly$Datetime, 
+                                  format = "%Y-%m-%d %H:%M:%S")
+DUQ_hourly <- DUQ_hourly |>
+  drop_na(Datetime) |>
+  distinct(Datetime, .keep_all = TRUE)
+
+DUQ_hourly <- as_tsibble(DUQ_hourly, index = Datetime) |> fill_gaps()
+
+DUQ_hourly |>
+  gg_tsdisplay(DUQ_MW, plot_type="partial", lag=36)
+
+```
+
+# East Kentucky Power Cooperative
+
+```{r, message=FALSE, warning=FALSE}
+
+# For the company https://www.ekpc.coop/
+# estimated energy consumption in Megawatts (MW)
+
+EKPC_hourly <- read.csv("data\\EKPC_hourly.csv")
+EKPC_hourly$Datetime <- as.POSIXct(EKPC_hourly$Datetime, 
+                                  format = "%Y-%m-%d %H:%M:%S")
+EKPC_hourly <- EKPC_hourly |>
+  drop_na(Datetime) |>
+  distinct(Datetime, .keep_all = TRUE)
+
+EKPC_hourly <- as_tsibble(EKPC_hourly, index = Datetime) |> fill_gaps()
+
+EKPC_hourly |>
+  gg_tsdisplay(EKPC_MW, plot_type="partial", lag=36)
+
+```
+
+# First Energy
+
+```{r, message=FALSE, warning=FALSE}
+
+# For the company https://en.wikipedia.org/wiki/FirstEnergy
+# estimated energy consumption in Megawatts (MW)
+
+FE_hourly <- read.csv("data\\FE_hourly.csv")
+FE_hourly$Datetime <- as.POSIXct(FE_hourly$Datetime, 
+                                  format = "%Y-%m-%d %H:%M:%S")
+FE_hourly <- FE_hourly |>
+  drop_na(Datetime) |>
+  distinct(Datetime, .keep_all = TRUE)
+
+FE_hourly <- as_tsibble(FE_hourly, index = Datetime) |> fill_gaps()
+
+FE_hourly |>
+  gg_tsdisplay(FE_MW, plot_type="partial", lag=36)
+
+```
+
+# Northern Illinois Hub
+
+```{r, message=FALSE, warning=FALSE}
+
+# For the company https://en.wikipedia.org/wiki/FirstEnergy
+# estimated energy consumption in Megawatts (MW)
+
+NI_hourly <- read.csv("data\\NI_hourly.csv")
+NI_hourly$Datetime <- as.POSIXct(NI_hourly$Datetime, 
+                                  format = "%Y-%m-%d %H:%M:%S")
+NI_hourly <- NI_hourly |>
+  drop_na(Datetime) |>
+  distinct(Datetime, .keep_all = TRUE)
+
+NI_hourly <- as_tsibble(NI_hourly, index = Datetime) |> fill_gaps()
+
+NI_hourly |>
+  gg_tsdisplay(NI_MW, plot_type="partial", lag=36)
+
+```
+
+# PJM East Region: 2001-2018 (PJME)
+
+```{r, message=FALSE, warning=FALSE}
+
+# estimated energy consumption in Megawatts (MW)
+
+PJME_hourly <- read.csv("data\\PJME_hourly.csv")
+PJME_hourly$Datetime <- as.POSIXct(PJME_hourly$Datetime, 
+                                  format = "%Y-%m-%d %H:%M:%S")
+PJME_hourly <- PJME_hourly |>
+  drop_na(Datetime) |>
+  distinct(Datetime, .keep_all = TRUE)
+
+PJME_hourly <- as_tsibble(PJME_hourly, index = Datetime) |> fill_gaps()
+
+PJME_hourly |>
+  gg_tsdisplay(PJME_MW, plot_type="partial", lag=36)
+
+```
+
+# PJM West Region: 2001-2018 (PJMW)
+
+```{r, message=FALSE, warning=FALSE}
+
+# estimated energy consumption in Megawatts (MW)
+
+PJMW_hourly <- read.csv("data\\PJMW_hourly.csv")
+PJMW_hourly$Datetime <- as.POSIXct(PJMW_hourly$Datetime, 
+                                  format = "%Y-%m-%d %H:%M:%S")
+PJMW_hourly <- PJMW_hourly |>
+  drop_na(Datetime) |>
+  distinct(Datetime, .keep_all = TRUE)
+
+PJMW_hourly <- as_tsibble(PJMW_hourly, index = Datetime) |> fill_gaps()
+
+PJMW_hourly |>
+  gg_tsdisplay(PJMW_MW, plot_type="partial", lag=36)
+
+```
+
+# PJM Load Combined: 1998-2001 (PJM_Load)
+
+```{r, message=FALSE, warning=FALSE}
+
+# estimated energy consumption in Megawatts (MW)
+
+PJM_Load_hourly <- read.csv("data\\PJM_Load_hourly.csv")
+PJM_Load_hourly$Datetime <- as.POSIXct(PJM_Load_hourly$Datetime, 
+                                  format = "%Y-%m-%d %H:%M:%S")
+PJM_Load_hourly <- PJM_Load_hourly |>
+  drop_na(Datetime) |>
+  distinct(Datetime, .keep_all = TRUE)
+
+PJM_Load_hourly <- as_tsibble(PJM_Load_hourly, index = Datetime) |> fill_gaps()
+
+PJM_Load_hourly |>
+  gg_tsdisplay(PJM_Load_MW, plot_type="partial", lag=36)
+
+```
