@@ -19,6 +19,8 @@ __pycache__/
 ^.*\.Rproj$
 ^\.Rproj\.user$
 
+*ckpt
+
 
 # Distribution / packaging
 .Python
