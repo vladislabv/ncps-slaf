@@ -156,7 +156,7 @@ Wie schon erwähnt, die Swish Funktion wird in diesem Projekt anstatt der klassi
 
 Die Aktivierungsfunktion wird ersetzt durch das Einstellen von dem optionalen boolischen Parameter `use_swish_activation` bei der "LTC" Modelle Definition:
 
-```{python}
+```
 class LTC(nn.Module):
     def __init__(
         self,
@@ -177,7 +177,7 @@ class LTC(nn.Module):
 
 Der Parameter wird später in jede LTC Knoten übergeben, welcher durch eine weitere Python Klasse repräsentiert ist:
 
-```{python}
+```
 class LTCCell(nn.Module):
     def __init__(
         self,
@@ -195,7 +195,7 @@ class LTCCell(nn.Module):
 
 Falls der Parameter als True gesetzt ist, wird einen neuen Parameter für PyTorch Modelle definiert, welcher ein zufälliger Skalarwert im Zahlenbereich von `0,5` bis `1,5` ist:
 
-```{python}
+```
 def add_weight(self, name, init_value, requires_grad=True):
     param = torch.nn.Parameter(init_value, requires_grad=requires_grad)
     self.register_parameter(name, param)
@@ -219,7 +219,7 @@ if self._use_swish_activation:
 
 Der Skalar wird dann später verwendet, um einen Matrizen Produkt zu berechnen:
 
-```{python}
+```
 def _sigmoid(self, v_pre, mu, sigma, beta):
     v_pre = torch.unsqueeze(v_pre, -1)  # For broadcasting
     mues = v_pre - mu
@@ -237,7 +237,7 @@ Durch die `pytorch`-Implementierung lässt sich das Training sowohl auf einer CP
 
 Das Training lässt sich sowohl mittels cmd-Befehl als auch Jupyter Notebook anstoßen, allein nur die Parameter in `config.py` sind entscheidend:
 
-```{python}
+```
 PATH = "data/csv/AEP_hourly_cleaned.csv"
 STATION = "AEP_MW"
 FEATURES_LIST = [

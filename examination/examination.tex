@@ -28,7 +28,7 @@
 \PassOptionsToPackage{hyphens}{url} % url is loaded by hyperref
 \usepackage[unicode=true]{hyperref}
 \hypersetup{
-            pdftitle={Stromerzeugung Vorhersage basierend auf Self Learning Activation Functions und Liquid Neuronal Networks},
+            pdftitle={Vorhersage der Stromerzeugung basierend auf Self Learning Activation Functions und Liquid Neuronal Networks},
             pdfkeywords={SLAF, LNN, Forecasting},
             pdfborder={0 0 0},
             breaklinks=true}
@@ -73,7 +73,7 @@
 \makeatother
 
 
-\title{Stromerzeugung Vorhersage basierend auf Self Learning Activation Functions und Liquid Neuronal Networks}
+\title{Vorhersage der Stromerzeugung basierend auf Self Learning Activation Functions und Liquid Neuronal Networks}
 
 %% MONASH STUFF
 
@@ -417,15 +417,279 @@ MatNr: 87654321
 }
 \section{Einleitung}\label{einleitung}
 
-test (\cite{Hasani2020})
+\begin{itemize}
+\tightlist
+\item
+  time-series
+\item
+  Problem beschreiben
+\item
+  Tiefere Zusammenfassung
+\item
+  Immer weiterlernen
+\item
+  LNN (Deep Learning), Model ist klein, Liquid Time Constant LTCs
+\item
+  Liquid time-constant
+\item
+  RNN (Parameter 100.000 - 1.000.000), unser Model \textasciitilde7000 Parameter 1mb Modelgröße (klein), an kleinen geräten
+\item
+  Elektronische Messgeräte, Rasbery PI
+\item
+  vanishing gradient Problem (SLAF sollte helfen)
+\item
+  Schnelleres Training
+\item
+  Echtzeit, weil weiter Lernbar?
+\item
+  Unterschied zu gewöhnlichen NNs
+\item
+  ARIMA, Prophet
+\end{itemize}
 
-\subsection{Context}\label{context}
+\section{Methodik}\label{methodik}
 
-\subsection{Research Question}\label{research-question}
+Eine der bekanntesten Modelle für eine Zeitreihe ist das ARIMA Model.
+Prophet als ein weiteres Benchmark-Model, welches sich an komplexe Saisonalität
+anpasst.
 
-\subsection{Paper Structure}\label{paper-structure}
+\subsection{Liquid Time-Constant Neuronal Networks (LTCNNs)}\label{liquid-time-constant-neuronal-networks-ltcnns}
 
-\section{Data}\label{data}
+Liquid Neural Networks, insbesondere LTCNNs, sind eine neuartige Form von neuronalen Netzen, die speziell für dynamische, zeitabhängige Daten entwickelt wurden. Im Gegensatz zu klassischen neuronalen Netzen, bei denen die Verbindungen zwischen den Neuronen statisch sind, passen sich die Verbindungen in LTCNs kontinuierlich über die Zeit an. Dies ermöglicht es den Modellen, dynamisch auf unterschiedliche Eingabeströme zu reagieren, was sie besonders geeignet für die Verarbeitung von zeitlichen Daten macht, wie z.B. in Zeitreihenanalysen oder bei Echtzeitanwendungen.
+
+Der Kernmechanismus von LTCNs basiert auf der Verwendung von Differentialgleichungen zur Beschreibung der Neuronenaktivität. Jedes Neuron \(x_i(t)\) wird durch eine Differentialgleichung beschrieben, die seinen Zustand in Abhängigkeit von der Zeit und den Eingangsgrößen steuert:
+
+\[
+\dot{x}_i(t) = -\frac{1}{\tau_i} x_i(t) + \sum_j w_{ij} \cdot \sigma(x_j(t)) + I_i(t)
+\]
+
+In dieser Gleichung steht:
+
+\begin{itemize}
+\tightlist
+\item
+  \(x_i(t)\) für den Zustand des Neurons \(i\) zu einem bestimmten Zeitpunkt \(t\),
+\item
+  \(\tau_i\) ist die zeitabhängige Konstante, die die Dynamik des Neurons bestimmt,
+\item
+  \(w_{ij}\) ist das Gewicht der Verbindung zwischen Neuron \(j\) und Neuron \(i\),
+\item
+  \(\sigma(x_j(t))\) ist die Aktivierungsfunktion (z.B. eine nichtlineare Funktion wie die Sigmoid- oder ReLU-Funktion),
+\item
+  \(I_i(t)\) repräsentiert den externen Input, der auf das Neuron einwirkt,
+\item
+  \(\dot{x}_i(t)\) bezeichnet die zeitliche Ableitung des Neuronzustandes \(x_i(t)\).
+\end{itemize}
+
+Die Zeitkonstante \(\tau_i\) spielt eine zentrale Rolle, da sie festlegt, wie schnell das Neuron auf Änderungen in den Eingangsdaten reagiert. Diese Konstante wird während des Trainings dynamisch angepasst, was den Begriff ``Liquid'' (flüssig) erklärt: Die Netzwerkkonfiguration ist nicht statisch, sondern verändert sich kontinuierlich im Laufe der Zeit.
+
+Die Architektur eines LTCNs ist relativ simpel aufgebaut: Jedes Neuron besitzt eine zeitabhängige Aktivierung, die durch die oben genannte Differentialgleichung gesteuert wird. Durch die ständige Anpassung der Zeitkonstanten können LTCNs flexibel auf Veränderungen in den Daten reagieren. Diese dynamischen Modelle sind besonders geeignet für komplexe, zeitlich veränderliche Muster.
+
+Besonders für die Verarbeitung von Zeitreihen oder die Analyse von Signalen in Echtzeit sind LTCNs vielversprechend. Durch die flexiblen Zeitkonstanten können sowohl kurzfristige als auch langfristige Abhängigkeiten in den Daten erfasst werden. Dies macht sie besonders nützlich in Anwendungsbereichen wie der Vorhersage von Finanzdaten, der Wetterprognose oder der Analyse biologischer Signale (z.B. EEG- oder EKG-Daten), wo das Erkennen von zeitlichen Mustern entscheidend ist.
+
+Ein wichtiger Durchbruch in der Forschung zu Liquid Neural Networks wurde durch das Paper von Hasani et al.~(2021) eingeführt, welches die grundlegende Architektur der Liquid Time Constant Networks beschreibt und deren Funktionsweise detailliert erklärtrde demonstriert, dass LTCNs in der Lage sind, mit weniger Parametern eine hohe Effizienz und Genauigkeit bei der Modellierung dynamischer Systeme zu erreichen. Diese Netzwerke zeigten überragende Ergebnisse in der Modellierung von dynamischen Umgebungen und zeitraumgreifenden Aufgaben, was sie von herkömmlichen rekurrenten Netzen unterschied.
+
+In einer späteren Anwendung auf Zeitreihendaten wurde in einem Paper von Gilpin et al.~(2021) gezeigt, dass LTCNs signifikante Verbesserungen in der Vorhersagegenauigkeit von Finanzzeitreihen erzielten, indem sie sowohl kurzfristige Schwankungen als auch langfristige Trends erfassten . In einen Studie demonstrierten Pasandi et al.~(2022), dass LTCNs zur Analyse von EEG-Signalen eingesetzt werden können, um epileptische Anfälle in Echtzeit mit einer hohen Genauigkeit zu erkennen . In beiden Fällesich die Stärken der flüssigen Zustandsübergänge und der dynamischen Zeitkonstanten als wesentliche Vorteile gegenüber traditionellen Netzwerken.
+
+Hasani, R., Lechner, M., Amini, A., Rus, D., \& Grosu, R. (2021). ``Liquid Time-constant Networks.'' Nature Machine Intelligence. DOI: 10.1038/s42256-021-00302-4.
+
+\subsection{Self Learnable Activation Functions (SLAFs)}\label{self-learnable-activation-functions-slafs}
+
+\subsection{Auto Regressive-Moving Average (ARIMA)}\label{auto-regressive-moving-average-arima}
+
+\subsection{PROPHET: Forecasting at a scale}\label{prophet-forecasting-at-a-scale}
+
+\begin{itemize}
+\tightlist
+\item
+  Lagged Values \textless- ARIMA Bezug / ACF-PACF \textless- Vitali
+\item
+  Train / Testdatensatz \textless- egal wer, nur paar sätze
+\end{itemize}
+
+\section{Datenanalyse}\label{datenanalyse}
+
+Der verwendete Datensatz kommt aus den USA und beinhaltet die Stromerzeugung
+vom Unternehmen American Electric Power gegenüber der Zeit. In einer stündlichen Auflösung
+
+\begin{itemize}
+\tightlist
+\item
+  Statistische Methoden \textless- Vitali
+\item
+  Feature Engineering \textless- Vitali (Analytisch) \& Vlad (PCA)
+\item
+  ``Calender Effect'' \textless- Vitali
+\end{itemize}
+
+\section{Implementierung}\label{implementierung}
+
+\subsection{SLAF Integration in LTC Nodes}\label{slaf-integration-in-ltc-nodes}
+
+Wie schon erwähnt, die Swish Funktion wird in diesem Projekt anstatt der klassischen Sigmoid-Aktiviserungsfunktion angewendet. Wir erweitern die Funktionalität von ``NCPs'' Package um das Benutzen von Swish Funktion zu ermöglichen.
+
+Die Aktivierungsfunktion wird ersetzt durch das Einstellen von dem optionalen boolischen Parameter \texttt{use\_swish\_activation} bei der ``LTC'' Modelle Definition:
+
+\begin{verbatim}
+class LTC(nn.Module):
+    def __init__(
+        self,
+        input_size: int,
+        units,
+        return_sequences: bool = True,
+        batch_first: bool = True,
+        mixed_memory: bool = False,
+        input_mapping="affine",
+        output_mapping="affine",
+        ode_unfolds=6,
+        epsilon=1e-8,
+        implicit_param_constraints=True,
+        use_swish_activation=False,
+    ):
+      ...
+\end{verbatim}
+
+Der Parameter wird später in jede LTC Knoten übergeben, welcher durch eine weitere Python Klasse repräsentiert ist:
+
+\begin{verbatim}
+class LTCCell(nn.Module):
+    def __init__(
+        self,
+        wiring,
+        in_features=None,
+        input_mapping="affine",
+        output_mapping="affine",
+        ode_unfolds=6,
+        epsilon=1e-8,
+        implicit_param_constraints=False,
+        use_swish_activation=False,
+    ):
+      ...
+\end{verbatim}
+
+Falls der Parameter als True gesetzt ist, wird einen neuen Parameter für PyTorch Modelle definiert, welcher ein zufälliger Skalarwert im Zahlenbereich von \texttt{0,5} bis \texttt{1,5} ist:
+
+\begin{verbatim}
+def add_weight(self, name, init_value, requires_grad=True):
+    param = torch.nn.Parameter(init_value, requires_grad=requires_grad)
+    self.register_parameter(name, param)
+    return param
+
+def _get_init_value(self, shape, param_name):
+    minval, maxval = self._init_ranges[param_name]
+    if minval == maxval:
+        return torch.ones(shape) * minval
+    else:
+        return torch.rand(*shape) * (maxval - minval) + minval
+
+if self._use_swish_activation:
+    self._params["swish_beta"] = self.add_weight(
+        "swish_beta",
+        init_value=self._get_init_value(
+            (1,), "swish_beta"
+        ),
+    )
+\end{verbatim}
+
+Der Skalar wird dann später verwendet, um einen Matrizen Produkt zu berechnen:
+
+\begin{verbatim}
+def _sigmoid(self, v_pre, mu, sigma, beta):
+    v_pre = torch.unsqueeze(v_pre, -1)  # For broadcasting
+    mues = v_pre - mu
+    x = sigma * mues
+    if self._use_swish_activation:
+        return x * torch.sigmoid(beta * x)
+    return torch.sigmoid(x)
+\end{verbatim}
+
+Der Parameter ist einer Anpassung bei einer Error Backpropagation fällig, und darüber hinaus, darf von dem initialen Wert während des Trainings unterscheiden.
+
+\subsection{Training}\label{training}
+
+Durch die \texttt{pytorch}-Implementierung lässt sich das Training sowohl auf einer CPU, als auch einer GPU ohne große Anpassungen stattfinden. Um das Training stabiler zu gestalten, waren das Hardware von FH-SWF Cluster genutzt.
+
+Das Training lässt sich sowohl mittels cmd-Befehl als auch Jupyter Notebook anstoßen, allein nur die Parameter in \texttt{config.py} sind entscheidend:
+
+\begin{verbatim}
+PATH = "data/csv/AEP_hourly_cleaned.csv"
+STATION = "AEP_MW"
+FEATURES_LIST = [
+    "WorkDay",
+    "LastDayWasHolodiayAndNotWeekend",
+    "NextDayIsHolidayAndNotWeekend",
+    "MeanLastWeek",
+    "MeanLastTwoDays",
+    "MaxLastOneDay",
+    "MinLastOneDay"
+]
+FEATURES_2_SCALE = [
+    "value",
+    "MeanLastWeek",
+    "MeanLastTwoDays",
+    "MaxLastOneDay",
+    "MinLastOneDay"
+]
+
+YEAR_SHIFT = 365
+WEEK_SHIFT = 7
+VALUES_PER_DAY = 24
+FILTER_DT_FROM = "2014-01-01 00:00:00"
+FILTER_DT_TILL = "2017-01-01 00:00:00"
+
+GRID_SEARCH = True
+
+BATCH_SIZE = 7
+NUM_WORKERS = 128
+NUM_LNN_UNITS = [16, 8, 32]
+
+USE_SWISH_ACTIVATION = [False, True]
+INIT_LR = [0.01, 0.0001]
+NUM_EPOCHS = [10, 50, 100]
+\end{verbatim}
+
+Außer Datenpfad, Energiestation und Liste relevanten Features, lässt sich auch einen Grid Search mit dem Parameter-Pool einstellen. Die wichtigsten Hyperparameter, die für LNN eine Rolle spielen, sind es Anzahl von Knoten, eine initiale Learning Rate und Anzahl von Epochen. Durch die
+Konfiguration kann man auch die Schranken für den Trainingsdatensatz definieren, in unserem Fall haben wir uns für 3 Jahren Daten zwischen 2014 und 2017 entschieden. Für die Auswertung nutzen wir die Daten aus danach folgender Woche.
+
+Bevor das eigentliche Training startet, werden die Daten normalisiert auf Bereich zwischen 0 und 1 mit dem \texttt{sklearn.processing.MinMaxScaler} Objekt. Für die Evaluation der Ergebnisse bzw. produktives Nutzen kann der Skaler die Daten denormalizieren. Welche Merkmale normaliziert werden müssen, kann auch mittels Konfig eingestellt werden, da die boolische Variablen brauchen keine Skalierung.
+
+Neben der initialen Variablen, die am Start gelesen werden, hinzufügen wir zwei weitere Spalten, die wöchentliche und jährliche Werten Verzögerung der abhängigen Variable einführen. Für Time-Series Daten ist eine normale Praktik, die wir hier auch verfolgen.
+
+Für das unkomplizierte Training wird die \texttt{Trainer} Klasse aus der \texttt{pytorch\_lightning} Bibliothek benutzt, welche einen Data Scientist vom Boiler Code befreit.
+
+\begin{itemize}
+\tightlist
+\item
+  Cluster \textless- Vlad
+\item
+  Normalisierung / Skalierung \textless- Vlad
+\end{itemize}
+
+\section{Vorhersage Ergebnisse}\label{vorhersage-ergebnisse}
+
+\begin{itemize}
+\tightlist
+\item
+  Metriks \textless- MAE / MAPE (X) / LOSS-FUNCTION \textless- Vlad
+\item
+  Plots der Ergebnisse \textless- Vlad
+\end{itemize}
+
+\section{Fazit \textless- Zusammen alles}\label{fazit---zusammen-alles}
+
+\begin{itemize}
+\tightlist
+\item
+  Probleme
+\item
+  Lösungen
+\item
+  Zusammenfassung
+\item
+  Schlussfolgerung und letztes Wort
+\end{itemize}
+
+test (\cite{hasani2021liquid})
 
 \singlespacing
 
