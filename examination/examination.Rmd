@@ -120,21 +120,45 @@ Hasani, R., Lechner, M., Amini, A., Rus, D., & Grosu, R. (2021). "Liquid Time-co
 
 ## Self Learnable Activation Functions (SLAFs)
 
-Aktivierungsfunktionen haben einen großen Einfluss auf die Modellierung im Bereich der Neuronalen Netze. Dabei reagieren Neuronen auf verschiede Aktivierungsfunktionen unterschiedlich und beschreiben damit, ob ein Neuron gerade den Status "aktiv" oder "nicht aktiv" hat. Ist ein bestimmter Schwellwert in einer dieser Funktionen überschritten, so ändert das Neuron seinen Status. Die wohl bekanntesten Aktivierungsfunktionen sind sigmoid, relu, tanh und eine linearen Aktivierung. Dabei wurde nach \cite{Ramachandran2017} die swish-Funktion aufgedeckt: 
+Aktivierungsfunktionen haben einen großen Einfluss auf die Modellierung im Bereich der Neuronalen Netze. Dabei reagieren Neuronen auf verschiede Aktivierungsfunktionen unterschiedlich und beschreiben damit, ob ein Neuron gerade den Status "aktiv" oder "nicht aktiv" hat. Ist ein bestimmter Schwellwert in einer dieser Funktionen überschritten, so ändert das Neuron seinen Status. Die wohl bekanntesten Aktivierungsfunktionen sind sigmoid, relu, tanh und eine linearen Aktivierung. In der Arbeit von \cite{Ramachandran2017} wurde die swish-Funktion aufgedeckt:
 
 \[
 f(x) = x * sigmoid(\beta * x)
 \]
 
-In der Arbeit von \cite{Ramachandran2017} wurde die swish-Funktion als die beste Aktivierungsfunktion empirisch bestimmt. Dabei wurde vor allem mit der ReLU-Funktion verglichen. 
+In der Arbeit von \cite{Ramachandran2017} wurde die swish-Funktion als die beste Aktivierungsfunktion alternativ zu der ReLU Funktion empirisch bestimmt. Die swish-Funktion soll dabei glättere Verläufe ermöglichen, was zu einer stabileren und effizienteren Modelloptmierung führen kann.
 
 ## Auto Regressive-Moving Average (ARIMA)
 
+Bei dem (S)ARIMA Modell handelt es sich um ein additives statistisches Modell, welches sich an komplexe Zeitreihe anpassen 
+kann. Dabei beschreiben die Therme PDQ (saisonall) und pdq (nicht saisonall) das Modell. Folgende Backshift Notation beschreibt
+das Modell:
+
+\[
+\Phi(B)\phi(B)(1-B)^d (1-B)^D y_t = c + \Theta(B) \theta(B) \epsilon_t
+\]
+
+Dabei wird die Zeitreihe d-mal und D-mal Differenziert. Die Therme p,d,P,Q werden mittels des geringsten AICc ermittelt.
+
+
+
 
 ## PROPHET: Forecasting at a scale
-- Lagged Values <- ARIMA Bezug / ACF-PACF <- Vitali 
-- Train / Testdatensatz <- egal wer, nur paar sätze
 
+Das Prophet Model wurde von Facebook entwickelt und findet Anwendung bei Vorhersagen von Zeitreihen mit komplexer saisonalität.
+Speziell designt, um Feiertagmuster zu erkennen. Dabei handelt es sich wie bei dem ARIMA Modell um ein additives Modell. Im Vergleich zum ARIMA Modell, ist das Prophet Model, vor allem im Training deutlich schneller. Hinzu kommt, dass dies Modell im gegensatz zum ARIMA Modell den Effekt der Feiertage deutlich besser erfassen kann. Folgende Formel beschreibt das Modell:
+
+\[
+y(t) = g(t) + s(t) + h(t) + \epsilon_t
+\]
+
+g(t) : Der Schrittweise Lineare Trend
+
+s(t) : Die saisonallen Muster
+
+h(t) : Feitagmustererfassung
+
+$\epsilon_t$ : Der Fehler-Term (Rauschen)
 
 # Datengrundlage und Datenanalyse
 Auch für Neuronales Netz muss Datenanalyse betrieben werden. Es ist wichtig den Datensatz komplett zu durchdringen und die Erkenntnisse aus der Analyse in der Implementierung des Neuronalen Netzen mit zu berücksichtigen. Der rohe Datensatz der Stromerzeugung hat eine stündliche Granularität in der Zeitspanne 01.10.2004 - 03.08.2018 (5054 Tage). Untersucht man den Datensatz auf Äquidistanz, so fallen Insgesamt 40 fehlende Beobachtungen in der stündlichen Auflösung. Die Abbildung \ref{fig:raw_AEP} repräsentiert den rohen Datensatz. Die fehlenden Werte (rot) wurden mit dem letzten vorhandenen Wert ersetzt. Dies ist damit zu begründen, da der Datensatz groß genug ist und es keine drastischen Auswirkungen auf das Neuronale Netz haben wird. Nach der säuberung der Daten hat der Datensatz korrekterweise 121.296 ($24*5054$) Beobachtungen. Ein positiver oder negativer Trend ist für die Stromerzeugung nicht zu erkennen.
@@ -371,12 +395,6 @@ Für das unkomplizierte Training wird die `Trainer` Klasse aus der `pytorch_ligh
 - Zusammenfassung
 - Schlussfolgerung und letztes Wort
 
-test (\cite{hasani2021liquid})
-
-
-```{r histogram, fig.cap="Nice histogram.", message=FALSE, warning=FALSE}
-qplot(exp(rnorm(200))) + theme_bw()
-```
 
 
 
