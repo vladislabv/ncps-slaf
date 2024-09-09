@@ -19,16 +19,19 @@ class Config:
         "MinLastOneDay"
     ]
 
+    TRAIN = True
+    EVALUATE = False
+
     YEAR_SHIFT = 365
     WEEK_SHIFT = 7
     VALUES_PER_DAY = 24
     FILTER_DT_FROM = "2014-01-01 00:00:00"
     FILTER_DT_TILL = "2017-01-01 00:00:00"
     
-    GRID_SEARCH = True
+    GRID_SEARCH = False
 
-    BATCH_SIZE = 7
-    NUM_WORKERS = 128
+    BATCH_SIZE = 7 * 24
+    NUM_WORKERS = 1
     NUM_LNN_UNITS = [16, 8, 32]
 
     USE_SWISH_ACTIVATION = [False, True]
