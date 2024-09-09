@@ -386,6 +386,48 @@ Für das unkomplizierte Training wird die `Trainer` Klasse aus der `pytorch_ligh
 - Normalisierung / Skalierung <- Vlad
 
 # Vorhersage Ergebnisse
+
+PROPHET
+1356.032
+7.542362
+1077.655
+2
+ARIMA
+1420.765
+7.684241
+1117.562
+3
+NAIVE
+2423.013
+12.602689
+1887.318
+4
+DRIFT
+2592.191
+13.257633
+2024.607
+5
+MEAN
+2321.886
+13.716441
+1887.558
+
+\begin{table}[h!]
+    \centering
+    \caption{Modellvergleich}
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{Modell} & \textbf{MAPE} & \textbf{MAE} & \textbf{RMSE} \\
+        \midrule
+        LNN & X\% & X & X \\
+        PROPHET & 7.54\% & 1078 & 1356 \\
+        ARIMA & 7.68\% & 1118 &  1421\\
+        LNN + SLAF & X\% & X & X \\
+        MEAN & 13.72\% & 1888 & 2322 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
 - Metriks <- MAE / MAPE (X) / LOSS-FUNCTION <- Vlad
 - Plots der Ergebnisse <- Vlad
 
