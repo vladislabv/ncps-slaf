@@ -178,10 +178,9 @@ class LTCCell(nn.Module):
         if self._use_swish_activation:
             self._params["swish_beta"] = self.add_weight(
                 "swish_beta",
-                init_value=torch.tensor(1.0),
-                # init_value=self._get_init_value(
-                #     (self.sensory_size, self.state_size), "swish_beta"
-                # ),
+                init_value=self._get_init_value(
+                    (1,), "swish_beta"
+                ),
             )
 
         if self._input_mapping in ["affine", "linear"]:

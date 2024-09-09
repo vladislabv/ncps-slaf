@@ -23,7 +23,7 @@ class SequenceLearner(pl.LightningModule):
     # Modell speichern?"
     def __init__(self, model, lr=0.005, features_num=3, device="cuda"):
         super().__init__()
-        self.save_hyperparameters()
+        self.save_hyperparameters(ignore=['model'])
         self.model = model
         self.features_num = features_num
         self.mydevice = device

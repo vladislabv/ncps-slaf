@@ -1,5 +1,6 @@
 import os
 import itertools
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -22,7 +23,7 @@ def read_data(path) -> pd.Series:
     if ext == ".parquet":
         df = pd.read_parquet(path)
     elif ext == '.csv':
-        df = pd.read_csv(path)
+        df = pd.read_csv(path, low_memory=False)
     else:
         raise ValueError("File extension is not supported")
     return df
@@ -59,8 +60,8 @@ def grid_search(dataloader, device, in_features, out_features):
         # Checkpoint callback to save the best model for this set of hyperparameters
         checkpoint_callback = pl.callbacks.ModelCheckpoint(
             monitor='train_loss',
-            dirpath='/home/vlsta001/git_projects/ncps-slaf/slaf-project/checkpoints',
-            filename=f'model-lnn_units={lnn_units}-lr={lr}-num_epochs={num_epochs}-lnn_modified={lnn_modified}',
+            dirpath='pl_checkpoints/',
+            filename=f'model-lnn_units={lnn_units}-lr={lr}-num_epochs={num_epochs}-lnn_modified={lnn_modified}_{str(datetime.now()).replace(":","-")}',
             save_top_k=1,
             mode='min'
         )
@@ -71,7 +72,7 @@ def grid_search(dataloader, device, in_features, out_features):
             callbacks=[checkpoint_callback],
             logger=pl.loggers.CSVLogger("log"),
             gradient_clip_val=1,  # Clip gradient to stabilize training
-            gpus=1 if device == "cuda" else 0
+            # gpus=1 if device == "cuda" else 0
         )
 
         # Train the model
@@ -83,41 +84,50 @@ def grid_search(dataloader, device, in_features, out_features):
             best_model_path = checkpoint_callback.best_model_path
 
     print(f'Best model saved at: {best_model_path} with validation loss: {best_train_loss}')
+    return best_model_path
 
 
-
-def main():
+def train():
+    best_model_path = None
     device = "cpu" #"cuda" if torch.cuda.is_available() else "cpu"
     # data related section
     data_raw = read_data(Config.PATH)
     data_raw = utils.prepare_data(data_raw, station=Config.STATION, features=Config.FEATURES_LIST)
 
     train_data = data_raw.copy()
-    train_scaler = MinMaxScaler()
-    train_scaler, train_data[Config.FEATURES_2_SCALE] = utils.normalize_data(
-        train_scaler,
-        train_data[Config.FEATURES_2_SCALE].values)
-
+    
+    x_train_scaler = MinMaxScaler()
+    y_train_scaler = MinMaxScaler()
+    
     train_data = utils.make_features(train_data, features=Config.FEATURES_LIST)
-
+    
     x_features, y_features = utils.generate_train_data(
         train_data, features=Config.FEATURES_LIST,
         dt_from=Config.FILTER_DT_FROM, dt_till=Config.FILTER_DT_TILL
     )
 
+    x_train_scaler, x_features = utils.normalize_data(
+        x_train_scaler,
+        x_features)
+
+    y_train_scaler, y_features = utils.normalize_data(
+        y_train_scaler,
+        y_features)
+
+    out_features = y_features.shape[-1]
+    in_features = x_features.shape[-1]
+
     ds = data_utils.TensorDataset(
-        x_features, y_features
+        torch.Tensor(x_features), torch.Tensor(y_features)
     )
 
     dataloader = data_utils.DataLoader(
         ds,
-        batch_size=Config.BATCH_SIZE * Config.VALUES_PER_DAY,
+        batch_size=Config.BATCH_SIZE,
         num_workers=Config.NUM_WORKERS,
-        shuffle=True, 
+        shuffle=False,
+        persistent_workers=True,
     )
-
-    out_features = y_features.shape[-1]
-    in_features = x_features.shape[-1]
     
     if not Config.GRID_SEARCH:
 
@@ -134,9 +144,11 @@ def main():
         learn = SequenceLearner(ltc_model, lr=Config.INIT_LR[0], features_num=in_features, device=device)
 
         checkpoint_callback = pl.callbacks.ModelCheckpoint(
-            dirpath="pl_checkpoints",
-            save_top_k=5,
-            monitor="train_loss"
+            dirpath="pl_checkpoints/",
+            filename=f'model-lnn_units={Config.NUM_LNN_UNITS[0]}-lr={Config.INIT_LR[0]}-num_epochs={Config.NUM_EPOCHS[0]}-lnn_modified={Config.USE_SWISH_ACTIVATION[0]}_{str(datetime.now()).replace(":","-")}',
+            save_top_k=1,
+            monitor="train_loss",
+            mode="min"
         )
 
         trainer = pl.Trainer(
@@ -144,56 +156,83 @@ def main():
             logger=pl.loggers.CSVLogger("log"),
             max_epochs=Config.NUM_EPOCHS[0],
             gradient_clip_val=1,  # Clip gradient to stabilize training
-            accelerator='gpu',
-            devices=2
-            #gpus=2 if device == "cuda" else 0
+            # gpus=1 if device == "cuda" else 0
         )
 
         # Train the model
         trainer.fit(learn, dataloader)
-        print(checkpoint_callback.best_model_path)
+        best_model_path = checkpoint_callback.best_model_path
     else:
-        grid_search(
+        best_model_path = grid_search(
             dataloader=dataloader,
             device=device,
             in_features=in_features,
             out_features=out_features
         )
 
-#     test_data = data_raw.copy()
-#     test_data.value, min_value, max_value = utils.normalize_data(
-#         test_data.value)
-    
-#     test_data = utils.make_features(test_data, features=Config.FEATURES_LIST)
-    
-#     x_features, y_features = utils.generate_test_data(
-#         test_data,
-#         Config.FILTER_DT,
-#         features=Config.FEATURES_LIST,
-#         push_y_by = 7,
-#         unit = 'd',
-#     )
-    
-#     ds = data_utils.TensorDataset(
-#         x_features, y_features
-#     )
+    print(best_model_path)
 
-#     dataloader = data_utils.DataLoader(
-#         ds,
-#         batch_size=Config.BATCH_SIZE,
-#         num_workers=Config.NUM_WORKERS,
-#         shuffle=False, 
-#     )
+    return best_model_path
+
+def evaluate(model_path=None):
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    # data related section
+    data_raw = read_data(Config.PATH)
+    data_raw = utils.prepare_data(data_raw, station=Config.STATION, features=Config.FEATURES_LIST)
+
+    test_data = data_raw
+    test_data.value, min_value, max_value = utils.normalize_data(
+        test_data.value)
     
-#     if not Config.GRID_SEARCH:
-#         ltc_model.to(device)
-#         with torch.no_grad():
-#             prediction = ltc_model(x_features.view(1, -1, in_features).to(device))[0].cpu().numpy()
+    test_data = utils.make_features(test_data, features=Config.FEATURES_LIST)
+    
+    x_features, y_features = utils.generate_test_data(
+        test_data,
+        Config.FILTER_DT,
+        features=Config.FEATURES_LIST,
+        push_y_by = 7,
+        unit = 'd',
+    )
+    
+    ds = data_utils.TensorDataset(
+        x_features, y_features
+    )
 
-#         prediction = utils.denormalize_data(prediction, min_value, max_value)
+    dataloader = data_utils.DataLoader(
+        ds,
+        batch_size=Config.BATCH_SIZE,
+        num_workers=Config.NUM_WORKERS,
+        shuffle=False,
+        persistent_workers=True
+    )
 
-    return # ltc_model, x_features, y_features
+    out_features = y_features.shape[-1]
+    in_features = x_features.shape[-1]
+    
+    trainer = SequenceLearner.load_from_checkpoint(
+        model_path or Config.MODEL_PATH
+    )
+    model = trainer.model
+    model.to(device)
+    model.eval()
 
+    x = x_features.view(1, -1, in_features).to(device)
+    
+    prediction = model(x)[0].cpu().numpy()
+
+    prediction = utils.denormalize_data(prediction, min_value, max_value)
+
+    return
+
+
+def main():
+    model_path = None
+    if Config.TRAIN:
+        model_path = train()
+
+    if Config.EVALUATE:
+        evaluate(model_path)
 
 if __name__ == '__main__':
     main()
+    
