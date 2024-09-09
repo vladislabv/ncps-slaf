@@ -25,13 +25,13 @@ author:
   othernames: Vitali
   address: "MatNr: 30329089"
   qualifications: "Data Science (Ms, 4. Semester)"
-  email: curie.marie@fh-swf.de
+  email: krilov.vitali@fh-swf.de
   correspondingauthor: true
 - familyname: Stasenko
   othernames: Vladislav
   address: "MatNr: 87654321"
   qualifications: "Data Science (Ms, 4. Semester)"
-  email: curie.pierre@fh-swf.de
+  email: stasenko.vladislav@fh-swf.de
 
 # Language Options
 german: true # German Dummy Text
@@ -63,6 +63,7 @@ header-includes:
 - \usepackage{caption}
 - \usepackage{csquotes}
 - \usepackage{graphicx}
+- \usepackage{microtype}
 ---
 
 ```{r setup, include=FALSE}
@@ -118,21 +119,42 @@ Diese Ausgewogenheit von Flexibilität und Ausdruckskraft macht LTCs zu einer sp
 
 ## Self Learnable Activation Functions (SLAFs)
 
-Aktivierungsfunktionen haben einen großen Einfluss auf die Modellierung im Bereich der Neuronalen Netze. Dabei reagieren Neuronen auf verschiede Aktivierungsfunktionen unterschiedlich und beschreiben damit, ob ein Neuron gerade den Status "aktiv" oder "nicht aktiv" hat. Ist ein bestimmter Schwellwert in einer dieser Funktionen überschritten, so ändert das Neuron seinen Status. Die wohl bekanntesten Aktivierungsfunktionen sind sigmoid, relu, tanh und eine linearen Aktivierung. Dabei wurde nach \cite{Ramachandran2017} die swish-Funktion aufgedeckt: 
+Aktivierungsfunktionen haben einen großen Einfluss auf die Modellierung im Bereich der Neuronalen Netze. Dabei reagieren Neuronen auf verschiede Aktivierungsfunktionen unterschiedlich und beschreiben damit, ob ein Neuron gerade den Status "aktiv" oder "nicht aktiv" hat. Ist ein bestimmter Schwellwert in einer dieser Funktionen überschritten, so ändert das Neuron seinen Status. Die wohl bekanntesten Aktivierungsfunktionen sind sigmoid, relu, tanh und eine linearen Aktivierung. In der Arbeit von \cite{Ramachandran2017} wurde die swish-Funktion aufgedeckt:
 
 \[
 f(x) = x * sigmoid(\beta * x)
 \]
 
-In der Arbeit von \cite{Ramachandran2017} wurde die swish-Funktion als die beste Aktivierungsfunktion empirisch bestimmt. Dabei wurde vor allem mit der ReLU-Funktion verglichen. 
+In der Arbeit von \cite{Ramachandran2017} wurde die swish-Funktion als die beste Aktivierungsfunktion alternativ zu der ReLU Funktion empirisch bestimmt. Die swish-Funktion soll dabei glättere Verläufe ermöglichen, was zu einer stabileren und effizienteren Modelloptmierung führen kann.
 
 ## Auto Regressive-Moving Average (ARIMA)
 
+Bei dem (S)ARIMA Modell handelt es sich um ein additives statistisches Modell, welches sich an komplexe Zeitreihe anpassen 
+kann. Dabei beschreiben die Therme PDQ (saisonall) und pdq (nicht saisonall) das Modell. Folgende Backshift Notation beschreibt
+das Modell:
+
+\[
+\Phi(B)\phi(B)(1-B)^d (1-B)^D y_t = c + \Theta(B) \theta(B) \epsilon_t
+\]
+
+Dabei wird die Zeitreihe d-mal und D-mal Differenziert. Die Therme p,d,P,Q werden mittels des geringsten AICc ermittelt.
 
 ## PROPHET: Forecasting at a scale
-- Lagged Values <- ARIMA Bezug / ACF-PACF <- Vitali 
-- Train / Testdatensatz <- egal wer, nur paar sätze
 
+Das Prophet Model wurde von Facebook entwickelt und findet Anwendung bei Vorhersagen von Zeitreihen mit komplexer Saisonalität.
+Speziell designt, um Feiertagmuster zu erkennen. Dabei handelt es sich wie bei dem ARIMA Modell um ein additives Modell. Im Vergleich zum ARIMA Modell, ist das Prophet Model, vor allem im Training deutlich schneller. Hinzu kommt, dass dies Modell im gegensatz zum ARIMA Modell den Effekt der Feiertage deutlich besser erfassen kann. Folgende Formel beschreibt das Modell:
+
+\[
+y(t) = g(t) + s(t) + h(t) + \epsilon_t
+\]
+
+g(t) : Der Schrittweise Lineare Trend
+
+s(t) : Die saisonallen Muster
+
+h(t) : Feitagmustererfassung
+
+$\epsilon_t$ : Der Fehler-Term (Rauschen)
 
 # Datengrundlage und Datenanalyse
 Auch für Neuronales Netz muss Datenanalyse betrieben werden. Es ist wichtig den Datensatz komplett zu durchdringen und die Erkenntnisse aus der Analyse in der Implementierung des Neuronalen Netzen mit zu berücksichtigen. Der rohe Datensatz der Stromerzeugung hat eine stündliche Granularität in der Zeitspanne 01.10.2004 - 03.08.2018 (5054 Tage). Untersucht man den Datensatz auf Äquidistanz, so fallen Insgesamt 40 fehlende Beobachtungen in der stündlichen Auflösung. Die Abbildung \ref{fig:raw_AEP} repräsentiert den rohen Datensatz. Die fehlenden Werte (rot) wurden mit dem letzten vorhandenen Wert ersetzt. Dies ist damit zu begründen, da der Datensatz groß genug ist und es keine drastischen Auswirkungen auf das Neuronale Netz haben wird. Nach der säuberung der Daten hat der Datensatz korrekterweise 121.296 ($24*5054$) Beobachtungen. Ein positiver oder negativer Trend ist für die Stromerzeugung nicht zu erkennen.
@@ -305,13 +327,24 @@ Der Parameter ist einer Anpassung bei einer Error Backpropagation fällig, und d
 
 ## Feature Engineering
 
-Insgesamt 
-Neben der initialen Variablen, die aus der Datenanalyse erzeugt wurden, hinzufügen wir zwei weitere Spalten, die wöchentliche und jährliche Werten Verzögerung der abhängigen Variable einführen. Für Time-Series Daten ist eine normale Praktik, die wir hier auch verfolgen. Insgesamt 
-ergeben sich 17, die einen möglichen Einfluss auf das Modell haben können.
+Neben der initialen Variablen, die aus der Datenanalyse erzeugt wurden, hinzufügen wir zwei weitere Spalten, nämlich die wöchentliche und jährliche Werten Verzögerung der abhängigen Variable. Für Time-Series Daten ist eine normale Praktik, die wir hier auch verfolgen. Somit ergeben sich 17, die einen möglichen Einfluss auf das Modell haben können.
 
-Wegen einer großen Dimensionalität des Datensatzes, möchten wir mithilfe der PCR-Analyse zeigen, wie viele Variablen man benötigt um die Varianz der Daten zu erklären.
+Wegen einer großen Dimensionalität des Datensatzes, möchten wir mithilfe der PCA-Analyse zeigen, wie viele Variablen man benötigt um die Varianz der Daten zu erklären. Unter beifügen wir eine Tabelle, wie viele Komponente man braucht um die Varianz des Datensatzes zu erklären:
 
-"WorkDay","Mo","Di","Mi","Do","Fr","Sa","Holiday","LastDayWasNotWorkDay","LastDayWasNotWorkDayAndNowWorkDay","NextDayIsNotWorkDayAndNowWorkDay","LastDayWasHolodiayAndNotWeekend","NextDayIsHolidayAndNotWeekend","MeanLastWeek","MeanLastTwoDays","MaxLastOneDay","MinLastOneDay"
+| Principal Component  | Merkmal                        | Explained Variance (cumulative) |
+| ---------------------| -------------------------------| --------------------------------|
+| PC1                  | x                              | 0.61522145                      |
+| PC2                  | x_shifted_week                 | 0.80951859                      |
+| PC3                  | x_shifted_year                 | 0.86591735                      |
+| PC4                  | MaxLastOneDay                  | 0.90337726                      |
+| PC5                  | WorkDay                        | 0.9391192                       |
+| PC6                  | MeanLastWeek                   | 0.96688936                      |
+| PC7                  | MinLastOneDay                  | 0.98807356                      |
+| PC8                  | MeanLastTwoDays                | 0.99384472                      |
+| PC9                  | LastDayWasHolidayAndNotWeekend | 0.99713582                      |
+| PC10                 | NextDayIsHolidayAndNotWeekend  | 1.0                             |
+
+Die Komponente sind in der Reihenfolge nach deren Wichtigkeit (Feature Importance) platziert. Jedoch man sieht, dass die numerischen Variablen höher platziert sind als die boolische Merkmale, weil diese stärkere Korrelation mit abhängiger Variable aufweisen.
 
 ## Training
 
@@ -400,6 +433,48 @@ Während des Trainings haben wir immer meistens eine gestrichelte Linie mit rüc
 Die Ergebnisse von den drei besten Modellen werden in dem nächsten Kapitel näher diskutiert.
 
 # Vorhersage Ergebnisse
+
+PROPHET
+1356.032
+7.542362
+1077.655
+2
+ARIMA
+1420.765
+7.684241
+1117.562
+3
+NAIVE
+2423.013
+12.602689
+1887.318
+4
+DRIFT
+2592.191
+13.257633
+2024.607
+5
+MEAN
+2321.886
+13.716441
+1887.558
+
+\begin{table}[h!]
+    \centering
+    \caption{Modellvergleich}
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{Modell} & \textbf{MAPE} & \textbf{MAE} & \textbf{RMSE} \\
+        \midrule
+        LNN & 6.82\% & X & X \\
+        PROPHET & 7.54\% & 1078 & 1356 \\
+        ARIMA & 7.68\% & 1118 &  1421\\
+        LNN + SLAF & X\% & X & X \\
+        MEAN & 13.72\% & 1888 & 2322 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
 - Metriks <- MAE / MAPE (X) / LOSS-FUNCTION <- Vlad
 - Plots der Ergebnisse <- Vlad
 
