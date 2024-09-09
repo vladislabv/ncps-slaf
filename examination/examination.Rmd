@@ -331,18 +331,26 @@ Neben der initialen Variablen, die aus der Datenanalyse erzeugt wurden, hinzufü
 
 Wegen einer großen Dimensionalität des Datensatzes, möchten wir mithilfe der PCA-Analyse zeigen, wie viele Variablen man benötigt um die Varianz der Daten zu erklären. Unter beifügen wir eine Tabelle, wie viele Komponente man braucht um die Varianz des Datensatzes zu erklären:
 
-| Principal Component  | Merkmal                        | Explained Variance (cumulative) |
-| ---------------------| -------------------------------| --------------------------------|
-| PC1                  | x                              | 0.61522145                      |
-| PC2                  | x_shifted_week                 | 0.80951859                      |
-| PC3                  | x_shifted_year                 | 0.86591735                      |
-| PC4                  | MaxLastOneDay                  | 0.90337726                      |
-| PC5                  | WorkDay                        | 0.9391192                       |
-| PC6                  | MeanLastWeek                   | 0.96688936                      |
-| PC7                  | MinLastOneDay                  | 0.98807356                      |
-| PC8                  | MeanLastTwoDays                | 0.99384472                      |
-| PC9                  | LastDayWasHolidayAndNotWeekend | 0.99713582                      |
-| PC10                 | NextDayIsHolidayAndNotWeekend  | 1.0                             |
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|l|c|}
+\hline
+\textbf{Principal Component} & \textbf{Merkmal}                        & \textbf{Explained Variance (cumulative)} \\ \hline
+\textbf{PC1}                 & x                                      & 0.61522145                              \\ \hline
+\textbf{PC2}                 & x\_shifted\_week                       & 0.80951859                              \\ \hline
+\textbf{PC3}                 & x\_shifted\_year                       & 0.86591735                              \\ \hline
+\textbf{PC4}                 & MaxLastOneDay                          & 0.90337726                              \\ \hline
+\textbf{PC5}                 & WorkDay                                & 0.9391192                               \\ \hline
+\textbf{PC6}                 & MeanLastWeek                           & 0.96688936                              \\ \hline
+\textbf{PC7}                 & MinLastOneDay                          & 0.98807356                              \\ \hline
+\textbf{PC8}                 & MeanLastTwoDays                        & 0.99384472                              \\ \hline
+\textbf{PC9}                 & LastDayWasHolidayAndNotWeekend         & 0.99713582                              \\ \hline
+\textbf{PC10}                & NextDayIsHolidayAndNotWeekend          & 1.0                                     \\ \hline
+\end{tabular}
+\caption{Principal Components and their Explained Variance}
+\label{table:pc_explained_variance}
+\end{table}
+
 
 Die Komponente sind in der Reihenfolge nach deren Wichtigkeit (Feature Importance) platziert. Jedoch man sieht, dass die numerischen Variablen höher platziert sind als die boolische Merkmale, weil diese stärkere Korrelation mit abhängiger Variable aufweisen.
 
@@ -434,34 +442,11 @@ Die Ergebnisse von den drei besten Modellen werden in dem nächsten Kapitel näh
 
 # Vorhersage Ergebnisse
 
-PROPHET
-1356.032
-7.542362
-1077.655
-2
-ARIMA
-1420.765
-7.684241
-1117.562
-3
-NAIVE
-2423.013
-12.602689
-1887.318
-4
-DRIFT
-2592.191
-13.257633
-2024.607
-5
-MEAN
-2321.886
-13.716441
-1887.558
+
 
 \begin{table}[h!]
     \centering
-    \caption{Modellvergleich}
+    \caption{Modellvergleich für eine Vorhersage über das ganze Jahr 2017}
     \begin{tabular}{lccc}
         \toprule
         \textbf{Modell} & \textbf{MAPE} & \textbf{MAE} & \textbf{RMSE} \\
