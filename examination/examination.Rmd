@@ -209,7 +209,6 @@ Um den Begriff der komplexen saisonalität zu verdeutlichen zeigt die Abbildung 
 
 Als letzter Punkt in der Datenanalyse ist die Betrachtung der verschiedenen vergangenen Beobachtungen. Durchschnitt der letzten Woche, Minimum vom letzten Tag, Maximum vom letzten Tag und Durchschnitt der letzten zwei Tage. Die Abbildung \ref{fig:corr} stellt dabei die Korrelation zwischen den einzelnen Werten dar. Es ist zwischen TRUE (Werktag) und FALSE (kein Werktag) zu unterscheiden. Eine mittelstarke (ca. 0.5) Korrelation für die Stromerzeugung und die unterschiedlichen Variablen.
 
-
 \begin{figure}[H]
 \centering
 \includegraphics[width=1.0\textwidth]{plots/corr.png}
@@ -354,7 +353,7 @@ NUM_LNN_UNITS = [16, 8, 32]
 
 USE_SWISH_ACTIVATION = [False, True]
 INIT_LR = [0.01, 0.0001]
-NUM_EPOCHS = [10, 50, 100]
+NUM_EPOCHS = [10]
 ```
 
 Außer Datenpfad, Energiestation und Liste relevanten Features, lässt sich auch einen Grid Search mit dem Parameter-Pool einstellen. Die wichtigsten Hyperparameter, die für LNN eine Rolle spielen, sind es Anzahl von Knoten, eine initiale Learning Rate und Anzahl von Epochen. Durch die 
@@ -368,14 +367,37 @@ Aufgrund von der Datenmenge und angeblich einer schlechter Optimizierung von `nc
 
 Nach den 10 Epochen haben die besten Modelle einen `MAPE Loss` zwischen 10% und 15% gezeigt:
 
-HERE 3 PLOTS WITH SOME EXPLAINING
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/best_model_10_epochs_training_no_slaf.png}
+\caption{LNN (best): Vorhersagen vs. abhängige Variable}
+\label{fig:best_model_10_epochs_training_no_slaf}
+\end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/best_model_10_epochs_training_with_slaf.png}
+\caption{LNN-SLAF (best): Vorhersagen vs. abhängige Variable}
+\label{fig:best_model_10_epochs_training_with_slaf}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/best_model_10_epochs_training_no_slaf_2nd_place.png}
+\caption{LNN (2nd best): Vorhersagen vs. abhängige Variable}
+\label{fig:best_model_10_epochs_training_no_slaf_2nd_place}
+\end{figure}
 
 Während des Trainings haben wir immer meistens eine gestrichelte Linie mit rückläufiges Tendenz gesehen. Ab und zu waren es enorm höhe Trainingsverluste, die wir nicht erklären können:
 
-PLOT
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/training_loss_over_epochs.png}
+\caption{LNN: Trainingsverluste}
+\label{fig:training_loss_over_epochs}
+\end{figure}
 
-Die Ergebnisse von den drei Modellen werden in dem nächsten Kapitel näher diskutiert.
+Die Ergebnisse von den drei besten Modellen werden in dem nächsten Kapitel näher diskutiert.
 
 # Vorhersage Ergebnisse
 - Metriks <- MAE / MAPE (X) / LOSS-FUNCTION <- Vlad
