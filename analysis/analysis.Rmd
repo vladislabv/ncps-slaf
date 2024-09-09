@@ -6,7 +6,7 @@
 # Load Packages
 library(fhswf)
 library(ggplot2)
-library(tsibbledata) #0.4.1
+library(tsibbledata) 
 library(dplyr)
 library(tsibble)
 library(fable)
@@ -27,7 +27,7 @@ library(corrplot)
 library(scales)
 library(fable.prophet)
 library(mgcv)
-library(MEFM)
+# library(MEFM)
 load_all()
 ```
 
@@ -159,7 +159,7 @@ plot_histogram_by_group(
   x="AEP_MW",
   x_label = "Stromerzeugung [MW]",
   y_label = "Häufigkeit",
-  name_0 = "Feiertag",
+  name_0 = "Nicht Werktag",
   name_1 = "Werktag"
 )
 
@@ -362,6 +362,62 @@ AEP_hourly_cleaned <- AEP_hourly_cleaned |>
   select(-Weekday, -Date, -localName, -So, -HolidayName)
 
 write.csv(AEP_hourly_cleaned, "..\\data\\AEP_hourly_cleaned.csv")
+
+```
+
+```{r, message=FALSE, warning=FALSE}
+
+# AEP_hourly_cleaned |>
+#     gg_tsdisplay(AEP_MW, plot_type="season", lag=36)
+
+
+# ACF plot
+p <- AEP_hourly_cleaned |>
+  feasts::ACF(AEP_MW) |>
+  autoplot()
+
+ggsave(
+    "plots/autocorrelation.png",
+    plot = p,
+    width = 5.5,
+    height = 3.7,
+    dpi = 600
+  )
+
+p <-
+    ggplot(AEP_hourly_cleaned, aes(x = AEP_MW)) +
+    geom_histogram(alpha = 0.5, binwidth = 100, position = "dodge") +
+    geom_density(fill=NA, aes(y=100 * after_stat(count))) + 
+    theme(legend.position = "bottom",
+          strip.text = element_text(size = 10)) +
+    labs(x = "Stromerzeugung [MW]", y = "Haeufigkeit") +
+  guides(color = "none") +
+  scale_y_continuous(labels = label_comma())
+  
+  ggsave(
+    "plots/histogram.png",
+    plot = p,
+    width = 5.5,
+    height = 3.7,
+    dpi = 600
+  )
+  
+
+p <- AEP_hourly_cleaned |>
+  GGally::ggpairs(
+    columns = c("AEP_MW", "MeanLastWeek", "MaxLastOneDay", "MinLastOneDay", "MeanLastTwoDays"),
+    ggplot2::aes(color = as.factor(WorkDay))
+  )
+
+
+
+ggsave(
+  "plots/corr.png",
+  plot = p,
+  width = 10,
+  height = 5.5,
+  dpi = 600
+)
 
 ```
 

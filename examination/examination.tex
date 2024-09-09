@@ -29,7 +29,7 @@
 \usepackage[unicode=true]{hyperref}
 \hypersetup{
             pdftitle={Vorhersage der Stromerzeugung basierend auf Self Learning Activation Functions und Liquid Neuronal Networks},
-            pdfkeywords={SLAF, LNN, Forecasting},
+            pdfkeywords={SLAF, LNN, Forecasting, Electric Power},
             pdfborder={0 0 0},
             breaklinks=true}
 \urlstyle{same}  % don't use monospace font for urls
@@ -186,7 +186,7 @@
         \end{singlespace}
                         \begin{keywords}
         \footnotesize
-        SLAF, LNN, Forecasting
+        SLAF, LNN, Forecasting, Electric Power
         \end{keywords}
                 %%
         \vfill
@@ -383,7 +383,7 @@
 
 \author{Vitali~Krilov, Vladislav~Stasenko}
 \addresses{\textbf{Vitali Krilov}\newline
-MatNr: 123454678
+MatNr: 30329089
 \newline{Email: \href{mailto:curie.marie@fh-swf.de}{\nolinkurl{curie.marie@fh-swf.de}}}\newline Corresponding Author\\[1cm]
 \textbf{Vladislav Stasenko}\newline
 MatNr: 87654321
@@ -398,6 +398,7 @@ MatNr: 87654321
 \usepackage{hyperref}
 \usepackage{caption}
 \usepackage{csquotes}
+\usepackage{graphicx}
 
 
 \begin{document}
@@ -406,7 +407,7 @@ MatNr: 87654321
 % Bei der Vorhersage von Zeitreihen kann die Anpassung an die aktuelle Situation eine große Rolle spielen. So i.d.r. ob z.B. Umwelteinflüsse oder Pandemien eine große Veränderung in einer Zeitreihe herbeiführen. Der erste Ansatz für eine Vorhersage von Zeitreihen basiert in dieser Arbeit auf den Liquid Neuronal Networks (LNN). Die LNNs sind dynamisch und passen sich an die aktuelle Situation an, lernen also immer weiter. Als eine Ergänzung zu den LNNs wir die Self Learning Activation Function (SLAF) implementiert. Diese approximiert die Parametrierung der richtigen Aktivierungsfunktion. Das Neuronale Netz wird auf den Datensatz der Stromerzeugung in den Jahren 2004-2018 vom Unternehmen American Electric Power angewandt.
 % \end{abstract}
 % % % \begin{keywords}
-% SLAF, LNN, Forecasting
+% SLAF, LNN, Forecasting, Electric Power
 % \end{keywords}
 % 
 {
@@ -417,35 +418,7 @@ MatNr: 87654321
 }
 \section{Einleitung}\label{einleitung}
 
-\begin{itemize}
-\tightlist
-\item
-  time-series
-\item
-  Problem beschreiben
-\item
-  Tiefere Zusammenfassung
-\item
-  Immer weiterlernen
-\item
-  LNN (Deep Learning), Model ist klein, Liquid Time Constant LTCs
-\item
-  Liquid time-constant
-\item
-  RNN (Parameter 100.000 - 1.000.000), unser Model \textasciitilde7000 Parameter 1mb Modelgröße (klein), an kleinen geräten
-\item
-  Elektronische Messgeräte, Rasbery PI
-\item
-  vanishing gradient Problem (SLAF sollte helfen)
-\item
-  Schnelleres Training
-\item
-  Echtzeit, weil weiter Lernbar?
-\item
-  Unterschied zu gewöhnlichen NNs
-\item
-  ARIMA, Prophet
-\end{itemize}
+Geht es um Vorhersagen von Zeitreihen mit komplexen saisonalen Mustern, so sind wohl die bekanntesten statistischen Modellierungen Autoregressive Integrated Moving Average (ARIMA), Exponential Smoothing oder das Prohphet Modell. Im Bereich der Neuronalen Netze ist Long-Short-Term-Memory (LSTM), welches eine spezielle Art von Recurrent Neural Network RNN ist, das bekannte Neuronale Netz für komplexe Zeitreihen. Ein aktuell neuer Ansatz für Vorhersage von komplexen Zeitreihen ist ein weiteres RNN, das Liquid Neuronal Network (LNN). Es geht darum mit weniger Rechenleistung und geringerem Datensatz ein kompakteres Modell zu erzeugen, welches sich z.B. in Echtzeit an die Datenlage anpassen kann. So kann z.B. ein LSTM 100.000 - 1.000.000 Parameter haben, wobei das LNN mit bis zu 10.000 Parametern auskommt und ähnliche Resultate liefert. So ist eine Anbindung an elektronische Messgeräte oder Rasbery PI mit weniger Rechneleistung im Gegensatz zu LSTM möglich. In dieser Arbeit wird ein LNN auf einen Datensatz von der Stromerzeugung vom Unternehmen American Electric Power angewandt. Das Ziel ist es eine Vorhersage für den nächsten Tag ``day-ahead'' zu treffen. Bei den Neuronalen Netzen steht immer die Frage im Raum, welche Aktivierungsfunktion genutzt werden soll. Als Ergänzung zu dem LNN wird ein self learning activation function (SLAF) Modell implementiert. SLAF soll das vanishing gradient Problem dezimieren, aber auch eine approximierte Aktivierungsfunktion für das LNN finden.
 
 \section{Methodik}\label{methodik}
 
@@ -495,6 +468,14 @@ Hasani, R., Lechner, M., Amini, A., Rus, D., \& Grosu, R. (2021). ``Liquid Time-
 
 \subsection{Self Learnable Activation Functions (SLAFs)}\label{self-learnable-activation-functions-slafs}
 
+Aktivierungsfunktionen haben einen großen Einfluss auf die Modellierung im Bereich der Neuronalen Netze. Dabei reagieren Neuronen auf verschiede Aktivierungsfunktionen unterschiedlich und beschreiben damit, ob ein Neuron gerade den Status ``aktiv'' oder ``nicht aktiv'' hat. Ist ein bestimmter Schwellwert in einer dieser Funktionen überschritten, so ändert das Neuron seinen Status. Die wohl bekanntesten Aktivierungsfunktionen sind sigmoid, relu, tanh und eine linearen Aktivierung. Dabei wurde nach \cite{Ramachandran2017} die swish-Funktion aufgedeckt:
+
+\[
+f(x) = x * sigmoid(\beta * x)
+\]
+
+In der Arbeit von \cite{Ramachandran2017} wurde die swish-Funktion als die beste Aktivierungsfunktion empirisch bestimmt. Dabei wurde vor allem mit der ReLU-Funktion verglichen.
+
 \subsection{Auto Regressive-Moving Average (ARIMA)}\label{auto-regressive-moving-average-arima}
 
 \subsection{PROPHET: Forecasting at a scale}\label{prophet-forecasting-at-a-scale}
@@ -507,10 +488,88 @@ Hasani, R., Lechner, M., Amini, A., Rus, D., \& Grosu, R. (2021). ``Liquid Time-
   Train / Testdatensatz \textless- egal wer, nur paar sätze
 \end{itemize}
 
-\section{Datenanalyse}\label{datenanalyse}
+\section{Datengrundlage und Datenanalyse}\label{datengrundlage-und-datenanalyse}
 
-Der verwendete Datensatz kommt aus den USA und beinhaltet die Stromerzeugung
-vom Unternehmen American Electric Power gegenüber der Zeit. In einer stündlichen Auflösung
+Auch für Neuronales Netz muss Datenanalyse betrieben werden. Es ist wichtig den Datensatz komplett zu durchdringen und die Erkenntnisse aus der Analyse in der Implementierung des Neuronalen Netzen mit zu berücksichtigen. Der rohe Datensatz der Stromerzeugung hat eine stündliche Granularität in der Zeitspanne 01.10.2004 - 03.08.2018 (5054 Tage). Untersucht man den Datensatz auf Äquidistanz, so fallen Insgesamt 40 fehlende Beobachtungen in der stündlichen Auflösung. Die Abbildung \ref{fig:raw_AEP} repräsentiert den rohen Datensatz. Die fehlenden Werte (rot) wurden mit dem letzten vorhandenen Wert ersetzt. Dies ist damit zu begründen, da der Datensatz groß genug ist und es keine drastischen Auswirkungen auf das Neuronale Netz haben wird. Nach der säuberung der Daten hat der Datensatz korrekterweise 121.296 (\(24*5054\)) Beobachtungen. Ein positiver oder negativer Trend ist für die Stromerzeugung nicht zu erkennen.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/raw_AEP_MW.png}
+\caption{Roher Datensatz zur Stromerzeugung (01.10.2004 - 03.08.2018) vom Unternehmen American Electric Power}
+\label{fig:raw_AEP}
+\end{figure}
+
+Wird der Datensatz der Stromerzeugung in die einzelnen Jahre aufgespalten, so ist deutlich ein moustache-Muster (Schnurrbart) zu erkennen. Dieses Muster kann inder Abbildung \ref{fig:raw_years} entnommen werden.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/raw_years.png}
+\caption{Stromerzeugung aufgespalten in einzelne Jahre}
+\label{fig:raw_years}
+\end{figure}
+
+Auch die Verteilung der Daten kann eine Rolle bei der Modellierung der Neuronalen Netze spielen. Die Stromerzeugung besitzt ein minimalen Wert von 9581 MW, einen maximalen Wert von 25.695MW und einer Durchschnitt von 15.499 MW. Die Abbildung \ref{fig:histogram} zeigt die Verteilung der Stromerzeugung (Normalverteilt).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/histogram.png}
+\caption{Verteilung der Stromerzeugung}
+\label{fig:histogram}
+\end{figure}
+
+Wird der Datensatz pro Stunde aggregiert, so ist auch ein weiteres Muster innerhalb der einzelnen Tage zu erkennen. So hat ist die Stromerzeugung in der Nacht (\textasciitilde23:00 - 08:00) runtergefahren und in der Tageszeit (\textasciitilde08:00 - 23:00) hochgefahren. Die Abbildung \ref{fighour_boxplot} stellt dabei die aggregierte Darstellung für jede Stunde dar.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/hour_boxplot.png}
+\caption{Stündlich aggregierte Darstellung der Stromerzeugung}
+\label{fig:hour_boxplot}
+\end{figure}
+
+Für ein tieferes Verständnis ist es sinnvoll die Wochentage, Werktage und die Feiertage zu betrachten. Als erstes die wöchentliche Betrachtung der Stromerzeugung. Die Abbildung \ref{fig:weekday_boxplot} stellt dabei die einzelnen Wochentage über die Jahre dar. Anzumerken ist, dass der Samstag und der Sonntag sich von den regulären Wochentagen in der Stromerzeugung unterscheiden. So haben die beiden Tage im Durchschnitt ca. 2000 MW weniger an Stromerzeugung.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/weekday_boxplot.png}
+\caption{Wöchentlich aggregierte Darstellung der Stromerzeugung}
+\label{fig:weekday_boxplot}
+\end{figure}
+
+Auch die einzelnen Feiertage unterscheiden sich von einem regulären Tag. In der Abbildung \ref{fig:holiday_boxplot} sind die einzelnen Feiertage abgebildet. Ähnliche wie ein Wochenende sinkt an den meisten Feiertagen die Stromerzeugung. Bis auf den Martin Luther Kind, Jr.~Day, New Year's Day, Veterans Day und den Washington's Birthday verhalten sich die Feirtage wie ein Wochenende unter der Betrachtung vom Durchschnitt.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/holiday_boxplot}
+\caption{Feiertage, aggregierte Darstellung der Stromerzeugung}
+\label{fig:holiday_boxplot}
+\end{figure}
+
+So kann eine dummy variable erzeugt werden, die die Feiertage, aber auch die Wochenenden beinhaltet. Die Abbildung \ref{fig:workday_histogram} stellt dabei die Verteilung der Werktage und der nicht Werktage dar. Eine verschiebung für die nicht Werktage in eine geringere Stromerzeugung.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/workday_histogram}
+\caption{Verteilung der Werktage und nicht Werktage}
+\label{fig:workday_histogram}
+\end{figure}
+
+Um den Begriff der komplexen saisonalität zu verdeutlichen zeigt die Abbildung \ref{fig:acf} die Autokorrelation. Dabei werden die aktuellen Beobachtungen mit den Vergangenen gegenübergestellt und die Korrelation zwischen diesen ermittelt. So z.B. für lag 12 wird ein shift des Datensatzes um 12 Zeiteinheiten nach links verschoben. Es wird die Korrelation zwischen dem vorschebnen Datensatz und dem Originalen ermittelt. So in der Abbildung \ref{fig:acf} eine komplexe saisonalität, da es sowohl tägliche, wöchentliche aber auch jährliche Muster im Datensatz zu finden sind.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/autocorrelation}
+\caption{Autokorrelation für die Stromerzeugung}
+\label{fig:acf}
+\end{figure}
+
+Als letzter Punkt in der Datenanalyse ist die Betrachtung der verschiedenen vergangenen Beobachtungen. Durchschnitt der letzten Woche, Minimum vom letzten Tag, Maximum vom letzten Tag und Durchschnitt der letzten zwei Tage. Die Abbildung \ref{fig:corr} stellt dabei die Korrelation zwischen den einzelnen Werten dar. Es ist zwischen TRUE (Werktag) und FALSE (kein Werktag) zu unterscheiden. Eine mittelstarke (ca. 0.5) Korrelation für die Stromerzeugung und die unterschiedlichen Variablen.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/corr.png}
+\caption{Korrelation zwischen den vergangenen Beobachtungen und der Stromerzeugung}
+\label{fig:corr}
+\end{figure}
 
 \begin{itemize}
 \tightlist
