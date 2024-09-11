@@ -1,5 +1,5 @@
 
-# LOAD
+# LOAD PACKES
 
 ```{r setup, include=FALSE}
 
@@ -33,7 +33,7 @@ library(viridis)
 load_all()
 ```
 
-
+# CREATE CLEANED DATA AND FEATURES
 
 
 ```{r, echo=TRUE, message=FALSE}
@@ -118,13 +118,11 @@ AEP_hourly_cleaned |>
 ```
 
 
-URL-collection
-
 ```
 https://www.pjm.com/library/~/media/about-pjm/pjm-zones.ashx
 ```
 
-# American Electric Power
+# CREATE PLOTS
 
 ```{r, message=FALSE, warning=FALSE}
 
@@ -367,13 +365,10 @@ write.csv(AEP_hourly_cleaned, "..\\data\\AEP_hourly_cleaned.csv")
 
 ```
 
+# CREATE PLOTS
+
 ```{r, message=FALSE, warning=FALSE}
 
-# AEP_hourly_cleaned |>
-#     gg_tsdisplay(AEP_MW, plot_type="season", lag=36)
-
-
-# ACF plot
 p <- AEP_hourly_cleaned |>
   feasts::ACF(AEP_MW) |>
   autoplot()
@@ -422,6 +417,8 @@ ggsave(
 )
 
 ```
+
+# CREATE PLOTS FOR SWISH
 
 ```{r, message=FALSE, warning=FALSE}
 
@@ -503,60 +500,63 @@ ggsave(
 
 ```
 
+# CREATE ARIMA MODEL AND PROPHET MODEL
+
 ```{r, message=FALSE, warning=FALSE}
 
-train_aep <- AEP_hourly_cleaned |>
-  filter(year(Datetime) >= 2014 & (year(Datetime) <= 2016))
-
-test_aep <- AEP_hourly_cleaned |>
-  select(
-    WorkDay,
-    LastDayWasHolodiayAndNotWeekend,
-    NextDayIsHolidayAndNotWeekend,
-    MeanLastWeek,
-    MeanLastTwoDays,
-    MaxLastOneDay,
-    MinLastOneDay
-  ) |>
-  filter(year(Datetime) == 2017)
-
-fit <- train_aep |>
-  model(
-    MEAN = MEAN(AEP_MW),
-    NAIVE = NAIVE(AEP_MW),
-    DRIFT = NAIVE(AEP_MW ~ drift()),
-    PROPHET = prophet(
-      AEP_MW ~ 
-        MeanLastWeek
-      + MeanLastTwoDays
-      + MaxLastOneDay
-      + MinLastOneDay
-      + WorkDay 
-      + LastDayWasHolodiayAndNotWeekend
-      + NextDayIsHolidayAndNotWeekend
-      + season(period = "day", order = 8) 
-      + season(period = "week", order = 5) 
-      + season(period = "year", order = 3)),
-    ARIMA = ARIMA(AEP_MW ~
-      PDQ(0, 0, 0)
-      + pdq(d = 0)
-      + MeanLastWeek
-      + MeanLastTwoDays
-      + MaxLastOneDay
-      + MinLastOneDay
-      + WorkDay 
-      + LastDayWasHolodiayAndNotWeekend
-      + NextDayIsHolidayAndNotWeekend
-      + fourier(period = "day", K = 8)
-      + fourier(period = "week", K = 5)
-      + fourier(period = "year", K = 3)
-    )
-  )
+# train_aep <- AEP_hourly_cleaned |>
+#   filter(year(Datetime) >= 2014 & (year(Datetime) <= 2016))
+# 
+# test_aep <- AEP_hourly_cleaned |>
+#   select(
+#     WorkDay,
+#     LastDayWasHolodiayAndNotWeekend,
+#     NextDayIsHolidayAndNotWeekend,
+#     MeanLastWeek,
+#     MeanLastTwoDays,
+#     MaxLastOneDay,
+#     MinLastOneDay
+#   ) |>
+#   filter(year(Datetime) == 2017)
+# 
+# fit <- train_aep |>
+#   model(
+#     MEAN = MEAN(AEP_MW),
+#     NAIVE = NAIVE(AEP_MW),
+#     DRIFT = NAIVE(AEP_MW ~ drift()),
+#     PROPHET = prophet(
+#       AEP_MW ~ 
+#         MeanLastWeek
+#       + MeanLastTwoDays
+#       + MaxLastOneDay
+#       + MinLastOneDay
+#       + WorkDay 
+#       + LastDayWasHolodiayAndNotWeekend
+#       + NextDayIsHolidayAndNotWeekend
+#       + season(period = "day", order = 8) 
+#       + season(period = "week", order = 5) 
+#       + season(period = "year", order = 3)),
+#     ARIMA = ARIMA(AEP_MW ~
+#       PDQ(0, 0, 0)
+#       + pdq(d = 0)
+#       + MeanLastWeek
+#       + MeanLastTwoDays
+#       + MaxLastOneDay
+#       + MinLastOneDay
+#       + WorkDay 
+#       + LastDayWasHolodiayAndNotWeekend
+#       + NextDayIsHolidayAndNotWeekend
+#       + fourier(period = "day", K = 8)
+#       + fourier(period = "week", K = 5)
+#       + fourier(period = "year", K = 3)
+#     )
+#   )
 
 # saveRDS(fit, file = "Rmodel/arima_mean_naive_drift_prophet.rds")
 
 ```
 
+# LOAD STATISTICAL MODELS AND MAKE FORECAST, ALSO PLOTS FOR FORECASTS
 
 ```{r, echo=TRUE, message=FALSE}
 
@@ -627,6 +627,8 @@ glance(fit)
 report(fit)
 ```
 
+# LOAD LNN AND LNN+SLAF MODELS AND MAKE FORECAST, CALCULATE METRICS (FOR 10 EPOCHS)
+
 ```{r, message=FALSE, warning=FALSE}
 
 path <- "../data/results/10_epochs_units8_lr0.0001_slaf.csv"
@@ -660,9 +662,9 @@ metr_10_epochs <- data_combined |>
     MAE = mean(abs(y_true - .mean), na.rm = TRUE)  
   ) |>
   drop_na()
-
-
 ```
+
+# LOAD LNN AND LNN+SLAF MODELS AND MAKE FORECAST, CALCULATE METRICS (FOR 100 EPOCHS)
 
 ```{r, message=FALSE, warning=FALSE}
 
@@ -704,6 +706,8 @@ all_metr <- metr |>
   bind_rows(metrics_by_model)
 ```
 
+# PLOT RESULTS FOR LNN AND LNN+SLAF
+
 ```{r, message=FALSE, warning=FALSE}
 
 data_2017 <- AEP_hourly_cleaned |>
@@ -732,6 +736,8 @@ plot_forecast_nn(
   
 
 ```
+
+# PLOT TRAINING LOSS
 
 ```{r, message=FALSE, warning=FALSE}
 
