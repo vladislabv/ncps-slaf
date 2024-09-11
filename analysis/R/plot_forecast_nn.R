@@ -10,8 +10,9 @@
 #' @return name_of_best_model Could be for example "version_0"
 #' 
 #' 
-plot_forecast <- function(all_forecasts, metric_results, df,
-                          month_to_plot, days_to_plot, raw_fc, prefix) {
+plot_forecast_nn <- function(all_forecasts, metric_results, df,
+                             month_to_plot, days_to_plot, raw_fc, prefix,
+                             name_for_model, aep_data) {
   
   best_forecast <- metric_results |>
     filter(MAPE == min(MAPE[MAPE > 0])) |>
@@ -24,66 +25,74 @@ plot_forecast <- function(all_forecasts, metric_results, df,
   print("Best Model is:")
   print(name_of_best_model)
   
-  filtered_best_forecast <- all_forecasts |>
-    filter(.model == name_of_best_model) |>
-    left_join(df |> rename(RealPowerConsum = AEP_MW,
-                                             WorkingDay = WorkDay), by = "Datetime") |>
-    mutate(WorkDay = as.factor(WorkDay))
-  
-  single_best_forecast <- raw_fc |>
-    filter(.model == name_of_best_model) |>
-    filter(month(Datetime) <= month_to_plot) |>
-    filter(day(Datetime) < days_to_plot) |>
-    filter(year(Datetime) == 2017)
-  
   filtered_power_consum <- df |>
+    mutate(AEP_MW = AEP_MW) |>
+    filter(day(Datetime) < days_to_plot) |>
+    filter((year(Datetime) == 2017 & month(Datetime) <= month_to_plot)  
+           | (year(Datetime) == 2016 & month(Datetime) == 12))
+  
+  filtered_aep_data <- aep_data |>
     mutate(AEP_MW = AEP_MW) |>
     filter(day(Datetime) < days_to_plot) |>
     filter((year(Datetime) == 2017 & month(Datetime) <= month_to_plot)  
            | (year(Datetime) == 2016 & month(Datetime) == 12 & day(Datetime) > 20))
   
+  data_for_datetime <- df |>
+    filter(year(Datetime) == 2017)
+  data_for_datetime <- data_for_datetime[1:nrow(data_for_datetime),]
   
-  p <- autoplot(single_best_forecast, color = "#FC4E07", alpha=0.5) +
-    geom_line(data = filtered_power_consum,
-              lwd = 0.4, alpha=0.2,
+  dobuled_data <- bind_rows(as.data.frame(data_for_datetime), as.data.frame(data_for_datetime))
+  all_fc <- raw_fc |> 
+    mutate(Datetime = dobuled_data$Datetime,
+           AEP_MW = dobuled_data$AEP_MW,
+           WorkDay = dobuled_data$WorkDay) 
+
+  single_best_forecast <- raw_fc |>
+    filter(.model == name_of_best_model) |>
+    mutate(Datetime = data_for_datetime$Datetime,
+           AEP_MW = data_for_datetime$AEP_MW,
+           WorkDay = data_for_datetime$WorkDay) 
+
+  print("Validating right positions, should be close to 0: ")
+  print(sum(data_for_datetime$AEP_MW - data_for_datetime$y_true))
+  print(sum(single_best_forecast$AEP_MW - single_best_forecast$y_true))
+  print(sum(all_fc$AEP_MW - all_fc$y_true))
+  
+  p <- ggplot() +
+    geom_line(data = filtered_aep_data,
+              lwd = 0.3, alpha=0.3,
               aes(x = Datetime, y = AEP_MW, color = "Tatsaechliche\nStromerzeugung [MW]")) +
-    geom_line(data = single_best_forecast,
+    geom_line(data = all_fc |> filter(month(Datetime) == 1),
               lwd = 0.2 ,
-              aes(x = Datetime, y = .mean, color =
-                    "Forecast")) +
+              aes(x = Datetime, y = .mean, color =.model)) +
     theme(legend.position = "bottom", strip.text = element_text(size = 12)) +
     guides(color = guide_legend(override.aes = list(lwd = 3, size = 2), title = " "),
            fill = guide_legend(title = " "))+
-    scale_color_manual(
-      values = c(
-        name = " ",
-        "Tatsaechliche\nStromerzeugung [MW]" = "black",
-        "Forecast" = "#FC4E07"
-      ),
-      labels = c(
-        "Tatsaechliche\nStromerzeugung [MW]" = "Tatsaechliche\nStromerzeugung [MW]",
-        "Forecast" = "PROPHET"
-      )
-    ) +
     labs(level = "Level")+ 
     labs(
       x = "Zeitstempel",
       y = "Stromerzeugung [MW]"
-    )
+    ) +
+    scale_color_manual(
+      values = c(
+        name = " ",
+        "LNN" = "#FF9100",
+        "LNN mit SLAF" = "#2E9FDF",
+        "Tatsaechliche\nStromerzeugung [MW]" = "black"
+      ))
   
   
   
   ggsave(
     paste0("plots/",prefix, name_of_best_model, ".png"),
     plot = p,
-    width = 5.5,
+    width = 6.5,
     height = 3.7,
     dpi = 600
   )
   
-  print(names(filtered_best_forecast))
   p <- ggplot()+
-    geom_point(data = filtered_best_forecast, aes(x=RealPowerConsum, y=.mean, color=WorkingDay), alpha=0.5, size=0.5) +
+    geom_point(data = single_best_forecast, aes(x=AEP_MW, y=.mean, color=WorkDay), alpha=0.5, size=0.5) +
     geom_abline(slope = 1, intercept = 0, color = "black", lwd=0.5, alpha=0.5) +
     xlim(8000, 22000) +
     ylim(8000, 22000) +
@@ -116,6 +125,5 @@ plot_forecast <- function(all_forecasts, metric_results, df,
   return(name_of_best_model)
   
 }
-  
-  
-  
+
+
