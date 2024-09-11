@@ -1,0 +1,15 @@
+\babel@toc {ngerman}{}\relax 
+\contentsline {section}{\numberline {1}Einleitung}{4}{section.1}%
+\contentsline {section}{\numberline {2}Methodik}{6}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Liquid Time-Constant Neuronal Networks (LTCNNs)}{6}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Self Learnable Activation Functions (SLAFs)}{7}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Auto Regressive-Moving Average (ARIMA)}{8}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}PROPHET: Forecasting at a scale}{8}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Metriken}{9}{subsection.2.5}%
+\contentsline {section}{\numberline {3}Datengrundlage und Datenanalyse}{10}{section.3}%
+\contentsline {section}{\numberline {4}Implementierung}{17}{section.4}%
+\contentsline {subsection}{\numberline {4.1}SLAF Integration in LTC Nodes}{17}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Feature Engineering}{19}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Training}{19}{subsection.4.3}%
+\contentsline {section}{\numberline {5}Vorhersage Ergebnisse}{22}{section.5}%
+\contentsline {section}{\numberline {6}Fazit}{28}{section.6}%
