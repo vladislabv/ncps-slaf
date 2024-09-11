@@ -97,9 +97,6 @@ def train(device="cpu"):
 
     train_data = data_raw.copy()
     
-    x_train_scaler = MinMaxScaler()
-    y_train_scaler = MinMaxScaler()
-    
     train_data = utils.make_features(train_data, features=Config.FEATURES_LIST)
     
     x_features, y_features = utils.generate_train_data(
@@ -107,13 +104,22 @@ def train(device="cpu"):
         dt_from=Config.FILTER_DT_FROM, dt_till=Config.FILTER_DT_TILL
     )
 
-    x_train_scaler, x_features = utils.normalize_data(
-        x_train_scaler,
-        x_features)
+    if Config.SCALE_OPTION == 'global':
+        min_value, max_value = data_raw.value.min(), data_raw.value.max()
+        x_features = (x_features - min_value) / (max_value - min_value)
+        y_features = (y_features - min_value) / (max_value - min_value)
+    
+    if Config.SCALE_OPTION == 'local':
+        x_train_scaler = MinMaxScaler()
+        y_train_scaler = MinMaxScaler()
+        
+        x_train_scaler, x_features = utils.normalize_data(
+            x_train_scaler,
+            x_features)
 
-    y_train_scaler, y_features = utils.normalize_data(
-        y_train_scaler,
-        y_features)
+        y_train_scaler, y_features = utils.normalize_data(
+            y_train_scaler,
+            y_features)
 
     out_features = y_features.shape[-1]
     in_features = x_features.shape[-1]
@@ -172,7 +178,7 @@ def train(device="cpu"):
     # Train the model
     trainer.fit(learn, dataloader)
     best_model_path = checkpoint_callback.best_model_path
-    best_train_loss = checkpoint_callback.best_train_loss
+    best_train_loss = checkpoint_callback.best_model_score
 
     print(f'Best model saved at: {best_model_path} with validation loss: {best_train_loss}')
 
