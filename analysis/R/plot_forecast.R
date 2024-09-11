@@ -11,7 +11,7 @@
 #' 
 #' 
 plot_forecast <- function(all_forecasts, metric_results, df,
-                          month_to_plot, days_to_plot, raw_fc) {
+                          month_to_plot, days_to_plot, raw_fc, prefix) {
   
   best_forecast <- metric_results |>
     filter(MAPE == min(MAPE[MAPE > 0])) |>
@@ -40,13 +40,13 @@ plot_forecast <- function(all_forecasts, metric_results, df,
     mutate(AEP_MW = AEP_MW) |>
     filter(day(Datetime) < days_to_plot) |>
     filter((year(Datetime) == 2017 & month(Datetime) <= month_to_plot)  
-           | (year(Datetime) == 2016 & month(Datetime) == 12))
+           | (year(Datetime) == 2016 & month(Datetime) == 12 & day(Datetime) > 20))
   
   
-  p <- autoplot(single_best_forecast, color = "#FC4E07") +
+  p <- autoplot(single_best_forecast, color = "#FC4E07", alpha=0.5) +
     geom_line(data = filtered_power_consum,
-              lwd = 0.2,
-              aes(x = Datetime, y = AEP_MW, color = "Real Obs.")) +
+              lwd = 0.4, alpha=0.2,
+              aes(x = Datetime, y = AEP_MW, color = "Tatsaechliche\nStromerzeugung [MW]")) +
     geom_line(data = single_best_forecast,
               lwd = 0.2 ,
               aes(x = Datetime, y = .mean, color =
@@ -57,12 +57,12 @@ plot_forecast <- function(all_forecasts, metric_results, df,
     scale_color_manual(
       values = c(
         name = " ",
-        "Real Obs." = "#2E9FDF",
+        "Tatsaechliche\nStromerzeugung [MW]" = "black",
         "Forecast" = "#FC4E07"
       ),
       labels = c(
-        "Real Obs." = "Tatsaechliche \nStromverbrauch",
-        "Forecast" = "ARIMA"
+        "Tatsaechliche\nStromerzeugung [MW]" = "Tatsaechliche\nStromerzeugung [MW]",
+        "Forecast" = "PROPHET"
       )
     ) +
     labs(level = "Level")+ 
@@ -74,7 +74,7 @@ plot_forecast <- function(all_forecasts, metric_results, df,
   
   
   ggsave(
-    paste0("plots/",name_of_best_model, ".png"),
+    paste0("plots/",prefix, name_of_best_model, ".png"),
     plot = p,
     width = 5.5,
     height = 3.7,
@@ -106,7 +106,7 @@ plot_forecast <- function(all_forecasts, metric_results, df,
     )
   
   ggsave(
-    paste0("plots/real_to_fc_",name_of_best_model, ".png"),
+    paste0("plots/real_to_fc_", prefix, name_of_best_model, ".png"),
     plot = p,
     width = 5.5,
     height = 3.7,

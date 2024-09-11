@@ -28,7 +28,7 @@
 \PassOptionsToPackage{hyphens}{url} % url is loaded by hyperref
 \usepackage[unicode=true]{hyperref}
 \hypersetup{
-            pdftitle={Vorhersage der Stromerzeugung basierend auf Self Learning Activation Functions und Liquid Neuronal Networks},
+            pdftitle={Stromprognose mittels Self Learning Activation Functions \& Liquid Neuronal Networks},
             pdfkeywords={SLAF, LNN, Forecasting, Electric Power},
             pdfborder={0 0 0},
             breaklinks=true}
@@ -43,19 +43,50 @@
 \fi
 \usepackage[style=authoryear-comp,]{biblatex}
 \addbibresource{references.bib}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
 \usepackage{longtable,booktabs}
 % Fix footnotes in tables (requires footnote package)
 \IfFileExists{footnote.sty}{\usepackage{footnote}\makesavenoteenv{long table}}{}
 
-\usepackage{graphicx,grffile}
-\makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 \IfFileExists{parskip.sty}{%
 \usepackage{parskip}
 }{% else
@@ -73,7 +104,7 @@
 \makeatother
 
 
-\title{Vorhersage der Stromerzeugung basierend auf Self Learning Activation Functions und Liquid Neuronal Networks}
+\title{Stromprognose mittels Self Learning Activation Functions \& Liquid Neuronal Networks}
 
 %% MONASH STUFF
 
@@ -384,10 +415,10 @@
 \author{Vitali~Krilov, Vladislav~Stasenko}
 \addresses{\textbf{Vitali Krilov}\newline
 MatNr: 30329089
-\newline{Email: \href{mailto:curie.marie@fh-swf.de}{\nolinkurl{curie.marie@fh-swf.de}}}\newline Corresponding Author\\[1cm]
+\newline{Email: \href{mailto:krilov.vitali@fh-swf.de}{\nolinkurl{krilov.vitali@fh-swf.de}}}\newline Corresponding Author\\[1cm]
 \textbf{Vladislav Stasenko}\newline
 MatNr: 87654321
-\newline{Email: \href{mailto:curie.pierre@fh-swf.de}{\nolinkurl{curie.pierre@fh-swf.de}}}\\[1cm]
+\newline{Email: \href{mailto:stasenko.vladislav@fh-swf.de}{\nolinkurl{stasenko.vladislav@fh-swf.de}}}\\[1cm]
 }
 
 \date{\sf\Date.~\Month~\Year}
@@ -399,6 +430,9 @@ MatNr: 87654321
 \usepackage{caption}
 \usepackage{csquotes}
 \usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{tabularx}
+\usepackage{longtable}
 
 
 \begin{document}
@@ -416,15 +450,32 @@ MatNr: 87654321
 \tableofcontents
 \newpage
 }
+\listoffigures
+\newpage
 \section{Einleitung}\label{einleitung}
 
-Geht es um Vorhersagen von Zeitreihen mit komplexen saisonalen Mustern, so sind wohl die bekanntesten statistischen Modellierungen Autoregressive Integrated Moving Average (ARIMA), Exponential Smoothing oder das Prohphet Modell. Im Bereich der Neuronalen Netze ist Long-Short-Term-Memory (LSTM), welches eine spezielle Art von Recurrent Neural Network RNN ist, das bekannte Neuronale Netz für komplexe Zeitreihen. Ein aktuell neuer Ansatz für Vorhersage von komplexen Zeitreihen ist ein weiteres RNN, das Liquid Neuronal Network (LNN). Es geht darum mit weniger Rechenleistung und geringerem Datensatz ein kompakteres Modell zu erzeugen, welches sich z.B. in Echtzeit an die Datenlage anpassen kann. So kann z.B. ein LSTM 100.000 - 1.000.000 Parameter haben, wobei das LNN mit bis zu 10.000 Parametern auskommt und ähnliche Resultate liefert. So ist eine Anbindung an elektronische Messgeräte oder Rasbery PI mit weniger Rechneleistung im Gegensatz zu LSTM möglich. In dieser Arbeit wird ein LNN auf einen Datensatz von der Stromerzeugung vom Unternehmen American Electric Power angewandt. Das Ziel ist es eine Vorhersage für den nächsten Tag ``day-ahead'' zu treffen. Bei den Neuronalen Netzen steht immer die Frage im Raum, welche Aktivierungsfunktion genutzt werden soll. Als Ergänzung zu dem LNN wird ein self learning activation function (SLAF) Modell implementiert. SLAF soll das vanishing gradient Problem dezimieren, aber auch eine approximierte Aktivierungsfunktion für das LNN finden.
+Geht es um Vorhersagen von Zeitreihen mit komplexen saisonalen Mustern, so sind wohl die bekanntesten statistischen Modellierungen Autoregressive Integrated Moving Average (ARIMA), Exponential Smoothing oder das Prophet-Modell. Im Bereich der neuronalen Netze ist Long-Short-Term-Memory (LSTM), welches eine spezielle Art von Recurrent Neural Network RNN ist, das bekannte neuronale Netz für komplexe Zeitreihen. Ein aktuell neuer Ansatz für eine Vorhersage von komplexen Zeitreihen ist ein weiteres RNN, das Liquid Time-Constant Neuronal Network oder kurz Liquid Neuronal Network (LNN). Es geht darum, mit weniger Rechenleistung und geringerem Datensatz ein kompakteres Modell zu erzeugen, welches sich z.B. in Echtzeit an die Datenlage anpassen kann. So kann z.B. ein LSTM 100.000 - 1.000.000 Parameter haben, wobei das LNN mit bis zu 10.000 Parametern auskommt und ähnliche Resultate liefert. So ist eine Anbindung an elektronische Messgeräte oder Raspberry Pi mit weniger Rechenleistung im Gegensatz zu LSTM möglich. In dieser Arbeit wird ein LNN auf einen Datensatz von der Stromerzeugung vom Unternehmen American Electric Power angewandt. Das Ziel ist es, eine Vorhersage für den nächsten Tag ``day-ahead'' zu treffen. Bei den neuronalen Netzen steht immer die Frage im Raum, welche Aktivierungsfunktion genutzt werden soll. Als Ergänzung zu dem LNN wird ein self learning activation function (SLAF) Modell implementiert. SLAF soll das vanishing gradient Problem dezimieren, aber auch eine approximierte Aktivierungsfunktion für das LNN finden.
+
+Um den roten Faden besser folgen zu können, werden die einzelnen Kapitel kurz erläutert:
+
+\textbf{Methodik:} Im Kapitel der Methodik wird auf die theoretischen Grundlagen eingegangen. Im ersten Abschnitt wird auf die Liquid Time-Constant Neuronal Networks (LTCNNs) eingegangen. Hier wird beschrieben, was ein LTCNN ist und wie die mathematische Zusammensetzung aussieht. Der Begriff ``Luquid'' und das Lernverhalten wird in Bezug auf das neuronale Netz erläutert.
+
+Darauf folgt die Erklärung, was eine Self Learnable Activation FUnction (SLAF) ist. Es wird auf das Konzept hinter SLAFs prägnant eingegangen und erläutert. Der Begriff der swish-Funktion wird eingeführt und beschrieben.
+
+Als Letztes wird vollständigkeitshalber auf das Auto Regressive-Moving Average (ARIMA), das Prophet-Modell und die verwendeten Metriken eingegangen.
+
+\textbf{Datengrundlage und Datenanalyse:} Im Kapitel der Datengrundlage und Datenanalyse wird auf den verwendeten Datensatz eingegangen. Dieser wird in seiner Rohform präsentiert und daraufhin analytisch untersucht. Dabei wird auf Datenkonsistenz (fehlende Werte und doppelte Beobachtungen) eingegangen. Das Verfahren zur Interpolation der fehlenden Daten und der Umgang mit doppelten Beobachtungen wird erläutert. Daraufhin wird der gesäuberte Datensatz in Bezug auf das Jahr, Woche und Stunde untersucht. Gegen Ende wird auf den Effekt der Feiertage eingegangen und es werden Features generiert, die in das neuronale Netz einfließen sollen.
+
+\textbf{Implementierung:} Im Kapitel der Implementierung wird erläutert, wie das Verfahren und welche Ressourcen zur Implementierung verwendet wurden. So wird stückweise auf den Code eingegangen. Darüber hinaus wird erläutert, wie Feature Engineering betrieben wurde. Wo und wie das Modell trainiert wurde.
+
+\textbf{Vorhersage Ergebnisse:} Im Kapitel der Vorhersage der Ergebnisse wird auf die statistischen Modelle als Referenz und auf die Vorhersage der LNNs eingegangen. Es wird der Unterschied zwischen den statistischen Modellen und den LNNs aufgezeigt. Mittels MAPE wird das beste Modell ermittelt. Gegen Ende wird der Trainingsverlauf dargestellt und die Ergebnisse nochmal zusammengefasst.
+
+\textbf{Fazit:} Im Kapitel Fazit wird die Arbeit rückblickend betrachtet und die wichtigsten Ergebnisse werden zusammengefasst. Es wird eine Forschungsfrage formuliert und ein Ausblick dargestellt.
+
+\clearpage
+\newpage
 
 \section{Methodik}\label{methodik}
-
-Eine der bekanntesten Modelle für eine Zeitreihe ist das ARIMA Model.
-Prophet als ein weiteres Benchmark-Model, welches sich an komplexe Saisonalität
-anpasst.
 
 \subsection{Liquid Time-Constant Neuronal Networks (LTCNNs)}\label{liquid-time-constant-neuronal-networks-ltcnns}
 
@@ -433,64 +484,107 @@ Liquid Neural Networks, insbesondere LTCNNs, sind eine neuartige Form von neuron
 Der Kernmechanismus von LTCNs basiert auf der Verwendung von Differentialgleichungen zur Beschreibung der Neuronenaktivität. Jedes Neuron \(x_i(t)\) wird durch eine Differentialgleichung beschrieben, die seinen Zustand in Abhängigkeit von der Zeit und den Eingangsgrößen steuert:
 
 \[
-\dot{x}_i(t) = -\frac{1}{\tau_i} x_i(t) + \sum_j w_{ij} \cdot \sigma(x_j(t)) + I_i(t)
+\frac{dx(t)}{dt} = -\left[\frac{1}{\tau} + f(x(t), I(t), t, \theta)\right] x(t) + f(x(t), I(t), t, \theta)A
 \]
 
-In dieser Gleichung steht:
+Hier ist \(x(t)\) der verborgene Zustand, \(\tau\) ist die Zeitkonstante, und \(f(x(t), I(t), t, \theta)\) ist eine Funktion, die sich mit der Eingabe \(I(t)\), der Zeit \(t\) und den Parametern \(\theta\) entwickelt.
 
-\begin{itemize}
-\tightlist
-\item
-  \(x_i(t)\) für den Zustand des Neurons \(i\) zu einem bestimmten Zeitpunkt \(t\),
-\item
-  \(\tau_i\) ist die zeitabhängige Konstante, die die Dynamik des Neurons bestimmt,
-\item
-  \(w_{ij}\) ist das Gewicht der Verbindung zwischen Neuron \(j\) und Neuron \(i\),
-\item
-  \(\sigma(x_j(t))\) ist die Aktivierungsfunktion (z.B. eine nichtlineare Funktion wie die Sigmoid- oder ReLU-Funktion),
-\item
-  \(I_i(t)\) repräsentiert den externen Input, der auf das Neuron einwirkt,
-\item
-  \(\dot{x}_i(t)\) bezeichnet die zeitliche Ableitung des Neuronzustandes \(x_i(t)\).
-\end{itemize}
+Die Zeitkonstante \(\tau_i\) spielt eine zentrale Rolle, da sie bestimmt, wie schnell das Neuron auf Änderungen in den Eingangsdaten reagiert. Diese Konstante wird während des Trainings dynamisch angepasst, was den Begriff ``Liquid'' (flüssig) erklärt: Die Netzwerkkonfiguration ist nicht statisch, sondern verändert sich kontinuierlich im Laufe der Zeit:
 
-Die Zeitkonstante \(\tau_i\) spielt eine zentrale Rolle, da sie festlegt, wie schnell das Neuron auf Änderungen in den Eingangsdaten reagiert. Diese Konstante wird während des Trainings dynamisch angepasst, was den Begriff ``Liquid'' (flüssig) erklärt: Die Netzwerkkonfiguration ist nicht statisch, sondern verändert sich kontinuierlich im Laufe der Zeit.
+\[
+\tau_{\text{sys}} = \frac{\tau}{1 + \tau f(x(t), I(t), t, \theta)}.
+\]
+
+Um diese Netze zu trainieren, verwenden die Autoren eine Technik namens Backpropagation through Time (BPTT) in Kombination mit einem benutzerdefinierten Solver, um die Gleichungen des Netzes effizient zu lösen. Dieser Solver stellt ein Gleichgewicht zwischen Stabilität und Geschwindigkeit her. Die Aktualisierungsregel lautet wie folgt:
+
+\[
+x(t + \Delta t) = x(t) + \Delta t \frac{f(x(t), I(t), t, \theta)A}{1 + \Delta t \left(\frac{1}{\tau} + f(x(t), I(t), t, \theta)\right)}
+\]
 
 Die Architektur eines LTCNs ist relativ simpel aufgebaut: Jedes Neuron besitzt eine zeitabhängige Aktivierung, die durch die oben genannte Differentialgleichung gesteuert wird. Durch die ständige Anpassung der Zeitkonstanten können LTCNs flexibel auf Veränderungen in den Daten reagieren. Diese dynamischen Modelle sind besonders geeignet für komplexe, zeitlich veränderliche Muster.
 
-Besonders für die Verarbeitung von Zeitreihen oder die Analyse von Signalen in Echtzeit sind LTCNs vielversprechend. Durch die flexiblen Zeitkonstanten können sowohl kurzfristige als auch langfristige Abhängigkeiten in den Daten erfasst werden. Dies macht sie besonders nützlich in Anwendungsbereichen wie der Vorhersage von Finanzdaten, der Wetterprognose oder der Analyse biologischer Signale (z.B. EEG- oder EKG-Daten), wo das Erkennen von zeitlichen Mustern entscheidend ist.
+In praktischen Tests übertrafen LTCs traditionelle Modelle wie Long Short-Time Memory Cells (LSTMs) und neuronale Ordinary Differential Equation (ODEs). Ob es um die Erkennung von Gesten oder die Vorhersage menschlicher Aktivitäten ging, in den meisten Fällen lieferten sie bessere Ergebnisse. Wie andere neuronale Netze haben sie jedoch aufgrund des Problems des verschwindenden Gradienten Schwierigkeiten mit langfristigen Abhängigkeiten. Außerdem benötigen sie im Vergleich zu einfacheren Modellen mehr Rechenressourcen.
 
-Ein wichtiger Durchbruch in der Forschung zu Liquid Neural Networks wurde durch das Paper von Hasani et al.~(2021) eingeführt, welches die grundlegende Architektur der Liquid Time Constant Networks beschreibt und deren Funktionsweise detailliert erklärtrde demonstriert, dass LTCNs in der Lage sind, mit weniger Parametern eine hohe Effizienz und Genauigkeit bei der Modellierung dynamischer Systeme zu erreichen. Diese Netzwerke zeigten überragende Ergebnisse in der Modellierung von dynamischen Umgebungen und zeitraumgreifenden Aufgaben, was sie von herkömmlichen rekurrenten Netzen unterschied.
-
-In einer späteren Anwendung auf Zeitreihendaten wurde in einem Paper von Gilpin et al.~(2021) gezeigt, dass LTCNs signifikante Verbesserungen in der Vorhersagegenauigkeit von Finanzzeitreihen erzielten, indem sie sowohl kurzfristige Schwankungen als auch langfristige Trends erfassten . In einen Studie demonstrierten Pasandi et al.~(2022), dass LTCNs zur Analyse von EEG-Signalen eingesetzt werden können, um epileptische Anfälle in Echtzeit mit einer hohen Genauigkeit zu erkennen . In beiden Fällesich die Stärken der flüssigen Zustandsübergänge und der dynamischen Zeitkonstanten als wesentliche Vorteile gegenüber traditionellen Netzwerken.
-
-Hasani, R., Lechner, M., Amini, A., Rus, D., \& Grosu, R. (2021). ``Liquid Time-constant Networks.'' Nature Machine Intelligence. DOI: 10.1038/s42256-021-00302-4.
+Diese Ausgewogenheit von Flexibilität und Ausdruckskraft macht LTCs zu einer spannenden Entwicklung in der Welt der rekurrenten neuronalen Netze, auch wenn es noch einige Herausforderungen zu bewältigen gibt.
 
 \subsection{Self Learnable Activation Functions (SLAFs)}\label{self-learnable-activation-functions-slafs}
 
-Aktivierungsfunktionen haben einen großen Einfluss auf die Modellierung im Bereich der Neuronalen Netze. Dabei reagieren Neuronen auf verschiede Aktivierungsfunktionen unterschiedlich und beschreiben damit, ob ein Neuron gerade den Status ``aktiv'' oder ``nicht aktiv'' hat. Ist ein bestimmter Schwellwert in einer dieser Funktionen überschritten, so ändert das Neuron seinen Status. Die wohl bekanntesten Aktivierungsfunktionen sind sigmoid, relu, tanh und eine linearen Aktivierung. Dabei wurde nach \cite{Ramachandran2017} die swish-Funktion aufgedeckt:
+Aktivierungsfunktionen haben einen großen Einfluss auf die Modellierung im Bereich der neuronalen Netze. Dabei reagieren Neuronen auf verschiedene Aktivierungsfunktionen unterschiedlich und beschreiben damit, ob ein Neuron gerade den Status ``aktiv'' oder ``nicht aktiv'' hat. Ist ein bestimmter Schwellwert in einer dieser Funktionen überschritten, so ändert das Neuron seinen Status. Die wohl bekanntesten Aktivierungsfunktionen sind Sigmoid, ReLU, tanh und eine lineare Aktivierung. In der Arbeit von \cite{Ramachandran2017} wurde die swish-Funktion aufgedeckt:
 
 \[
 f(x) = x * sigmoid(\beta * x)
 \]
 
-In der Arbeit von \cite{Ramachandran2017} wurde die swish-Funktion als die beste Aktivierungsfunktion empirisch bestimmt. Dabei wurde vor allem mit der ReLU-Funktion verglichen.
+In dieser Arbeit wurde die swish-Funktion als die beste Aktivierungsfunktion alternativ zu der ReLU Funktion empirisch bestimmt. Die swish-Funktion soll dabei glättere Verläufe ermöglichen, was zu einer stabileren und effizienteren Modelloptimierung führen kann. Der Verlauf der swish-Funktion ist in Abbildung \ref{fig:swish_rep} dargestellt.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{plots/swish_relu_representation.png}
+\caption{Swish-Funktion, ReLU Repräsentation}
+\label{fig:swish_rep}
+\end{figure}
+
+Geht das \(\beta \to \infty = ReLU()\) so repräsentiert die Swish-Funktion die aktuelle ReLU-Funktion. Bei schon relativ hohem \(\beta\) erreicht die swish-Funktion approximiert die ReLU-Funktion. Geht das \(\beta \to 0 = x\), so entspricht die Funktion x.
 
 \subsection{Auto Regressive-Moving Average (ARIMA)}\label{auto-regressive-moving-average-arima}
 
+Bei dem (S)ARIMA Modell handelt es sich um ein additives statistisches Modell, welches sich an komplexe Zeitreihen anpasst. Dabei beschreiben die Thermen PDQ (saisonall) und pdq (nicht saisonall) das Modell. Folgende Backshift Notation beschreibt
+das Modell:
+
+\[
+\Phi(B)\phi(B)(1-B)^d (1-B)^D y_t = c + \Theta(B) \theta(B) \epsilon_t
+\]
+
+Dabei wird die Zeitreihe d-mal und D-mal differenziert. Die Thermen p, d, P, Q werden mittels des geringsten AICc ermittelt. Dieses Modell gilt als eines der Grundlagenmodelle zum Vergleich in dieser Arbeit. \cite{HyndmanR}
+
 \subsection{PROPHET: Forecasting at a scale}\label{prophet-forecasting-at-a-scale}
 
-\begin{itemize}
-\tightlist
-\item
-  Lagged Values \textless- ARIMA Bezug / ACF-PACF \textless- Vitali
-\item
-  Train / Testdatensatz \textless- egal wer, nur paar sätze
-\end{itemize}
+Das Prophet-Model wurde von Facebook \cite{taylor2018forecasting} entwickelt und findet Anwendung beim Vorhersagen von Zeitreihen mit komplexer Saisonalität.
+Speziell designt, um Feiertag-Muster zu erkennen. Dabei handelt es sich wie bei dem ARIMA Modell um ein additives Modell. Im Vergleich zum ARIMA Modell ist das Prophet-Model vor allem im Training deutlich schneller. Hinzu kommt, dass dieses Modell im Gegensatz zum ARIMA Modell den Effekt der Feiertage deutlich besser erfassen kann. Folgende Formel beschreibt das Modell:
+
+\[
+y(t) = g(t) + s(t) + h(t) + \epsilon_t
+\]
+
+g(t) : Der schrittweise lineare Trend
+
+s(t) : Die saisonalen Muster
+
+h(t) : Feiertag-Mustererfassung
+
+\(\epsilon_t\) : Der Fehler-Term (Rauschen)
+
+\clearpage
+\newpage
+
+\subsection{Metriken}\label{metriken}
+
+Als ein Auswahlkriterium für eine Vorhersage spielen Metriken wie Mean Absolute Error (MAE), Mean Absolute Percentage Error (MAPE) und Root Mean Squared Error (RMSE) eine Rolle. Folgend werden die einzelnen Metriken kurz beschrieben.
+
+\textbf{MAE} beschreibt die durchschnittliche absolute Abweichung zwischen den vorhergesagten Werten \(\hat{y_i}\) und den tatsächlichen Werten \(y_i\). Folgende Formel wird dabei verwendet:
+
+\[
+MAE = \sum_{i=1}^{n} \frac{| y_i - \hat{y_i} | }{n}
+\]
+
+\textbf{MAPE} beschreibt die durchschnittliche prozentuale Abweichung zwischen den vorhergesagten Werten \(\hat{y_i}\) und den tatsächlichen Werten \(y_i\). Folgende Formel wird dabei verwendet.
+
+\[
+MAPE = 100 \frac{1}{n} \sum_{i=1}^{n} | \frac{ y_i - \hat{y_i}  }{y_i} |
+\]
+
+\textbf{RMSE} beschreibt die Durchschnittliche quadratische Abweichung zwischen den vorhergesagten Werten \(\hat{y_i}\) und den tatsächlichen Werten \(y_i\). Folgende Formel wird dabei verwendet.
+
+\[
+RMSE = \sqrt{\frac{1}{n} \sum_{i=1}^{n}  (y_i - \hat{y_i})^2}
+\]
+
+\clearpage
+\newpage
 
 \section{Datengrundlage und Datenanalyse}\label{datengrundlage-und-datenanalyse}
 
-Auch für Neuronales Netz muss Datenanalyse betrieben werden. Es ist wichtig den Datensatz komplett zu durchdringen und die Erkenntnisse aus der Analyse in der Implementierung des Neuronalen Netzen mit zu berücksichtigen. Der rohe Datensatz der Stromerzeugung hat eine stündliche Granularität in der Zeitspanne 01.10.2004 - 03.08.2018 (5054 Tage). Untersucht man den Datensatz auf Äquidistanz, so fallen Insgesamt 40 fehlende Beobachtungen in der stündlichen Auflösung. Die Abbildung \ref{fig:raw_AEP} repräsentiert den rohen Datensatz. Die fehlenden Werte (rot) wurden mit dem letzten vorhandenen Wert ersetzt. Dies ist damit zu begründen, da der Datensatz groß genug ist und es keine drastischen Auswirkungen auf das Neuronale Netz haben wird. Nach der säuberung der Daten hat der Datensatz korrekterweise 121.296 (\(24*5054\)) Beobachtungen. Ein positiver oder negativer Trend ist für die Stromerzeugung nicht zu erkennen.
+Auch für neuronale Netze muss Datenanalyse betrieben werden. Es ist wichtig, den Datensatz komplett zu durchdringen und die Erkenntnisse aus der Analyse in der Implementierung des neuronalen Netzes mitzuberücksichtigen. Der rohe Datensatz der Stromerzeugung hat eine stündliche Granularität in der Zeitspanne 01.10.2004 - 03.08.2018 (5054 Tage). Wird der Datensatz auf Äquidistanz, so fallen insgesamt 40 fehlende Beobachtungen in der stündlichen Auflösung. Die Abbildung \ref{fig:raw_AEP} repräsentiert den rohen Datensatz. Die fehlenden Werte (rot) wurden mit dem letzten vorhandenen Wert ersetzt. Dies ist damit zu begründen, da der Datensatz groß genug ist und es keine drastischen Auswirkungen auf das neuronale Netz haben wird. Nach der Säuberung der Daten hat der Datensatz korrekterweise 121.296 (\(24*5054\)) Beobachtungen. Ein positiver oder negativer Trend ist für die Stromerzeugung nicht zu erkennen.
 
 \begin{figure}[H]
 \centering
@@ -499,7 +593,7 @@ Auch für Neuronales Netz muss Datenanalyse betrieben werden. Es ist wichtig den
 \label{fig:raw_AEP}
 \end{figure}
 
-Wird der Datensatz der Stromerzeugung in die einzelnen Jahre aufgespalten, so ist deutlich ein moustache-Muster (Schnurrbart) zu erkennen. Dieses Muster kann inder Abbildung \ref{fig:raw_years} entnommen werden.
+Wird der Datensatz der Stromerzeugung in die einzelnen Jahre aufgespalten, so ist deutlich ein moustache-Muster (Schnurrbart) zu erkennen. Dieses Muster kann in der Abbildung \ref{fig:raw_years} entnommen werden.
 
 \begin{figure}[H]
 \centering
@@ -508,7 +602,7 @@ Wird der Datensatz der Stromerzeugung in die einzelnen Jahre aufgespalten, so is
 \label{fig:raw_years}
 \end{figure}
 
-Auch die Verteilung der Daten kann eine Rolle bei der Modellierung der Neuronalen Netze spielen. Die Stromerzeugung besitzt ein minimalen Wert von 9581 MW, einen maximalen Wert von 25.695MW und einer Durchschnitt von 15.499 MW. Die Abbildung \ref{fig:histogram} zeigt die Verteilung der Stromerzeugung (Normalverteilt).
+Auch die Verteilung der Daten kann eine Rolle bei der Modellierung der neuronalen Netze spielen. Die Stromerzeugung besitzt einen minimalen Wert von 9581 MW, einen maximalen Wert von 25.695MW und einen Durchschnitt von 15.499 MW. Die Abbildung \ref{fig:histogram} zeigt die Verteilung der Stromerzeugung (normalverteilt).
 
 \begin{figure}[H]
 \centering
@@ -517,7 +611,7 @@ Auch die Verteilung der Daten kann eine Rolle bei der Modellierung der Neuronale
 \label{fig:histogram}
 \end{figure}
 
-Wird der Datensatz pro Stunde aggregiert, so ist auch ein weiteres Muster innerhalb der einzelnen Tage zu erkennen. So hat ist die Stromerzeugung in der Nacht (\textasciitilde23:00 - 08:00) runtergefahren und in der Tageszeit (\textasciitilde08:00 - 23:00) hochgefahren. Die Abbildung \ref{fighour_boxplot} stellt dabei die aggregierte Darstellung für jede Stunde dar.
+Wird der Datensatz pro Stunde aggregiert, so ist auch ein weiteres Muster innerhalb der einzelnen Tage zu erkennen. So wird die Stromerzeugung in der Nacht (\textasciitilde23:00 - 08:00) heruntergefahren und in der Tageszeit (\textasciitilde08:00 - 23:00) hochgefahren. Die Abbildung \ref{fig:hour_boxplot} stellt dabei die aggregierte Darstellung für jede Stunde dar.
 
 \begin{figure}[H]
 \centering
@@ -526,7 +620,7 @@ Wird der Datensatz pro Stunde aggregiert, so ist auch ein weiteres Muster innerh
 \label{fig:hour_boxplot}
 \end{figure}
 
-Für ein tieferes Verständnis ist es sinnvoll die Wochentage, Werktage und die Feiertage zu betrachten. Als erstes die wöchentliche Betrachtung der Stromerzeugung. Die Abbildung \ref{fig:weekday_boxplot} stellt dabei die einzelnen Wochentage über die Jahre dar. Anzumerken ist, dass der Samstag und der Sonntag sich von den regulären Wochentagen in der Stromerzeugung unterscheiden. So haben die beiden Tage im Durchschnitt ca. 2000 MW weniger an Stromerzeugung.
+Für ein tieferes Verständnis ist es sinnvoll, die Wochentage, Werktage und die Feiertage zu betrachten. Als Erstes die wöchentliche Betrachtung der Stromerzeugung. Die Abbildung \ref{fig:weekday_boxplot} stellt dabei die einzelnen Wochentage über die Jahre dar. Anzumerken ist, dass der Samstag und der Sonntag sich von den regulären Wochentagen in der Stromerzeugung unterscheiden. So haben die beiden Tage im Durchschnitt ca. 2000 MW weniger an Stromerzeugung.
 
 \begin{figure}[H]
 \centering
@@ -535,7 +629,7 @@ Für ein tieferes Verständnis ist es sinnvoll die Wochentage, Werktage und die 
 \label{fig:weekday_boxplot}
 \end{figure}
 
-Auch die einzelnen Feiertage unterscheiden sich von einem regulären Tag. In der Abbildung \ref{fig:holiday_boxplot} sind die einzelnen Feiertage abgebildet. Ähnliche wie ein Wochenende sinkt an den meisten Feiertagen die Stromerzeugung. Bis auf den Martin Luther Kind, Jr.~Day, New Year's Day, Veterans Day und den Washington's Birthday verhalten sich die Feirtage wie ein Wochenende unter der Betrachtung vom Durchschnitt.
+Auch die einzelnen Feiertage unterscheiden sich von einem regulären Tag. In der Abbildung \ref{fig:holiday_boxplot} sind die einzelnen Feiertage abgebildet. Ähnliche wie ein Wochenende sinkt an den meisten Feiertagen die Stromerzeugung. Bis auf den Martin Luther Kind, Jr.~Day, New Year's Day, Veterans Day und den Washington's Birthday verhalten sich die Feiertage wie ein Wochenende unter der Betrachtung vom Durchschnitt.
 
 \begin{figure}[H]
 \centering
@@ -544,16 +638,16 @@ Auch die einzelnen Feiertage unterscheiden sich von einem regulären Tag. In der
 \label{fig:holiday_boxplot}
 \end{figure}
 
-So kann eine dummy variable erzeugt werden, die die Feiertage, aber auch die Wochenenden beinhaltet. Die Abbildung \ref{fig:workday_histogram} stellt dabei die Verteilung der Werktage und der nicht Werktage dar. Eine verschiebung für die nicht Werktage in eine geringere Stromerzeugung.
+So kann eine dummy variable erzeugt werden, die die Feiertage, aber auch die Wochenenden beinhaltet. Die Abbildung \ref{fig:workday_histogram} stellt dabei die Verteilung der Werktage und der nicht Werktage dar. Eine Verschiebung für die nicht Werktage in eine geringere Stromerzeugung ist deutlich sichtbar.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=1.0\textwidth]{plots/workday_histogram}
+\includegraphics[width=0.7\textwidth]{plots/workday_histogram}
 \caption{Verteilung der Werktage und nicht Werktage}
 \label{fig:workday_histogram}
 \end{figure}
 
-Um den Begriff der komplexen saisonalität zu verdeutlichen zeigt die Abbildung \ref{fig:acf} die Autokorrelation. Dabei werden die aktuellen Beobachtungen mit den Vergangenen gegenübergestellt und die Korrelation zwischen diesen ermittelt. So z.B. für lag 12 wird ein shift des Datensatzes um 12 Zeiteinheiten nach links verschoben. Es wird die Korrelation zwischen dem vorschebnen Datensatz und dem Originalen ermittelt. So in der Abbildung \ref{fig:acf} eine komplexe saisonalität, da es sowohl tägliche, wöchentliche aber auch jährliche Muster im Datensatz zu finden sind.
+Um den Begriff der komplexen Saisonalität zu verdeutlichen, zeigt die Abbildung \ref{fig:acf} die Autokorrelation. Dabei werden die aktuellen Beobachtungen mit den vergangenen gegenübergestellt und die Korrelation zwischen diesen ermittelt. So z.B. für lag 12 wird ein shift des Datensatzes um 12 Zeiteinheiten nach links verschoben. Es wird die Korrelation zwischen dem verschobenen Datensatz und dem Originalen ermittelt. So in der Abbildung \ref{fig:acf} ist eine komplexe Saisonalität abgbebildet, da es sowohl tägliche, wöchentliche als auch jährliche Muster im Datensatz zu finden sind.
 
 \begin{figure}[H]
 \centering
@@ -571,192 +665,394 @@ Als letzter Punkt in der Datenanalyse ist die Betrachtung der verschiedenen verg
 \label{fig:corr}
 \end{figure}
 
+Damit wurde der Datensatz nach der Analyse angepasst und kann folgend beschrieben werden:
+
 \begin{itemize}
 \tightlist
 \item
-  Statistische Methoden \textless- Vitali
+  Datetime: Zeitstempel
 \item
-  Feature Engineering \textless- Vitali (Analytisch) \& Vlad (PCA)
+  AEP\_MW: Stromerzeugung in Megawatt
 \item
-  ``Calender Effect'' \textless- Vitali
+  Weekday: Wochentag (Mo, Di, Mi, Do, Fr, Sa, So)
+\item
+  Date: Datum (YYYY-MM-DD)
+\item
+  Year: Jahr
+\item
+  Week: Kalenderwoche
+\item
+  Hour: Stunde
+\item
+  Month: Monat
+\item
+  WorkDay: Ob es ein Arbeitstag ist (TRUE/FALSE)
+\item
+  Mo: Montag (TRUE/FALSE)
+\item
+  Di: Dienstag (TRUE/FALSE)
+\item
+  Mi: Mittwoch (TRUE/FALSE)
+\item
+  Do: Donnerstag (TRUE/FALSE)
+\item
+  Fr: Freitag (TRUE/FALSE)
+\item
+  Sa: Samstag (TRUE/FALSE)
+\item
+  So: Sonntag (TRUE/FALSE)
+\item
+  Holiday: Ob es ein Feiertag ist (TRUE/FALSE)
+\item
+  LastDayWasNotWorkDay: Ob der letzte Tag kein Arbeitstag war (TRUE/FALSE)
+\item
+  LastDayWasNotWorkDayAndNowWorkDay: Ob der letzte Tag kein Arbeitstag war und der heutige Arbeitstag ist (TRUE/FALSE)
+\item
+  NextDayIsNotWorkDayAndNowWorkDay: Ob der nächste Tag kein Arbeitstag ist und der heutige Arbeitstag ist (TRUE/FALSE)
+\item
+  LastDayWasHolidayAndNotWeekend: Ob der letzte Tag ein Feiertag war und kein Wochenende (TRUE/FALSE)
+\item
+  NextDayIsHolidayAndNotWeekend: Ob der nächste Tag ein Feiertag ist und kein Wochenende (TRUE/FALSE)
+\item
+  HolidayName: Name des Feiertags
+\item
+  MeanLastWeek: Durchschnitt der letzten Woche
+\item
+  MeanLastTwoDays: Durchschnitt der letzten zwei Tage
+\item
+  MaxLastOneDay: Maximum des letzten Tages
+\item
+  MinLastOneDay: Minimum des letzten Tages
 \end{itemize}
+
+Anmerkung: Es wurden weitere Feature erzeugt, die z.B. den Kalender-Effekt besser beschreiben sollen. So kann es sein, dass nach einem Feiertag die Menschen Urlaub nehmen und dadurch die Stromerzeugung sinkt. So wird auch untersucht, ob der letzte Tag z.B. ein Feiertag war und nun ein Werktag.
+
+\clearpage
+\newpage
 
 \section{Implementierung}\label{implementierung}
 
 \subsection{SLAF Integration in LTC Nodes}\label{slaf-integration-in-ltc-nodes}
 
-Wie schon erwähnt, die Swish Funktion wird in diesem Projekt anstatt der klassischen Sigmoid-Aktiviserungsfunktion angewendet. Wir erweitern die Funktionalität von ``NCPs'' Package um das Benutzen von Swish Funktion zu ermöglichen.
+Wie schon erwähnt, die swish-Funktion wird in diesem Projekt anstatt der klassischen Sigmoid-Aktivierungsfunktion angewandt. Es wird die Funktionalität vom ``NCPs'' Package um die swish-Funktion erweitert.
 
-Die Aktivierungsfunktion wird ersetzt durch das Einstellen von dem optionalen boolischen Parameter \texttt{use\_swish\_activation} bei der ``LTC'' Modelle Definition:
-
-\begin{verbatim}
-class LTC(nn.Module):
-    def __init__(
-        self,
-        input_size: int,
-        units,
-        return_sequences: bool = True,
-        batch_first: bool = True,
-        mixed_memory: bool = False,
-        input_mapping="affine",
-        output_mapping="affine",
-        ode_unfolds=6,
-        epsilon=1e-8,
-        implicit_param_constraints=True,
-        use_swish_activation=False,
-    ):
-      ...
-\end{verbatim}
-
-Der Parameter wird später in jede LTC Knoten übergeben, welcher durch eine weitere Python Klasse repräsentiert ist:
-
-\begin{verbatim}
-class LTCCell(nn.Module):
-    def __init__(
-        self,
-        wiring,
-        in_features=None,
-        input_mapping="affine",
-        output_mapping="affine",
-        ode_unfolds=6,
-        epsilon=1e-8,
-        implicit_param_constraints=False,
-        use_swish_activation=False,
-    ):
-      ...
-\end{verbatim}
-
-Falls der Parameter als True gesetzt ist, wird einen neuen Parameter für PyTorch Modelle definiert, welcher ein zufälliger Skalarwert im Zahlenbereich von \texttt{0,5} bis \texttt{1,5} ist:
-
-\begin{verbatim}
-def add_weight(self, name, init_value, requires_grad=True):
-    param = torch.nn.Parameter(init_value, requires_grad=requires_grad)
-    self.register_parameter(name, param)
-    return param
-
-def _get_init_value(self, shape, param_name):
-    minval, maxval = self._init_ranges[param_name]
-    if minval == maxval:
-        return torch.ones(shape) * minval
-    else:
-        return torch.rand(*shape) * (maxval - minval) + minval
-
-if self._use_swish_activation:
-    self._params["swish_beta"] = self.add_weight(
-        "swish_beta",
-        init_value=self._get_init_value(
-            (1,), "swish_beta"
-        ),
-    )
-\end{verbatim}
-
-Der Skalar wird dann später verwendet, um einen Matrizen Produkt zu berechnen:
-
-\begin{verbatim}
-def _sigmoid(self, v_pre, mu, sigma, beta):
-    v_pre = torch.unsqueeze(v_pre, -1)  # For broadcasting
-    mues = v_pre - mu
-    x = sigma * mues
-    if self._use_swish_activation:
-        return x * torch.sigmoid(beta * x)
-    return torch.sigmoid(x)
-\end{verbatim}
-
-Der Parameter ist einer Anpassung bei einer Error Backpropagation fällig, und darüber hinaus, darf von dem initialen Wert während des Trainings unterscheiden.
-
-\subsection{Training}\label{training}
-
-Durch die \texttt{pytorch}-Implementierung lässt sich das Training sowohl auf einer CPU, als auch einer GPU ohne große Anpassungen stattfinden. Um das Training stabiler zu gestalten, waren das Hardware von FH-SWF Cluster genutzt.
-
-Das Training lässt sich sowohl mittels cmd-Befehl als auch Jupyter Notebook anstoßen, allein nur die Parameter in \texttt{config.py} sind entscheidend:
-
-\begin{verbatim}
-PATH = "data/csv/AEP_hourly_cleaned.csv"
-STATION = "AEP_MW"
-FEATURES_LIST = [
-    "WorkDay",
-    "LastDayWasHolodiayAndNotWeekend",
-    "NextDayIsHolidayAndNotWeekend",
-    "MeanLastWeek",
-    "MeanLastTwoDays",
-    "MaxLastOneDay",
-    "MinLastOneDay"
-]
-FEATURES_2_SCALE = [
-    "value",
-    "MeanLastWeek",
-    "MeanLastTwoDays",
-    "MaxLastOneDay",
-    "MinLastOneDay"
-]
-
-YEAR_SHIFT = 365
-WEEK_SHIFT = 7
-VALUES_PER_DAY = 24
-FILTER_DT_FROM = "2014-01-01 00:00:00"
-FILTER_DT_TILL = "2017-01-01 00:00:00"
-
-GRID_SEARCH = True
-
-BATCH_SIZE = 7
-NUM_WORKERS = 128
-NUM_LNN_UNITS = [16, 8, 32]
-
-USE_SWISH_ACTIVATION = [False, True]
-INIT_LR = [0.01, 0.0001]
-NUM_EPOCHS = [10, 50, 100]
-\end{verbatim}
-
-Außer Datenpfad, Energiestation und Liste relevanten Features, lässt sich auch einen Grid Search mit dem Parameter-Pool einstellen. Die wichtigsten Hyperparameter, die für LNN eine Rolle spielen, sind es Anzahl von Knoten, eine initiale Learning Rate und Anzahl von Epochen. Durch die
-Konfiguration kann man auch die Schranken für den Trainingsdatensatz definieren, in unserem Fall haben wir uns für 3 Jahren Daten zwischen 2014 und 2017 entschieden. Für die Auswertung nutzen wir die Daten aus danach folgender Woche.
-
-Bevor das eigentliche Training startet, werden die Daten normalisiert auf Bereich zwischen 0 und 1 mit dem \texttt{sklearn.processing.MinMaxScaler} Objekt. Für die Evaluation der Ergebnisse bzw. produktives Nutzen kann der Skaler die Daten denormalizieren. Welche Merkmale normaliziert werden müssen, kann auch mittels Konfig eingestellt werden, da die boolische Variablen brauchen keine Skalierung.
-
-Neben der initialen Variablen, die am Start gelesen werden, hinzufügen wir zwei weitere Spalten, die wöchentliche und jährliche Werten Verzögerung der abhängigen Variable einführen. Für Time-Series Daten ist eine normale Praktik, die wir hier auch verfolgen.
-
-Für das unkomplizierte Training wird die \texttt{Trainer} Klasse aus der \texttt{pytorch\_lightning} Bibliothek benutzt, welche einen Data Scientist vom Boiler Code befreit.
-
-\begin{itemize}
-\tightlist
-\item
-  Cluster \textless- Vlad
-\item
-  Normalisierung / Skalierung \textless- Vlad
-\end{itemize}
-
-\section{Vorhersage Ergebnisse}\label{vorhersage-ergebnisse}
-
-\begin{itemize}
-\tightlist
-\item
-  Metriks \textless- MAE / MAPE (X) / LOSS-FUNCTION \textless- Vlad
-\item
-  Plots der Ergebnisse \textless- Vlad
-\end{itemize}
-
-\section{Fazit \textless- Zusammen alles}\label{fazit---zusammen-alles}
-
-\begin{itemize}
-\tightlist
-\item
-  Probleme
-\item
-  Lösungen
-\item
-  Zusammenfassung
-\item
-  Schlussfolgerung und letztes Wort
-\end{itemize}
-
-test (\cite{hasani2021liquid})
+Die Aktivierungsfunktion wird durch das Einstellen von dem optionalen booleschen Parameter \texttt{use\_swish\_activation} ersetzt. Bei der ``LTC'' Modelle Definition sieht der Code folgend aus:
 
 \singlespacing
 
-\begin{figure}
+\begin{Shaded}
+\begin{Highlighting}[numbers=left,,]
+\KeywordTok{class}\NormalTok{ LTC(nn.Module):}
+    \KeywordTok{def} \FunctionTok{\_\_init\_\_}\NormalTok{(}
+        \VariableTok{self}\NormalTok{,}
+\NormalTok{        input\_size: }\BuiltInTok{int}\NormalTok{,}
+\NormalTok{        units,}
+\NormalTok{        return\_sequences: }\BuiltInTok{bool} \OperatorTok{=} \VariableTok{True}\NormalTok{,}
+\NormalTok{        batch\_first: }\BuiltInTok{bool} \OperatorTok{=} \VariableTok{True}\NormalTok{,}
+\NormalTok{        mixed\_memory: }\BuiltInTok{bool} \OperatorTok{=} \VariableTok{False}\NormalTok{,}
+\NormalTok{        input\_mapping}\OperatorTok{=}\StringTok{"affine"}\NormalTok{,}
+\NormalTok{        output\_mapping}\OperatorTok{=}\StringTok{"affine"}\NormalTok{,}
+\NormalTok{        ode\_unfolds}\OperatorTok{=}\DecValTok{6}\NormalTok{,}
+\NormalTok{        epsilon}\OperatorTok{=}\FloatTok{1e{-}8}\NormalTok{,}
+\NormalTok{        implicit\_param\_constraints}\OperatorTok{=}\VariableTok{True}\NormalTok{,}
+\NormalTok{        use\_swish\_activation}\OperatorTok{=}\VariableTok{False}\NormalTok{,}
+\NormalTok{    ):}
+\NormalTok{      ...}
+\end{Highlighting}
+\end{Shaded}
+
+Der Parameter wird später in jede LTC Knoten übergeben, welcher durch eine weitere Python Klasse repräsentiert wird:
+
+\singlespacing
+
+\begin{Shaded}
+\begin{Highlighting}[numbers=left,,]
+\KeywordTok{class}\NormalTok{ LTCCell(nn.Module):}
+    \KeywordTok{def} \FunctionTok{\_\_init\_\_}\NormalTok{(}
+        \VariableTok{self}\NormalTok{,}
+\NormalTok{        wiring,}
+\NormalTok{        in\_features}\OperatorTok{=}\VariableTok{None}\NormalTok{,}
+\NormalTok{        input\_mapping}\OperatorTok{=}\StringTok{"affine"}\NormalTok{,}
+\NormalTok{        output\_mapping}\OperatorTok{=}\StringTok{"affine"}\NormalTok{,}
+\NormalTok{        ode\_unfolds}\OperatorTok{=}\DecValTok{6}\NormalTok{,}
+\NormalTok{        epsilon}\OperatorTok{=}\FloatTok{1e{-}8}\NormalTok{,}
+\NormalTok{        implicit\_param\_constraints}\OperatorTok{=}\VariableTok{False}\NormalTok{,}
+\NormalTok{        use\_swish\_activation}\OperatorTok{=}\VariableTok{False}\NormalTok{,}
+\NormalTok{    ):}
+\NormalTok{      ...}
+\end{Highlighting}
+\end{Shaded}
+
+Falls der Parameter als True gesetzt ist, wird ein neuer Parameter für PyTorch Modelle definiert, welcher ein zufälliger Skalarwert im Zahlenbereich von \texttt{0,5} bis \texttt{1,5} ist:
+
+\singlespacing
+
+\begin{Shaded}
+\begin{Highlighting}[numbers=left,,]
+\KeywordTok{def}\NormalTok{ add\_weight(}\VariableTok{self}\NormalTok{, name, init\_value, requires\_grad}\OperatorTok{=}\VariableTok{True}\NormalTok{):}
+\NormalTok{    param }\OperatorTok{=}\NormalTok{ torch.nn.Parameter(init\_value, requires\_grad}\OperatorTok{=}\NormalTok{requires\_grad)}
+    \VariableTok{self}\NormalTok{.register\_parameter(name, param)}
+    \ControlFlowTok{return}\NormalTok{ param}
+
+\KeywordTok{def}\NormalTok{ \_get\_init\_value(}\VariableTok{self}\NormalTok{, shape, param\_name):}
+\NormalTok{    minval, maxval }\OperatorTok{=} \VariableTok{self}\NormalTok{.\_init\_ranges[param\_name]}
+    \ControlFlowTok{if}\NormalTok{ minval }\OperatorTok{==}\NormalTok{ maxval:}
+        \ControlFlowTok{return}\NormalTok{ torch.ones(shape) }\OperatorTok{*}\NormalTok{ minval}
+    \ControlFlowTok{else}\NormalTok{:}
+        \ControlFlowTok{return}\NormalTok{ torch.rand(}\OperatorTok{*}\NormalTok{shape) }\OperatorTok{*}\NormalTok{ (maxval }\OperatorTok{{-}}\NormalTok{ minval) }\OperatorTok{+}\NormalTok{ minval}
+
+\ControlFlowTok{if} \VariableTok{self}\NormalTok{.\_use\_swish\_activation:}
+    \VariableTok{self}\NormalTok{.\_params[}\StringTok{"swish\_beta"}\NormalTok{] }\OperatorTok{=} \VariableTok{self}\NormalTok{.add\_weight(}
+        \StringTok{"swish\_beta"}\NormalTok{,}
+\NormalTok{        init\_value}\OperatorTok{=}\VariableTok{self}\NormalTok{.\_get\_init\_value(}
+\NormalTok{            (}\DecValTok{1}\NormalTok{,), }\StringTok{"swish\_beta"}
+\NormalTok{        ),}
+\NormalTok{    )}
+\end{Highlighting}
+\end{Shaded}
+
+Der Skalar wird dann später verwendet, um ein Matrizen Produkt zu berechnen:
+
+\singlespacing
+
+\begin{Shaded}
+\begin{Highlighting}[numbers=left,,]
+\KeywordTok{def}\NormalTok{ \_sigmoid(}\VariableTok{self}\NormalTok{, v\_pre, mu, sigma, beta):}
+\NormalTok{    v\_pre }\OperatorTok{=}\NormalTok{ torch.unsqueeze(v\_pre, }\OperatorTok{{-}}\DecValTok{1}\NormalTok{)  }\CommentTok{\# For broadcasting}
+\NormalTok{    mues }\OperatorTok{=}\NormalTok{ v\_pre }\OperatorTok{{-}}\NormalTok{ mu}
+\NormalTok{    x }\OperatorTok{=}\NormalTok{ sigma }\OperatorTok{*}\NormalTok{ mues}
+    \ControlFlowTok{if} \VariableTok{self}\NormalTok{.\_use\_swish\_activation:}
+        \ControlFlowTok{return}\NormalTok{ x }\OperatorTok{*}\NormalTok{ torch.sigmoid(beta }\OperatorTok{*}\NormalTok{ x)}
+    \ControlFlowTok{return}\NormalTok{ torch.sigmoid(x)}
+\end{Highlighting}
+\end{Shaded}
+
+Der Parameter (swish beta) wird während des Trainings kontinuierlich verändert. Das passiert wenn die Fehler ins Netz zurückgespielt werden.
+
+\clearpage
+\newpage
+
+\subsection{Feature Engineering}\label{feature-engineering}
+
+Neben den initialen Variablen, die aus der Datenanalyse erzeugt wurden, werden zwei weitere Spalten hinzugefügt. Nämlich die wöchentliche und jährliche Verzögerung der abhängigen Variable. Für Time-Series Daten ist es eine normale Praktik, die wir hier auch verfolgen. Somit ergeben sich ca. 30 Features, die einen möglichen Einfluss auf das Modell haben können.
+
+\begin{itemize}
+\tightlist
+\item
+  x: \(x_{t-24}\) Verschiebung um einen Tag zurück.
+\item
+  x\_shifted\_week: \(x_{t-24*7}\) Verschiebung um eine Woche zürück.
+\item
+  x\_shifted\_year: \(x_{t-24*365}\) Verschiebung um ein Jahr zürück.
+\end{itemize}
+
+Wegen dieser großen Dimensionalität des Datensatzes möchten wir mithilfe der PCA-Analyse zeigen, wie viele Variablen benötigt werden, um die Varianz der Daten zu erklären. Folgend eine Tabelle, wie viele Komponenten gebraucht werden, um die Varianz des Datensatzes zu beschreiben:
+
+\begin{table}[h!]
 \centering
-\includegraphics{examination_files/figure-latex/histogram-1.pdf}
-\caption{\label{fig:histogram}Nice histogram.}
+\begin{tabularx}{\textwidth}{|c|c|X|}
+\hline
+\textbf{Principal Component} & \textbf{Merkmal}                        & \textbf{Kummulierte Varianz} \\ \hline
+\textbf{PC1}                 & x                                      & 0.61522145                              \\ \hline
+\textbf{PC2}                 & x\_shifted\_week                       & 0.80951859                              \\ \hline
+\textbf{PC3}                 & x\_shifted\_year                       & 0.86591735                              \\ \hline
+\textbf{PC4}                 & MaxLastOneDay                          & 0.90337726                              \\ \hline
+\textbf{PC5}                 & WorkDay                                & 0.9391192                               \\ \hline
+\textbf{PC6}                 & MeanLastWeek                           & 0.96688936                              \\ \hline
+\textbf{PC7}                 & MinLastOneDay                          & 0.98807356                              \\ \hline
+\textbf{PC8}                 & MeanLastTwoDays                        & 0.99384472                              \\ \hline
+\textbf{PC9}                 & LastDayWasHolidayAndNotWeekend         & 0.99713582                              \\ \hline
+\textbf{PC10}                & NextDayIsHolidayAndNotWeekend          & 1.0                                     \\ \hline
+\end{tabularx}
+\caption{PCA: Beschreibung der Varianz}
+\label{table:pc_explained_variance}
+\end{table}
+
+Die Komponenten sind in der Reihenfolge nach deren Wichtigkeit (Feature Importance) platziert. Jedoch zeigt die Tabelle, dass die numerischen Variablen höher platziert sind als die booleschen Merkmale, weil diese stärkere Korrelation mit abhängigen Variablen aufweisen.
+
+Trotzdem hat sich im Verlauf des Trainings herausgestellt, dass die verzögerten Werte eher das Modell verwirren als fördern. Aufgrund des enormen Zeitaufwands, um alle Möglichkeiten der ca. 30 Features durchzugehen (Grid-Search für Features) wurde in dieser Arbeit
+der Ansatz der Datenanalyse verfolgt. Dabei wurde versucht, logisch die Variablen herauszupicken und ins Modell hereinfließen zu lassen. Das Ganze untermauert mit der Datenanalyse. Im folgenden Unterkapitel beschreibt die \texttt{FEATURES\_LIST} die ausgewählten Features. Dabei war es auch die Idee für den Anfang einen etwas einfacheren Ansatz zu untersuchen.
+
+\subsection{Training}\label{training}
+
+Durch die \texttt{pytorch}-Implementierung lässt sich das Training sowohl auf einer CPU als auch einer GPU ohne große Anpassungen laufen lassen. Um das Training stabiler zu gestalten, wurde die Hardware vom FH-SWF Cluster genutzt.
+
+Das Training lässt sich sowohl mittels des cmd-Befehl als auch Jupyter Notebook anstoßen, allein nur die Parameter in \texttt{config.py} sind entscheidend:
+
+\clearpage
+\newpage
+
+\singlespacing
+
+\begin{Shaded}
+\begin{Highlighting}[numbers=left,,]
+\NormalTok{PATH }\OperatorTok{=} \StringTok{"data/csv/AEP\_hourly\_cleaned.csv"}
+\NormalTok{STATION }\OperatorTok{=} \StringTok{"AEP\_MW"}
+\NormalTok{FEATURES\_LIST }\OperatorTok{=}\NormalTok{ [}
+    \StringTok{"WorkDay"}\NormalTok{,}
+    \StringTok{"LastDayWasHolodiayAndNotWeekend"}\NormalTok{,}
+    \StringTok{"NextDayIsHolidayAndNotWeekend"}\NormalTok{,}
+    \StringTok{"MeanLastWeek"}\NormalTok{,}
+    \StringTok{"MeanLastTwoDays"}\NormalTok{,}
+    \StringTok{"MaxLastOneDay"}\NormalTok{,}
+    \StringTok{"MinLastOneDay"}
+\NormalTok{]}
+\NormalTok{FEATURES\_2\_SCALE }\OperatorTok{=}\NormalTok{ [}
+    \StringTok{"value"}\NormalTok{,}
+    \StringTok{"MeanLastWeek"}\NormalTok{,}
+    \StringTok{"MeanLastTwoDays"}\NormalTok{,}
+    \StringTok{"MaxLastOneDay"}\NormalTok{,}
+    \StringTok{"MinLastOneDay"}
+\NormalTok{]}
+
+\NormalTok{YEAR\_SHIFT }\OperatorTok{=} \DecValTok{365}
+\NormalTok{WEEK\_SHIFT }\OperatorTok{=} \DecValTok{7}
+\NormalTok{VALUES\_PER\_DAY }\OperatorTok{=} \DecValTok{24}
+\NormalTok{FILTER\_DT\_FROM }\OperatorTok{=} \StringTok{"2014{-}01{-}01 00:00:00"}
+\NormalTok{FILTER\_DT\_TILL }\OperatorTok{=} \StringTok{"2017{-}01{-}01 00:00:00"}
+
+\NormalTok{GRID\_SEARCH }\OperatorTok{=} \VariableTok{True}
+
+\NormalTok{BATCH\_SIZE }\OperatorTok{=} \DecValTok{7}
+\NormalTok{NUM\_WORKERS }\OperatorTok{=} \DecValTok{128}
+\NormalTok{NUM\_LNN\_UNITS }\OperatorTok{=}\NormalTok{ [}\DecValTok{16}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{32}\NormalTok{]}
+
+\NormalTok{USE\_SWISH\_ACTIVATION }\OperatorTok{=}\NormalTok{ [}\VariableTok{False}\NormalTok{, }\VariableTok{True}\NormalTok{]}
+\NormalTok{INIT\_LR }\OperatorTok{=}\NormalTok{ [}\FloatTok{0.01}\NormalTok{, }\FloatTok{0.0001}\NormalTok{]}
+\NormalTok{NUM\_EPOCHS }\OperatorTok{=}\NormalTok{ [}\DecValTok{10}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+Außer Datenpfad, Energiestation und Liste relevanter Features lässt sich auch einen Grid Search mit dem Parameter-Pool einstellen. Die wichtigsten Hyperparameter, die für LNN eine Rolle spielen, sind die Anzahl von Knoten, eine initiale Learning-Rate und die Anzahl von Epochen.
+In der Konfiguration werden auch die Schranken für den Trainingsdatensatz definiert. In diesem Fall war es sinnvoll, die letzten 3 Jahre zum Vorhersagejahr zu nehmen (hier 2014 und 2017). Dies ist damit zu begründen, dass das Modell sowohl das jährliche Muster, wöchentliche Muster als auch das tägliche Muster lernen soll.
+
+Bevor das eigentliche Training startet, werden die Daten im Bereich zwischen 0 und 1 mit dem \texttt{sklearn.processing.MinMaxScaler} Objekt normalisiert. Für die Evaluation der Ergebnisse bzw. produktives Nutzen kann der Scaler die Daten denormalisieren. Welche Features normalisiert werden, wird mittels \texttt{FEATURES\_2\_SCALE} eingestellt, da z.B. die booleschen Variablen keine Skalierung brauchen.
+
+Für das unkomplizierte Training wird die \texttt{Trainer} Klasse aus der \texttt{pytorch\_lightning} Bibliothek benutzt, welche einen Data Scientisten vom Boiler Code befreit.
+
+Der Grid Search für die Parameter wurde auf 10 Epochen pro Parameterkombination begrenzt, um das Potenzial von den Modellen analytisch zur 10-ten Epoche zu betrachten. Dafür wurden insgesamt 36 Modelle miteinander verglichen. Zuerst wurde für jeden Kandidaten ein \texttt{Mean\ Average\ Percentage\ Error} berechnet und eine grafische Darstellung der Vorhersagen als ein Anhaltspunkt genommen. Die meist vielversprechenden Parameterkombinationen wurden dann für längeres Training (100 Epochen) ausgewählt.
+
+Nach 10 Epochen hatten die besten Modelle einen \texttt{MAPE\ Loss} zwischen 19\% und 25\% gezeigt:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/10_epochs_cobmined_nnLNN mit SLAF 10 Epochen.png}
+\caption{Nach 10 Epochen mit und ohne SLAF, Ausschnitt für Januar}
+\label{fig:slaf_lnn_10_epochs_january}
 \end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/10_epochs_all_time_cobmined_nnLNN mit SLAF 10 Epochen.png}
+\caption{Nach 10 Erpochen mit und ohne SLAF, ganzes Jahr 2017}
+\label{fig:slaf_lnn_10_epochs_2017}
+\end{figure}
+
+\clearpage
+\newpage
+
+\section{Vorhersage Ergebnisse}\label{vorhersage-ergebnisse}
+
+Ein Vergleichskriterium für die verschiedenen Modelle ist der MAPE. Es wurden verschiedene statistische Modelle und Methoden implementiert und ausprobiert. ARIMA Modell, NAIVE Methode, MEAN Methode, DRIFT Methode und das Prophet-Modell. Alle Modelle wurden vereinfacht implementiert und nicht auf den Datensatz optimiert. Schneidet das neuronale Netz schlechter ab als eins dieser Modelle, so fliegt es aus der Betrachtung für eine Vorhersage raus. Im Folgenden werden die Vorhersagen für das Jahr 2017, jeweils immer für die nächsten 24 Stunden, vorgestellt. D.h. jedes Modell sagt nur einen Tag voraus und das über das ganze Jahr.
+
+Zuerst wird das beste statistische Modell vorgestellt, das Prophet Modell, mit einem MAPE von 7.49\%. Die Abbildung \ref{fig:prophet_january} zeigt die Vorhersage. Eine Anmerkung hier zu den statistischen Modellen ist das Vorhersageintervall. Denn bei den neuronalen Netzen ist ein Vorhersageintervall eher schwieriger darzustellen und zu berechnen. Das Prophet-Modell erkennt das Muster relativ gut und ist auch unter der 10\% Grenze, die in der Energiewirtschaft für Energieprognosen oft als ein Ausschluss und Brauchbarkeitskriterium gesetzt wird.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/statistic_approach_PROPHET.png}
+\caption{Prophet, Ausschnitt für Januar}
+\label{fig:prophet_january}
+\end{figure}
+
+Die Abbildung \ref{fig:prophet_real_sim} stellt die Vorhersage gegenüber den realen Beobachtungen dar. Deutlich zu erkennen, dass die Vorhersage werte für das Prophet-Modell sich um die schwarze Gerade streuen. Diese Gerade soll eine perfekte Vorhersage darstellen. Die Streuung um diese Gerade kann auch als Residueen angesehen werden.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/real_to_fc_statistic_approach_PROPHET.png}
+\caption{Prophet, Vorhersage gegenüber realen Beobachtungen}
+\label{fig:prophet_real_sim}
+\end{figure}
+
+Das neuronale Netz ist mit einem MAPE von 6.62\% besser als das Prophet-Modell. Dabei ist zwischen ``LNN mit SLAF'' und ``LNN'' zu unterscheiden. LNN mit SLAF konnte leider nicht so gut performen wie LNN (ohne SLAF). Ein Grund dafür kann z.B. sein, dass das LNN nicht für ein SLAF geeignet ist, oder dass SLAF für Zeitreihen nicht anwendbar ist. Die Abbildung \ref{fig:slaf_lnn_100_epochs_january} zeigt die Vorhersage für den Januar 2017 nach 100 Epochen. Hier wird gezeigt, dass LNN sich besser an das saisonale Muster anpassen kann als ein LNN mit SLAF. LNN mit SLAF hat zwar an einigen Stellen das Muster erkennen können, aber nicht über den ganzen Datensatz hinweg.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/cobmined_nnLNN.png}
+\caption{Nach 100 Epochen mit und ohne SLAF, Ausschnitt für Januar}
+\label{fig:slaf_lnn_100_epochs_january}
+\end{figure}
+
+Auch in der Jahresbetrachtung sieht LNN begründet aus. LNN passt sich an das moustache-Muster über das ganze Jahr sehr gut an
+und ist damit auch für eine Vorhersage von Stromerzeugung bzw. von Zeitreihen geeignet. LNN mit SLAF war in dem Fall nicht so erfolgreich. Zwar folgt es halbwegs dem Verlauf, erkennt aber das saisonale Muster nicht so gut wie LNN ohne SLAF. Die Abbildung \ref{fig:slaf_lnn_100_epochs_2017} zeigt dabei die Vorhersage der beiden Modelle für das Jahr 2017 nach 100 Epochen.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/all_time_cobmined_nnLNN.png}
+\caption{Nach 100 Epochen mit und ohne SLAF, ganzes Jahr 2017}
+\label{fig:slaf_lnn_100_epochs_2017}
+\end{figure}
+
+Der Vergleich zwischen Abbildung \ref{fig:prophet_real_sim} und \ref{fig:slaf_lnn_100_epochs_lnn} zeigt, dass beim LNN ein ähnliches Muster entsteht wie beim Prophet Modell für die Vorhersage werte gegenüber den echten Beobachtungen. Anzumerken hier ist, dass LNN eine künstliche Grenze im oberen Bereich gezogen hat. Diese Grenze konnte mit Normalisierung zwar gedämmt werden, konnte jedoch nicht komplett aufgelöst werden. Dies zeigt, dass LNNs noch mehr Potenzial haben kann. Wobei das LNN noch weiter optimiert werden muss.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{plots/real_to_fc_all_time_cobmined_nnLNN.png}
+\caption{Nach 100 Epochen LNN, Vorhersage gegenüber realen Beobachtungen}
+\label{fig:slaf_lnn_100_epochs_lnn}
+\end{figure}
+
+LNN mit SLAF in Abbildung \ref{fig:slaf_lnn_100_epochs_lnn_slaf} sieht im Gegensatz dazu nicht so gut aus. LNN mit SLAF hat eine stärkere Unter- und Obergrenze gezogen. Die Datenwolke ist konzentrierter und breiter um die perfekte Vorhersage gestreut. Wieder deutlich, dass LNN mit SLAF nicht so gut geeignet ist wie LNN ohne SLAF.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{plots/real_to_fc_cobmined_nnLNN mit SLAF.png}
+\caption{Nach 100 Epochen LNN + SLAF, Vorhersage gegenüber realen Beobachtungen}
+\label{fig:slaf_lnn_100_epochs_lnn_slaf}
+\end{figure}
+
+Die Trainings-Verluste zeigen jedoch, dass im Training sich LNN mit SLAF an den Verlust vom Training ohne SLAF annähert. Genau dieses Verhalten war auch zu erwarten, da SLAFs mit swish nur eine Approximation der echten ReLU-Funktion ist.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{plots/training_loss.png}
+\caption{MAPE Verlust in den einzelnen Schritten (eine Epoche sind mehrere Schritte)}
+\label{fig:train_loss}
+\end{figure}
+
+\clearpage
+\newpage
+
+Die Tabelle \ref{table:model_comparison} fasst nochmal alle Ergebnisse zusammen. Wie besprochen ist LNN mit einem MAPE von 6.62\% ein sehr gutes Ergebnisss für die Stromerzeugung und geeignet für eine Vorhersage. Anzumerken ist hier, dass das ARIMA Modell und das Prophet-Modell nicht optimiert wurden. Ebenfalls konnte LNN nicht vollständig durch die enorme Trainingszeit (2 Studen ca. für 100 Epochen) optimiert werden.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|l|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Model}              & \textbf{RMSE}    & \textbf{MAPE}    & \textbf{MAE}     \\ \hline
+1            & LNN                         & 1170         & 6.62         & 937         \\ \hline
+2            & PROPHET                     & 1351         & 7.49         & 1071        \\ \hline
+3            & ARIMA                       & 1421         & 7.68         & 1118        \\ \hline
+4            & LNN mit SLAF                & 1895         & 9.63        & 1443        \\ \hline
+5            & NAIVE                       & 2423         & 12.60        & 1887        \\ \hline
+6            & DRIFT                       & 2592         & 13.26        & 2025        \\ \hline
+7            & MEAN                        & 2322         & 13.72        & 1888        \\ \hline
+8            & LNN mit SLAF 10 Epochen     & 3721         & 19.83        & 2865        \\ \hline
+9            & LNN 10 Epochen              & 3779         & 23.57        & 3307        \\ \hline
+\end{tabular}
+\caption{Vergleich der Modelle mit RMSE, MAPE und MAE}
+\label{table:model_comparison}
+\end{table}
+
+\clearpage
+\newpage
+
+\section{Fazit}\label{fazit}
+
+In dieser Arbeit wurde gezeigt, dass LNNs ohne SLAF für eine Vorhersage von Zeitreihen im Bereich der Energiewirtschaft geeignet sind. Durch eine umfassende Datenanalyse konnten die notwendigen Features für die Modellierung extrahiert werden. Der Vergleich zu den herkömmlichen statistischen Modellen zeigt ein großes Potenzial im Bereich von Zeitreihen für LNNs auf. Schon in wenigen Schritten kann ein LNN so optimiert werden, dass es ein unoptimiertes statistisches Modell übertrumpft. Die saisonalen Muster werden genauso gut von dem LNN erkannt wie von einem statistischen Modell. Der einzige Nachteil eines LNNs gegenüber einem statistischen Modell sind die Vorhersageintervalle.
+
+Diese werden bei einem LNN nicht automatisch mit erzeugt, können jedoch durch weitere Verfahren ermittelt und für LNNs angepasst werden (Forschungsfrage). LNNs mit SLAF performen zwar nicht so gut, können aber vielleicht weiter angepasst werden. Denn LNNs sind von Grund auf nicht für SLAF optimiert worden. Dabei könnte eine weitere Forschungsfrage entstehen und zwar wie SLAF am besten für LNNs optimiert werden kann und welche Vorteile das dann mit sich bringt.
+
+Im Großen und Ganzen sollten LNNs im Bereich der Zeitreihen weiter untersucht werden und tiefergehende Modellierungen und Optimierungen erzeugt werden.
 
 \newpage
 \printbibliography

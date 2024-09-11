@@ -27,6 +27,8 @@ library(corrplot)
 library(scales)
 library(fable.prophet)
 library(mgcv)
+library(RColorBrewer)
+library(viridis)  
 # library(MEFM)
 load_all()
 ```
@@ -41,18 +43,6 @@ us_holidays <- load_holidays(from_year = 2004, to_year = 2018, location="/US")
 us_holidays <- us_holidays |> 
   mutate(date = as.Date(date)) |>
   select(localName, date)
-```
-
-
-URL-collection
-
-```
-https://www.pjm.com/library/~/media/about-pjm/pjm-zones.ashx
-```
-
-# American Electric Power
-
-```{r, message=FALSE, warning=FALSE}
 
 # For the company https://en.wikipedia.org/wiki/American_Electric_Power
 # estimated energy consumption in Megawatts (MW)
@@ -62,7 +52,7 @@ AEP_hourly$Datetime <- as.POSIXct(AEP_hourly$Datetime,
                                   format = "%Y-%m-%d %H:%M:%S")
 AEP_hourly <- AEP_hourly |>
   mutate(
-    MissingValue = (difftime(Datetime, lag(Datetime, default = first(Datetime)), units = "hours") == 2) | is.na(AEP_MW) | is.na(Datetime),
+    MissingValue = (difftime(Datetime, lag(Datetime, default = first(Datetime)), units = "hours") >= 2) | is.na(AEP_MW) | is.na(Datetime),
     DuplicatedDate = duplicated(Datetime),
     Year = year(Datetime)) |>
   distinct(Datetime, .keep_all = TRUE)
@@ -80,7 +70,7 @@ AEP_hourly_cleaned <- AEP_hourly |>
   drop_na(Datetime) |>
   as_tsibble(index = Datetime) |>
   select(Datetime, AEP_MW) |>
-  fill_gaps() |>
+  fill_gaps(Datetime = seq(min(Datetime), max(Datetime), by = "hour")) |>
   fill(AEP_MW, .direction = "downup") |>
     mutate(
     Weekday = wday(Datetime, label = TRUE),  
@@ -122,9 +112,21 @@ AEP_hourly_cleaned$MinLastOneDay <- rollapply(AEP_hourly_cleaned$AEP_MW, width =
 
 cor <- cor(AEP_hourly_cleaned[sapply(AEP_hourly_cleaned, is.numeric)], method = c("pearson", "kendall", "spearman"), use = "complete.obs")
 
+
 AEP_hourly_cleaned |>
   gg_tsdisplay(AEP_MW, plot_type="partial", lag=36)
+```
 
+
+URL-collection
+
+```
+https://www.pjm.com/library/~/media/about-pjm/pjm-zones.ashx
+```
+
+# American Electric Power
+
+```{r, message=FALSE, warning=FALSE}
 
 local_name_colors <- c(
   "New Year's Day" = palette()[2],
@@ -423,6 +425,86 @@ ggsave(
 
 ```{r, message=FALSE, warning=FALSE}
 
+sigmoid_f <- function(x) {
+  1/(1+exp(-x))
+}
+
+x_sig <- seq(-10, 10, by = 0.1)
+y_sig <- sigmoid_f(x_sig)
+
+sigmoid_df <- data.frame(x = x_sig, y= y_sig, beta="sigmoid")
+
+
+relu <- function(x) {
+  return(pmax(0, x))
+}
+
+x_relu <- seq(-10, 10, by = 0.1)
+y_relu <- relu(x_relu)
+
+relu_df <- data.frame(x = x_relu, y= y_relu, beta="ReLU")
+
+
+sigmoid <- function(x) {
+  1 / (1 + exp(-x))
+}
+
+swish <- function(x, beta = 1) {
+  x * sigmoid(beta * x)
+}
+
+
+
+x_vals <- seq(-10, 10, length.out = 1000)
+
+swish_df <- data.frame()
+
+for (i in c(0.01, 0.1, 1, 10, 100)){
+  y_vals <- swish(x_vals, beta = i)
+  temp_df <- data.frame(x = x_vals, y = y_vals, beta = paste0("Beta: ", as.factor(i)))
+  swish_df <- rbind(swish_df, temp_df)
+}
+
+# swish_df <- swish_df |>
+#   bind_rows(relu_df)
+colors <- brewer.pal(n = 6, name = "Blues")
+
+p <- ggplot(data=swish_df, aes(x=x, y=y, color=beta)) +
+  geom_line(size=0.5) +
+  geom_line(size=1, alpha=0.4, data=relu_df, aes(x=x, y=y, color=beta))+
+  geom_line(size=1, alpha=0.4, data=sigmoid_df, aes(x=x, y=y, color=beta))+
+  theme(legend.position = "bottom", strip.text = element_text(size = 12)) +
+  guides(color = guide_legend(override.aes = list(lwd = 3, size = 2), title = " "),
+         fill = guide_legend(title = " "))+
+  labs(level = "Level")+
+  labs(
+    x = "x",
+    y = "y"
+  )+
+  ylim(-0.5,1) + 
+  xlim(-10, 10) + 
+  scale_color_manual(values = c("ReLU" = "orange", 
+                                "sigmoid" = "black",
+                                "Beta: 0.01" = colors[2], 
+                                "Beta: 0.1" = colors[3], 
+                                "Beta: 1" = colors[4], 
+                                "Beta: 10" = colors[5], 
+                                "Beta: 100" = colors[6])) 
+
+ggsave(
+    "plots/swish_sigmoid_representation.png",
+    plot = p,
+    width = 5.5,
+    height = 3.7,
+    dpi = 600
+  )
+
+
+
+```
+
+```{r, message=FALSE, warning=FALSE}
+
 train_aep <- AEP_hourly_cleaned |>
   filter(year(Datetime) >= 2014 & (year(Datetime) <= 2016))
 
@@ -471,14 +553,14 @@ fit <- train_aep |>
     )
   )
 
-saveRDS(fit, file = "Rmodel/arima_mean_naive_drift_prophet.rds")
+# saveRDS(fit, file = "Rmodel/arima_mean_naive_drift_prophet.rds")
 
 ```
 
 
 ```{r, echo=TRUE, message=FALSE}
 
-
+# 2017-10-29 02:00:00
 days_to_forecast <- 40
 months_to_forecast <- 12
 month_to_plot <- 12
@@ -537,12 +619,162 @@ plot_forecast(
   metric_results = metrics_by_model, 
   df = AEP_hourly_cleaned,
   month_to_plot = 1, 
-  days_to_plot = 42
+  days_to_plot = 42,
+  prefix="statistic_approach_"
 )
 
 glance(fit)
 report(fit)
 ```
+
+```{r, message=FALSE, warning=FALSE}
+
+path <- "../data/results/10_epochs_units8_lr0.0001_slaf.csv"
+model_name <- "LNN mit SLAF 10 Epochen"
+name_for_legend <- "LNN mit SLAF 10 Epochen"
+
+data <- read.csv(path)
+data <- data [2:nrow(data)-1,]
+data$.model <- model_name
+data <- data |>
+  rename(.mean = y_pred)
+
+path <- "../data/results/10_epochs_units32_lr0.01_no_slaf.csv"
+model_name <- "LNN 10 Epochen"
+name_for_legend <- "LNN 10 Epochen"
+
+data_no_slaf <- read.csv(path)
+data_no_slaf <- data_no_slaf [2:nrow(data_no_slaf)-1,]
+data_no_slaf$.model <- model_name
+data_no_slaf <- data_no_slaf |>
+  rename(.mean = y_pred)
+
+data_combined <- data_no_slaf |>
+  bind_rows(data)
+
+metr_10_epochs <- data_combined |>
+  group_by(.model) |>
+  summarize(
+    RMSE = sqrt(mean((y_true - .mean)^2, na.rm = TRUE)),  
+    MAPE = mean(abs((y_true - .mean) / y_true), na.rm = TRUE) * 100,  
+    MAE = mean(abs(y_true - .mean), na.rm = TRUE)  
+  ) |>
+  drop_na()
+
+
+```
+
+```{r, message=FALSE, warning=FALSE}
+
+path <- "../data/results/8units_LR0.0001_SLAF.csv"
+model_name <- "LNN mit SLAF"
+name_for_legend <- "LNN mit SLAF"
+
+data <- read.csv(path)
+data <- data [2:nrow(data)-1,]
+data$.model <- model_name
+data <- data |>
+  rename(.mean = y_pred)
+
+path <- "../data/results/units32_lr0.01_no_slaf.csv"
+model_name <- "LNN"
+name_for_legend <- "LNN"
+
+data_no_slaf <- read.csv(path)
+data_no_slaf <- data_no_slaf [2:nrow(data_no_slaf)-1,]
+data_no_slaf$.model <- model_name
+data_no_slaf <- data_no_slaf |>
+  rename(.mean = y_pred)
+
+data_combined <- data_no_slaf |>
+  bind_rows(data)
+
+metr <- data_combined |>
+  group_by(.model) |>
+  summarize(
+    RMSE = sqrt(mean((y_true - .mean)^2, na.rm = TRUE)),  
+    MAPE = mean(abs((y_true - .mean) / y_true), na.rm = TRUE) * 100,  
+    MAE = mean(abs(y_true - .mean), na.rm = TRUE)  
+  ) |>
+  drop_na()
+
+
+all_metr <- metr |>
+  bind_rows(metr_10_epochs) |>
+  bind_rows(metrics_by_model)
+```
+
+```{r, message=FALSE, warning=FALSE}
+
+data_2017 <- AEP_hourly_cleaned |>
+  filter(year(Datetime) == 2017) |>
+  filter(month(Datetime) >= 1) |>
+  filter(month(Datetime) <= 12) |>
+  distinct(Datetime, .keep_all = TRUE) |>
+  as_tsibble(index=Datetime)  |>
+  filter(!duplicated(as.factor(Datetime), fromLast = TRUE))
+# data_2017_2$.mean <- data$.mean
+# data_2017_2$y_true <- data$y_true
+# data_2017_2$X <- data$X
+# data_2017_2$diff <- data_2017_2$y_true - data_2017_2$AEP_MW  
+ 
+load_all()
+plot_forecast_nn(
+  aep_data = AEP_hourly_cleaned,
+  raw_fc = data_combined,
+  metric_results = metr, 
+  df = data_2017_2,
+  month_to_plot = 1, 
+  days_to_plot = 42,
+  prefix="cobmined_nn",
+  name_for_model = name_for_legend
+)
+  
+
+```
+
+```{r, message=FALSE, warning=FALSE}
+
+model_name_slaf <- "LNN mit SLAF"
+path_slaf <- "../data/results/best_slaf_metrics.csv"
+
+model_name_no_slaf <- "LNN"
+path_no_slaf <- "../data/results/best_no_slaf_metrics.csv"
+
+
+data_no_slaf <- read.csv(path_no_slaf)
+data_slaf <- read.csv(path_slaf)
+
+data_no_slaf$.model = model_name_no_slaf
+data_slaf$.model = model_name_slaf
+
+data <- data_no_slaf |>
+  bind_rows(data_slaf)
+
+p <- ggplot(data=data, aes(x=step, y=train_loss*100)) +
+  geom_line(aes(color = .model), alpha=0.5) + 
+  geom_smooth(aes(color = .model)) + 
+  ylim(0,5) +
+  labs(x="Step", y="Train loss, MAPE [%]") +
+  theme(legend.position = "bottom", strip.text = element_text(size = 12)) +
+  scale_color_manual(
+      values = c(
+        name = " ",
+        "LNN" = "#FF9100",
+        "LNN mit SLAF" = "#2E9FDF"
+      ))
+
+ggsave(
+    "plots/training_loss.png",
+    plot = p,
+    width = 5.5,
+    height = 3.7,
+    dpi = 600
+  )
+
+```
+
+
 
 
 # Commonwealth Edison

@@ -1,0 +1,20 @@
+\babel@toc {ngerman}{}\relax 
+\contentsline {figure}{\numberline {1}{\ignorespaces Swish-Funktion, ReLU Repräsentation}}{7}{figure.caption.1}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Roher Datensatz zur Stromerzeugung (01.10.2004 - 03.08.2018) vom Unternehmen American Electric Power}}{10}{figure.caption.2}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Stromerzeugung aufgespalten in einzelne Jahre}}{11}{figure.caption.3}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Verteilung der Stromerzeugung}}{11}{figure.caption.4}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Stündlich aggregierte Darstellung der Stromerzeugung}}{12}{figure.caption.5}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Wöchentlich aggregierte Darstellung der Stromerzeugung}}{12}{figure.caption.6}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Feiertage, aggregierte Darstellung der Stromerzeugung}}{13}{figure.caption.7}%
+\contentsline {figure}{\numberline {8}{\ignorespaces Verteilung der Werktage und nicht Werktage}}{13}{figure.caption.8}%
+\contentsline {figure}{\numberline {9}{\ignorespaces Autokorrelation für die Stromerzeugung}}{14}{figure.caption.9}%
+\contentsline {figure}{\numberline {10}{\ignorespaces Korrelation zwischen den vergangenen Beobachtungen und der Stromerzeugung}}{15}{figure.caption.10}%
+\contentsline {figure}{\numberline {11}{\ignorespaces Nach 10 Epochen mit und ohne SLAF, Ausschnitt für Januar}}{21}{figure.caption.12}%
+\contentsline {figure}{\numberline {12}{\ignorespaces Nach 10 Erpochen mit und ohne SLAF, ganzes Jahr 2017}}{21}{figure.caption.13}%
+\contentsline {figure}{\numberline {13}{\ignorespaces Prophet, Ausschnitt für Januar}}{22}{figure.caption.14}%
+\contentsline {figure}{\numberline {14}{\ignorespaces Prophet, Vorhersage gegenüber realen Beobachtungen}}{23}{figure.caption.15}%
+\contentsline {figure}{\numberline {15}{\ignorespaces Nach 100 Epochen mit und ohne SLAF, Ausschnitt für Januar}}{24}{figure.caption.16}%
+\contentsline {figure}{\numberline {16}{\ignorespaces Nach 100 Epochen mit und ohne SLAF, ganzes Jahr 2017}}{24}{figure.caption.17}%
+\contentsline {figure}{\numberline {17}{\ignorespaces Nach 100 Epochen LNN, Vorhersage gegenüber realen Beobachtungen}}{25}{figure.caption.18}%
+\contentsline {figure}{\numberline {18}{\ignorespaces Nach 100 Epochen LNN + SLAF, Vorhersage gegenüber realen Beobachtungen}}{26}{figure.caption.19}%
+\contentsline {figure}{\numberline {19}{\ignorespaces MAPE Verlust in den einzelnen Schritten (eine Epoche sind mehrere Schritte)}}{26}{figure.caption.20}%
