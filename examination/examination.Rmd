@@ -88,13 +88,17 @@ library(ggplot2)
 
 <!----------------------------------------------------------------------->
 
-Geht es um Vorhersagen von Zeitreihen mit komplexen saisonalen Mustern, so sind wohl die bekanntesten statistischen Modellierungen Autoregressive Integrated Moving Average (ARIMA), Exponential Smoothing oder das Prophet-Modell. Im Bereich der neuronalen Netze ist Long-Short-Term-Memory (LSTM), welches eine spezielle Art von Recurrent Neural Network RNN ist, das bekannte neuronale Netz für komplexe Zeitreihen. Ein aktuell neuer Ansatz für eine Vorhersage von komplexen Zeitreihen ist ein weiteres RNN, das Liquid Time-Constant Neuronal Network oder kurz Liquid Neuronal Network (LNN). Es geht darum, mit weniger Rechenleistung und geringerem Datensatz ein kompakteres Modell zu erzeugen, welches sich z.B. in Echtzeit an die Datenlage anpassen kann. So kann z.B. ein LSTM 100.000 - 1.000.000 Parameter haben, wobei das LNN mit bis zu 10.000 Parametern auskommt und ähnliche Resultate liefert. So ist eine Anbindung an elektronische Messgeräte oder Raspberry Pi mit weniger Rechenleistung im Gegensatz zu LSTM möglich. In dieser Arbeit wird ein LNN auf einen Datensatz von der Stromerzeugung vom Unternehmen American Electric Power angewandt. Das Ziel ist es, eine Vorhersage für den nächsten Tag "day-ahead" zu treffen. Bei den neuronalen Netzen steht immer die Frage im Raum, welche Aktivierungsfunktion genutzt werden soll. Als Ergänzung zu dem LNN wird ein self learning activation function (SLAF) Modell implementiert. SLAF soll das vanishing gradient Problem dezimieren, aber auch eine approximierte Aktivierungsfunktion für das LNN finden. 
+Geht es um Vorhersagen von Zeitreihen mit komplexen saisonalen Mustern, so sind wohl die bekanntesten statistischen Modellierungen Autoregressive Integrated Moving Average (ARIMA), Exponential Smoothing oder das Prophet-Modell. Im Bereich der neuronalen Netze ist Long-Short-Term-Memory (LSTM), welches eine spezielle Art von Recurrent Neural Network RNN ist, das bekannte neuronale Netz für komplexe Zeitreihen. Ein aktuell neuer Ansatz für eine Vorhersage von komplexen Zeitreihen ist ein weiteres RNN, das Liquid Time-Constant Neuronal Network oder kurz Liquid Neuronal Network (LNN). 
+
+Es geht darum, mit weniger Rechenleistung und geringerem Datensatz ein kompakteres Modell zu erzeugen, welches sich z.B. in Echtzeit an die Datenlage anpassen kann. So kann z.B. ein LSTM 100.000 - 1.000.000 Parameter haben, wobei das LNN mit bis zu 10.000 Parametern auskommt und ähnliche Resultate liefert. So ist eine Anbindung an elektronische Messgeräte oder Raspberry Pi mit weniger Rechenleistung im Gegensatz zu LSTM möglich. In dieser Arbeit wird ein LNN auf einen Datensatz von der Stromerzeugung vom Unternehmen American Electric Power angewandt. Das Ziel ist es, eine Vorhersage für den nächsten Tag "day-ahead" zu treffen. Bei den neuronalen Netzen steht immer die Frage im Raum, welche Aktivierungsfunktion genutzt werden soll. 
+
+Als Ergänzung zu dem LNN wird ein self learning activation function (SLAF) Modell implementiert. SLAF soll das vanishing gradient Problem verstärkt dezimieren, aber auch eine approximierte Aktivierungsfunktion für das LNN finden. 
 
 Um den roten Faden besser folgen zu können, werden die einzelnen Kapitel kurz erläutert:
 
 \textbf{Methodik:} Im Kapitel der Methodik wird auf die theoretischen Grundlagen eingegangen. Im ersten Abschnitt wird auf die Liquid Time-Constant Neuronal Networks (LTCNNs) eingegangen. Hier wird beschrieben, was ein LTCNN ist und wie die mathematische Zusammensetzung aussieht. Der Begriff "Luquid" und das Lernverhalten wird in Bezug auf das neuronale Netz erläutert.
 
-Darauf folgt die Erklärung, was eine Self Learnable Activation FUnction (SLAF) ist. Es wird auf das Konzept hinter SLAFs prägnant eingegangen und erläutert. Der Begriff der swish-Funktion wird eingeführt und beschrieben.
+Darauf folgt die Erklärung, was eine Self Learnable Activation Function (SLAF) ist. Es wird auf das Konzept hinter SLAFs prägnant eingegangen und erläutert. Der Begriff der swish-Funktion wird eingeführt und beschrieben.
 
 Als Letztes wird vollständigkeitshalber auf das Auto Regressive-Moving Average (ARIMA), das Prophet-Modell und die verwendeten Metriken eingegangen.  
 
@@ -104,7 +108,7 @@ Als Letztes wird vollständigkeitshalber auf das Auto Regressive-Moving Average 
 
 \textbf{Vorhersage Ergebnisse:} Im Kapitel der Vorhersage der Ergebnisse wird auf die statistischen Modelle als Referenz und auf die Vorhersage der LNNs eingegangen. Es wird der Unterschied zwischen den statistischen Modellen und den LNNs aufgezeigt. Mittels MAPE wird das beste Modell ermittelt. Gegen Ende wird der Trainingsverlauf dargestellt und die Ergebnisse nochmal zusammengefasst.
 
-\textbf{Fazit:} Im Kapitel Fazit wird die Arbeit rückblickend betrachtet und die wichtigsten Ergebnisse werden zusammengefasst. Es wird eine Forschungsfrage formuliert und ein Ausblick dargestellt.
+\textbf{Fazit:} Im Kapitel Fazit wird die Arbeit rückblickend betrachtet und die wichtigsten Ergebnisse werden zusammengefasst. Es werden verschiedene Forschungsfragen formuliert und ein Ausblick dargestellt.
 
 \clearpage
 \newpage
@@ -205,7 +209,7 @@ $\epsilon_t$ : Der Fehler-Term (Rauschen)
 
 ## Metriken
 
-Als ein Auswahlkriterium für eine Vorhersage spielen Metriken wie Mean Absolute Error (MAE), Mean Absolute Percentage Error (MAPE) und Root Mean Squared Error (RMSE) eine Rolle. Folgend werden die einzelnen Metriken kurz beschrieben.
+Als ein Auswahlkriterium für eine Vorhersage spielen Metriken (in dieser Arbeit) wie Mean Absolute Error (MAE), Mean Absolute Percentage Error (MAPE) und Root Mean Squared Error (RMSE) eine Rolle. Folgend werden die einzelnen Metriken kurz beschrieben.
 
 **MAE** beschreibt die durchschnittliche absolute Abweichung zwischen den vorhergesagten Werten $\hat{y_i}$ und den tatsächlichen Werten $y_i$. Folgende Formel wird dabei verwendet:
 
@@ -234,7 +238,7 @@ RMSE = \sqrt{\frac{1}{n} \sum_{i=1}^{n}  (y_i - \hat{y_i})^2}
 <!----------------------------------------------------------------------->
 
 # Datengrundlage und Datenanalyse
-Auch für neuronale Netze muss Datenanalyse betrieben werden. Es ist wichtig, den Datensatz komplett zu durchdringen und die Erkenntnisse aus der Analyse in der Implementierung des neuronalen Netzes mitzuberücksichtigen. Der rohe Datensatz der Stromerzeugung hat eine stündliche Granularität in der Zeitspanne 01.10.2004 - 03.08.2018 (5054 Tage). Wird der Datensatz auf Äquidistanz, so fallen insgesamt 40 fehlende Beobachtungen in der stündlichen Auflösung. Die Abbildung \ref{fig:raw_AEP} repräsentiert den rohen Datensatz. Die fehlenden Werte (rot) wurden mit dem letzten vorhandenen Wert ersetzt. Dies ist damit zu begründen, da der Datensatz groß genug ist und es keine drastischen Auswirkungen auf das neuronale Netz haben wird. Nach der Säuberung der Daten hat der Datensatz korrekterweise 121.296 ($24*5054$) Beobachtungen. Ein positiver oder negativer Trend ist für die Stromerzeugung nicht zu erkennen.
+Auch für neuronale Netze muss Datenanalyse betrieben werden. Es ist wichtig, den Datensatz komplett zu durchdringen und die Erkenntnisse aus der Analyse in der Implementierung des neuronalen Netzes mitzuberücksichtigen. Der rohe Datensatz der Stromerzeugung hat eine stündliche Granularität in der Zeitspanne 01.10.2004 - 03.08.2018 (5054 Tage). Wird der Datensatz auf Äquidistanz untersucht, so fallen insgesamt 40 fehlende Beobachtungen in der stündlichen Auflösung. Die Abbildung \ref{fig:raw_AEP} repräsentiert den rohen Datensatz. Die fehlenden Werte (rot) wurden mit dem letzten vorhandenen Wert ersetzt. Dies ist damit zu begründen, da der Datensatz groß genug ist und es keine drastischen Auswirkungen auf das neuronale Netz haben wird. Nach der Säuberung der Daten hat der Datensatz korrekterweise 121.296 ($24*5054$) Beobachtungen. Ein positiver oder negativer Trend ist für die Stromerzeugung nicht zu erkennen. Die ganze Analyse und Datensäuberung wurde in dieser Arbeit mit R gemacht.
 
 \begin{figure}[H]
 \centering
@@ -345,7 +349,7 @@ Damit wurde der Datensatz nach der Analyse angepasst und kann folgend beschriebe
 - MaxLastOneDay: Maximum des letzten Tages 
 - MinLastOneDay: Minimum des letzten Tages 
 
-Anmerkung: Es wurden weitere Feature erzeugt, die z.B. den Kalender-Effekt besser beschreiben sollen. So kann es sein, dass nach einem Feiertag die Menschen Urlaub nehmen und dadurch die Stromerzeugung sinkt. So wird auch untersucht, ob der letzte Tag z.B. ein Feiertag war und nun ein Werktag.
+Anmerkung: Es wurden weitere Feature erzeugt, die z.B. den Kalender-Effekt besser beschreiben sollen. So kann es sein, dass nach einem Feiertag die Menschen Urlaub nehmen und dadurch die Stromerzeugung sinkt. So wird auch untersucht, ob der letzte Tag z.B. ein Feiertag war und nun ein Werktag (z.B. das Feature "LastDayWasNotWorkDayAndNowWorkDay").
 
 \clearpage
 \newpage
@@ -475,7 +479,7 @@ Wegen dieser großen Dimensionalität des Datensatzes möchten wir mithilfe der 
 Die Komponenten sind in der Reihenfolge nach deren Wichtigkeit (Feature Importance) platziert. Jedoch zeigt die Tabelle, dass die numerischen Variablen höher platziert sind als die booleschen Merkmale, weil diese stärkere Korrelation mit abhängigen Variablen aufweisen.
 
 Trotzdem hat sich im Verlauf des Trainings herausgestellt, dass die verzögerten Werte eher das Modell verwirren als fördern. Aufgrund des enormen Zeitaufwands, um alle Möglichkeiten der ca. 30 Features durchzugehen (Grid-Search für Features) wurde in dieser Arbeit
-der Ansatz der Datenanalyse verfolgt. Dabei wurde versucht, logisch die Variablen herauszupicken und ins Modell hereinfließen zu lassen. Das Ganze untermauert mit der Datenanalyse. Im folgenden Unterkapitel beschreibt die `FEATURES_LIST` die ausgewählten Features. Dabei war es auch die Idee für den Anfang einen etwas einfacheren Ansatz zu untersuchen.
+der Ansatz der Datenanalyse verfolgt. Dabei wurde versucht, logisch die Variablen herauszupicken und ins Modell hereinfließen zu lassen. Das Ganze untermauert mit der Datenanalyse. Im folgenden Unterkapitel beschreibt die `FEATURES_LIST` die ausgewählten Features. Dabei war es auch die Idee für den Anfang einen etwas einfacheren Ansatz zu untersuchen, um die Trainingszeit zu minimieren.
 
 <!----------------------------------------------------------------------->
 
@@ -533,7 +537,7 @@ Bevor das eigentliche Training startet, werden die Daten im Bereich zwischen 0 u
 
 Für das unkomplizierte Training wird die `Trainer` Klasse aus der `pytorch_lightning` Bibliothek benutzt, welche einen Data Scientisten vom Boiler Code befreit.
 
-Der Grid Search für die Parameter wurde auf 10 Epochen pro Parameterkombination begrenzt, um das Potenzial von den Modellen analytisch zur 10-ten Epoche zu betrachten. Dafür wurden insgesamt 36 Modelle miteinander verglichen. Zuerst wurde für jeden Kandidaten ein `Mean Average Percentage Error` berechnet und eine grafische Darstellung der Vorhersagen als ein Anhaltspunkt genommen. Die meist vielversprechenden Parameterkombinationen wurden dann für längeres Training (100 Epochen) ausgewählt.
+Der Grid Search für die Parameter (nicht Features) wurde auf 10 Epochen pro Parameterkombination begrenzt, um das Potenzial von den Modellen analytisch zur 10-ten Epoche zu betrachten. Dafür wurden insgesamt 36 Modelle miteinander verglichen. Zuerst wurde für jeden Kandidaten ein `Mean Average Percentage Error` berechnet und eine grafische Darstellung der Vorhersagen als ein Anhaltspunkt genommen. Die meist vielversprechenden Parameterkombinationen wurden dann für längeres Training (100 Epochen) ausgewählt.
 
 Nach 10 Epochen hatten die besten Modelle einen `MAPE Loss` zwischen 19% und 25% gezeigt:
 
@@ -627,7 +631,7 @@ Die Trainings-Verluste zeigen jedoch, dass im Training sich LNN mit SLAF an den 
 \clearpage
 \newpage
 
-Die Tabelle \ref{table:model_comparison} fasst nochmal alle Ergebnisse zusammen. Wie besprochen ist LNN mit einem MAPE von 6.62% ein sehr gutes Ergebnisss für die Stromerzeugung und geeignet für eine Vorhersage. Anzumerken ist hier, dass das ARIMA Modell und das Prophet-Modell nicht optimiert wurden. Ebenfalls konnte LNN nicht vollständig durch die enorme Trainingszeit (2 Studen ca. für 100 Epochen) optimiert werden. 
+Die Tabelle \ref{table:model_comparison} fasst nochmal alle Ergebnisse zusammen. Dabei wurden die MAPEs, MAEs und RMSEs für die Vorhersage vom ganzen Jahr 2017 berechnet. Wie besprochen ist LNN mit einem MAPE von 6.62% ein sehr gutes Ergebnisss für die Stromerzeugung und geeignet für eine Vorhersage. Anzumerken ist hier, dass das ARIMA Modell und das Prophet-Modell nicht optimiert wurden. Ebenfalls konnte LNN nicht vollständig durch die enorme Trainingszeit (2 Studen ca. für 100 Epochen) optimiert werden. 
 
 \begin{table}[h!]
 \centering
@@ -656,14 +660,30 @@ Die Tabelle \ref{table:model_comparison} fasst nochmal alle Ergebnisse zusammen.
 
 # Fazit
 
-In dieser Arbeit wurde gezeigt, dass LNNs ohne SLAF für eine Vorhersage von Zeitreihen im Bereich der Energiewirtschaft geeignet sind. Durch eine umfassende Datenanalyse konnten die notwendigen Features für die Modellierung extrahiert werden. Der Vergleich zu den herkömmlichen statistischen Modellen zeigt ein großes Potenzial im Bereich von Zeitreihen für LNNs auf. Schon in wenigen Schritten kann ein LNN so optimiert werden, dass es ein unoptimiertes statistisches Modell übertrumpft. Die saisonalen Muster werden genauso gut von dem LNN erkannt wie von einem statistischen Modell. Der einzige Nachteil eines LNNs gegenüber einem statistischen Modell sind die Vorhersageintervalle. 
+In dieser Arbeit wurde gezeigt, dass LNNs ohne SLAF für eine Vorhersage von Zeitreihen im Bereich der Energiewirtschaft geeignet sind. Durch eine umfassende Datenanalyse konnten die notwendigen Features für die Modellierung extrahiert werden. Der Vergleich zu den herkömmlichen statistischen Modellen zeigt ein großes Potenzial im Bereich von Zeitreihen für LNNs auf. Schon in wenigen Schritten kann ein LNN so optimiert werden, dass es ein unoptimiertes statistisches Modell übertrumpft. 
 
-Diese werden bei einem LNN nicht automatisch mit erzeugt, können jedoch durch weitere Verfahren ermittelt und für LNNs angepasst werden (Forschungsfrage). LNNs mit SLAF performen zwar nicht so gut, können aber vielleicht weiter angepasst werden. Denn LNNs sind von Grund auf nicht für SLAF optimiert worden. Dabei könnte eine weitere Forschungsfrage entstehen und zwar wie SLAF am besten für LNNs optimiert werden kann und welche Vorteile das dann mit sich bringt.
+Des weiteren unterscheidet sich ein LLN in der Größe zu den statistischen Modellen enorm. Dort, wo ein LNN nur ca. 100 KB braucht, brauch ein statistisches Modell ca. 1 MB. Dies zeigt nochmal, dass LNNs kompakter sind und weniger Rechenleistung für eine Vorhersage brauchen. So kann ein Prophet-Modell ca. 1 Minute brauchen, um eine Vorhersage zu treffen und ein LNN nur wenige Sekunden im Gegensatz.
+
+Eine mögliche Optimierung des LNNs ist die Betrachtung der unterschiedlichen Feiertage. So kann für jeden Feiertag eine Dummy-Variable erstellt werden, die in das Modell einfließen soll. Eine weitere Möglichkeit ist es, den Trainingsdatensatz zu erhöhen. Anstatt die letzten 3 Jahre zum Vorhersagejahr zu nehmen, soll der gesamte Datensatz als Trainingsdatensatz genommen werden und das letzte Jahr als ein Testdatensatz. 
+
+Die saisonalen Muster werden genauso gut von dem LNN erkannt wie von einem statistischen Modell. Der einzige Nachteil eines LNNs gegenüber einem statistischen Modell sind die Vorhersageintervalle. Diese werden bei einem LNN nicht automatisch mit erzeugt, können jedoch durch weitere Verfahren ermittelt und für LNNs angepasst werden (Forschungsfrage). LNNs mit SLAF performen zwar nicht so gut, können aber vielleicht weiter angepasst werden. Denn LNNs sind von Grund auf nicht für SLAF optimiert worden. Dabei könnte eine weitere Forschungsfrage entstehen, und zwar wie SLAF am besten für LNNs optimiert werden kann und welche Vorteile das dann mit sich bringt.
 
 Im Großen und Ganzen sollten LNNs im Bereich der Zeitreihen weiter untersucht werden und tiefergehende Modellierungen und Optimierungen erzeugt werden.
 
+\clearpage
+\newpage
 
+# Anhang
 
+Git-Repo: https://github.com/vladislabv/ncps-slaf.
+
+Datensatz: AEP_hourly_cleaned.csv ist der verwendete Datensatz fürs Training.
+
+Im Ordner ncps-slaf ist nochmal der verwendete Code beigefügt.
+
+Im Ordner ncps-slaf/analysis ist die Datenanalyse zu finden (R).
+
+Im Ordner ncps-slaf/notebooks und  ncps-slaf/project ist unser Code für LNN zu finden (Python).
 
 
 
