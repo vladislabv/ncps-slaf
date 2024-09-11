@@ -121,7 +121,7 @@ Als Letztes wird vollständigkeitshalber auf das Auto Regressive-Moving Average 
 
 ## Liquid Time-Constant Neuronal Networks (LTCNNs)
 
-Liquid Neural Networks, insbesondere LTCNNs, sind eine neuartige Form von neuronalen Netzen, die speziell für dynamische, zeitabhängige Daten entwickelt wurden. Im Gegensatz zu klassischen neuronalen Netzen, bei denen die Verbindungen zwischen den Neuronen statisch sind, passen sich die Verbindungen in LTCNs kontinuierlich über die Zeit an. Dies ermöglicht es den Modellen, dynamisch auf unterschiedliche Eingabeströme zu reagieren, was sie besonders geeignet für die Verarbeitung von zeitlichen Daten macht, wie z.B. in Zeitreihenanalysen oder bei Echtzeitanwendungen.
+Liquid Neural Networks, insbesondere LTCNNs, sind eine neuartige Form von neuronalen Netzen, die speziell für dynamische, zeitabhängige Daten entwickelt wurden. Diese Architektur wurde in der Arbeit von \cite{hasani2021liquid} eingeführt. Im Gegensatz zu klassischen neuronalen Netzen, bei denen die Verbindungen zwischen den Neuronen statisch sind, passen sich die Verbindungen in LTCNs kontinuierlich über die Zeit an. Dies ermöglicht es den Modellen, dynamisch auf unterschiedliche Eingabeströme zu reagieren, was sie besonders geeignet für die Verarbeitung von zeitlichen Daten macht, wie z.B. in Zeitreihenanalysen oder bei Echtzeitanwendungen.
 
 Der Kernmechanismus von LTCNs basiert auf der Verwendung von Differentialgleichungen zur Beschreibung der Neuronenaktivität. Jedes Neuron \( x_i(t) \) wird durch eine Differentialgleichung beschrieben, die seinen Zustand in Abhängigkeit von der Zeit und den Eingangsgrößen steuert:
 
@@ -137,17 +137,17 @@ Die Zeitkonstante \( \tau_i \) spielt eine zentrale Rolle, da sie bestimmt, wie 
 \tau_{\text{sys}} = \frac{\tau}{1 + \tau f(x(t), I(t), t, \theta)}.
 \]
 
-Um diese Netze zu trainieren, verwenden die Autoren eine Technik namens Backpropagation through Time (BPTT) in Kombination mit einem benutzerdefinierten Solver, um die Gleichungen des Netzes effizient zu lösen. Dieser Solver stellt ein Gleichgewicht zwischen Stabilität und Geschwindigkeit her. Die Aktualisierungsregel lautet wie folgt:
+Um diese Netze zu trainieren, verwenden die Autoren eine Technik namens Backpropagation through Time (BPTT), beschrieben von \cite{pontryagin2018mathematical}, in Kombination mit einem benutzerdefinierten Solver, um die Gleichungen des Netzes effizient zu lösen. Dieser Solver stellt ein Gleichgewicht zwischen Stabilität und Geschwindigkeit her. Die Aktualisierungsregel lautet wie folgt:
 
 \[
 x(t + \Delta t) = x(t) + \Delta t \frac{f(x(t), I(t), t, \theta)A}{1 + \Delta t \left(\frac{1}{\tau} + f(x(t), I(t), t, \theta)\right)}
 \]
 
-Die Architektur eines LTCNs ist relativ simpel aufgebaut: Jedes Neuron besitzt eine zeitabhängige Aktivierung, die durch die oben genannte Differentialgleichung gesteuert wird. Durch die ständige Anpassung der Zeitkonstanten können LTCNs flexibel auf Veränderungen in den Daten reagieren. Diese dynamischen Modelle sind besonders geeignet für komplexe, zeitlich veränderliche Muster.
+Die LTCN-Architektur ist wie folgt aufgebaut: jedes Neuron besitzt eine zeitabhängige Aktivierung, die durch die vorher genannte Differentialgleichung definiert wird. Durch die kontinuierlich Anpassung der Zeitkonstanten können LTCNs schnell auf jegliche Veränderungen in den Daten reagieren. Darüber hinaus, können sind LTCNs im Kontext von komplexen, zeitlich veränderlichen Mustern anzuwenden.
 
-In praktischen Tests übertrafen LTCs traditionelle Modelle wie Long Short-Time Memory Cells (LSTMs) und neuronale Ordinary Differential Equation (ODEs). Ob es um die Erkennung von Gesten oder die Vorhersage menschlicher Aktivitäten ging, in den meisten Fällen lieferten sie bessere Ergebnisse. Wie andere neuronale Netze haben sie jedoch aufgrund des Problems des verschwindenden Gradienten Schwierigkeiten mit langfristigen Abhängigkeiten. Außerdem benötigen sie im Vergleich zu einfacheren Modellen mehr Rechenressourcen.
+In praktischen Tests übertrafen LTCs traditionelle Modelle wie Long Short-Time Memory Cells (LSTMs) und neuronale Ordinary Differential Equation (ODEs). Die Autoren behaupten eine Ergebnissverbesserung beim Benchmark, welcher auf 7 sehr bekannten öffentlichen Datesets basiert. Wie aber andere neuronale Netze haben sie jedoch aufgrund des Problems des verschwindenden Gradienten (Vanishing gradient problem) Schwierigkeiten mit langfristigen Abhängigkeiten. Außerdem benötigen sie im Vergleich zu einfacheren Modellen mehr Rechenressourcen, um eine Vorhersage zu machen. Neber der Neuheit des Modells könnte es erklären, dass praktischen Anwendungen es derzeit noch kaum zu finden sind.
 
-Diese Ausgewogenheit von Flexibilität und Ausdruckskraft macht LTCs zu einer spannenden Entwicklung in der Welt der rekurrenten neuronalen Netze, auch wenn es noch einige Herausforderungen zu bewältigen gibt.
+Dennoch macht es LTCs zu einer spannenden Entwicklung in der Welt der rekurrenten neuronalen Netze, auch wenn es noch einige Herausforderungen zu bewältigen gibt.
 
 <!----------------------------------------------------------------------->
 
