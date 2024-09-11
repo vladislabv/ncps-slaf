@@ -9,5 +9,4 @@ distributed
 sphinx-copybutton
 furo
 torch
-tensorflow
 sphinx_design
