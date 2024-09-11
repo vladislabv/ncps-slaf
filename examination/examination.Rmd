@@ -670,6 +670,20 @@ Die saisonalen Muster werden genauso gut von dem LNN erkannt wie von einem stati
 
 Im Großen und Ganzen sollten LNNs im Bereich der Zeitreihen weiter untersucht werden und tiefergehende Modellierungen und Optimierungen erzeugt werden.
 
+\clearpage
+\newpage
+
+# Anhang
+
+Git-Repo: https://github.com/vladislabv/ncps-slaf.
+
+Datensatz: AEP_hourly_cleaned.csv ist der verwendete Datensatz fürs Training.
+
+Im Ordner ncps-slaf ist nochmal der verwendete Code beigefügt.
+
+Im Ordner ncps-slaf/analysis ist die Datenanalyse zu finden (R).
+
+Im Ordner ncps-slaf/notebooks und  ncps-slaf/project ist unser Code für LNN zu finden (Python).
 
 
 
