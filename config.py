@@ -49,7 +49,7 @@ class Config:
 
 
     # hyperparameters of LNN
-    NUM_LNN_UNITS: list = [16, 16, 32]
-    USE_SWISH_ACTIVATION: list = [True, True]
-    INIT_LR: list = [0.0001, 0.0001]
+    NUM_LNN_UNITS: list = [8, 16, 32]
+    USE_SWISH_ACTIVATION: list = [False, True]
+    INIT_LR: list = [0.01, 0.0001]
     NUM_EPOCHS: list = [10, 50, 100]
